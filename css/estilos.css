@@ -8,29 +8,35 @@ body {
   font-family: "Antonio";
 }
 
-header {
+.header {
   height: 100px;
   background-color: #ffffff;
   position: sticky;
   top: 0px;
   z-index: 10;
-}
-
-#header.scrolled {
-  transition: 0.6s;
-  background-color: #131748;
-}
-
-#header.scrolled a {
-  color: #ffffff;
-}
-
-header a {
   font-family: "Antonio";
+  transition: height 0.3s ease;
 }
 
-header div {
+.header div {
   height: 100px;
+}
+
+.headerReducido {
+  height: 80px;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+  transition: height 0.3s ease;
+}
+
+.headerReducido div {
+  height: 80px;
+}
+
+.logoRacing {
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.4));
 }
 
 #navbarNavAltMarkup {
@@ -39,6 +45,7 @@ header div {
 
 .custom-navbar {
   height: 100px;
+  transition: height 0.3s ease;
 }
 
 .custom-navbar .navbar-brand,
@@ -50,6 +57,24 @@ header div {
   max-height: 100%;
   height: 90px;
   width: auto;
+  transition: height 0.3s ease;
+}
+
+.custom-navbarReducido {
+  height: 80px;
+  transition: height 0.3s ease;
+}
+
+.custom-navbarReducido .navbar-brand,
+.custom-navbarReducido .navbar-nav .nav-link {
+  line-height: 80px;
+}
+
+.custom-navbarReducido .navbar-brand img {
+  max-height: 100%;
+  height: 70px;
+  width: auto;
+  transition: height 0.3s ease;
 }
 
 .section1 {
@@ -57,11 +82,15 @@ header div {
   height: calc(100vh - 100px);
 }
 
-.section1 div {
+.section1 .divArticle1 {
   color: #ffffff;
   height: 50vh;
   width: 60vw;
   font-size: 40vh;
+}
+
+.section1 .divArticle2 {
+  color: #ffffff;
 }
 
 .akdBlanco {
@@ -71,7 +100,7 @@ header div {
 
 .section2 {
   background-color: #8bc4e5;
-  height: calc(118vh - 100px);
+  height: 118vh;
 }
 
 .article21 {
@@ -114,25 +143,161 @@ header div {
 
 .article32 {
   color: #ffffff;
+  height: calc(87vh - 100px);
+}
+
+/*Mapas*/
+
+.mapContainer {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.mapCobertor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease-in;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.mapCobertor2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease-in;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.mapCobertor.hidden {
+  background-color: rgba(0, 0, 0, 0);
+  pointer-events: none;
+}
+
+.mapCobertor2.hidden {
+  background-color: rgba(0, 0, 0, 0);
+  pointer-events: none;
+}
+
+.mapCobertorContent {
+  color: #ffffff;
+  text-align: center;
+}
+
+.botonContainer {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  transition: bottom 0.5s ease, transform 0.5s ease;
+}
+
+.botonContainer2 {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  transition: bottom 0.5s ease, transform 0.5s ease;
+}
+
+.botonContainer.center {
+  bottom: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.botonContainer2.center {
+  bottom: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.toggleBoton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  color: #131748;
+  transition: background-color 0.3s ease;
+}
+
+.toggleBoton:hover {
+  background-color: #131748;
+  color: #ffffff;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 0;
+  position: relative;
+}
+
+.section4 {
+  height: 30vh;
+  background-color: #8bc4e5;
+  color: #ffffff;
+}
+
+.carruselProductos {
+  height: 20vh;
+}
+
+.owl-carouselP {
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.owl-carouselP .item {
+  width: 50%;
+  height: auto;
+  margin-right: auto;
+  margin-left: auto;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.owl-carouselP img {
+  width: 100%;
+  height: auto;
 }
 
 footer {
-  height: 40vh;
+  height: 45vh;
 }
 
 footer svg {
   color: #131748;
-  height: 30px;
+  height: 4vh;
   width: auto;
 }
 
 .escudoRacing {
-  height: 30vh;
+  height: 35vh;
   width: auto;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
 }
 
 .logosLigas {
-  height: 14vh;
+  height: 6vh;
   width: auto;
 }
 
@@ -144,4 +309,11 @@ footer svg {
   .custom-navbar .navbar-brand img {
     height: 80px;
   }
+}
+
+/*Clases de Bootstrap*/
+
+.btn-custom {
+  background-color: #ffffff;
+  color: #131748;
 }
