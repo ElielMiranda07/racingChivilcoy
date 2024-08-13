@@ -1,0 +1,19 @@
+.noticiaItem[hidden] {
+  display: none;
+}
+
+.botonVerMas {
+  background-color: #ffffff;
+  color: #131748;
+  border: 2px solid #131748;
+}
+
+.botonVerMas:hover {
+  background-color: #131748;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+main {
+  color: #131748;
+}

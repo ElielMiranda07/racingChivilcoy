@@ -83,19 +83,40 @@ $(".owl-carouselP").owlCarousel({
   smartSpeed: 1000,
   responsive: {
     0: {
+      items: 2,
+      nav: false,
+      loop: true,
+      dots: false,
+    },
+    576: {
       items: 3,
       nav: false,
       loop: true,
+      dots: false,
     },
-    600: {
+    768: {
+      items: 3,
+      nav: false,
+      loop: true,
+      dots: false,
+    },
+    992: {
+      items: 4,
+      nav: false,
+      loop: true,
+      dots: false,
+    },
+    1200: {
       items: 5,
       nav: false,
       loop: true,
+      dots: false,
     },
-    1000: {
-      items: 5,
+    1440: {
+      items: 6,
       nav: false,
       loop: true,
+      dots: false,
     },
   },
 });

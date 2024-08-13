@@ -1,0 +1,31 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Antonio";
+}
+
+.mainFormulario {
+  background-color: #131748;
+  color: #ffffff;
+  min-height: calc(55vh - 100px);
+  font-family: "Antonio";
+}
+
+.mainFormulario button {
+  background-color: #ffffff;
+  color: #131748;
+}
+
+.mainFormulario button:hover {
+  background-color: #131748;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+.mainFormulario div {
+  font-size: 3rem;
+}

@@ -4,77 +4,20 @@
   box-sizing: border-box;
 }
 
-body {
+#body {
   font-family: "Antonio";
 }
 
-.header {
-  height: 100px;
-  background-color: #ffffff;
-  position: sticky;
-  top: 0px;
-  z-index: 10;
-  font-family: "Antonio";
-  transition: height 0.3s ease;
+.asociate {
+  color: #8bc4e5;
 }
 
-.header div {
-  height: 100px;
+#asociate {
+  color: #8bc4e5;
 }
 
-.headerReducido {
-  height: 80px;
-  background-color: #ffffff;
-  position: sticky;
-  top: 0px;
-  z-index: 10;
-  transition: height 0.3s ease;
-}
-
-.headerReducido div {
-  height: 80px;
-}
-
-.logoRacing {
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.4));
-}
-
-#navbarNavAltMarkup {
-  justify-content: right;
-}
-
-.custom-navbar {
-  height: 100px;
-  transition: height 0.3s ease;
-}
-
-.custom-navbar .navbar-brand,
-.custom-navbar .navbar-nav .nav-link {
-  line-height: 100px;
-}
-
-.custom-navbar .navbar-brand img {
-  max-height: 100%;
-  height: 90px;
-  width: auto;
-  transition: height 0.3s ease;
-}
-
-.custom-navbarReducido {
-  height: 80px;
-  transition: height 0.3s ease;
-}
-
-.custom-navbarReducido .navbar-brand,
-.custom-navbarReducido .navbar-nav .nav-link {
-  line-height: 80px;
-}
-
-.custom-navbarReducido .navbar-brand img {
-  max-height: 100%;
-  height: 70px;
-  width: auto;
-  transition: height 0.3s ease;
+main {
+  font-family: "antonio";
 }
 
 .section1 {
@@ -256,6 +199,16 @@ iframe {
   color: #ffffff;
 }
 
+.nuestrosProductos {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.nuestrosProductos:hover {
+  text-decoration: none;
+  color: #131748;
+}
+
 .carruselProductos {
   height: 20vh;
 }
@@ -301,14 +254,37 @@ footer svg {
   width: auto;
 }
 
-@media (max-width: 768px) {
-  .custom-navbar {
-    height: auto;
-  }
+.producto {
+  width: 100%;
+}
 
-  .custom-navbar .navbar-brand img {
-    height: 80px;
-  }
+.bi-whatsapp:hover {
+  color: #25d366;
+}
+
+.bi-facebook:hover {
+  color: #1877f2;
+}
+
+.bi-instagram:hover {
+  background: linear-gradient(
+    45deg,
+    #fd1d1d,
+    #fccc63,
+    #f77737,
+    #833ab4,
+    #405de6
+  );
+  border-radius: 0.1rem;
+  color: #ffffff;
+}
+
+.bi-twitter-x:hover {
+  color: #000000;
+}
+
+.bi-tiktok:hover {
+  color: #000000;
 }
 
 /*Clases de Bootstrap*/
@@ -316,4 +292,91 @@ footer svg {
 .btn-custom {
   background-color: #ffffff;
   color: #131748;
+  border: 2px solid #131748;
+}
+
+.btn-custom:hover {
+  background-color: #131748;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+@media screen and (min-width: 576px) {
+}
+
+@media screen and (min-width: 768px) {
+  .header {
+    height: 100px;
+    background-color: #ffffff;
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+    font-family: "Antonio";
+    transition: height 0.3s ease;
+  }
+
+  .header div {
+    height: 100px;
+  }
+
+  .headerReducido {
+    height: 80px;
+    background-color: #ffffff;
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+    transition: height 0.3s ease;
+  }
+
+  .headerReducido div {
+    height: 80px;
+  }
+
+  #navbarNavAltMarkup {
+    justify-content: right;
+  }
+
+  .custom-navbar {
+    height: 100px;
+    transition: height 0.3s ease;
+    background-color: #ffffff;
+  }
+
+  .custom-navbar .navbar-brand,
+  .custom-navbar .navbar-nav .nav-link {
+    line-height: 100px;
+  }
+
+  .custom-navbar .navbar-brand img {
+    max-height: 100%;
+    height: 90px;
+    width: auto;
+    transition: height 0.3s ease;
+  }
+
+  .custom-navbarReducido {
+    height: 80px;
+    transition: height 0.3s ease;
+  }
+
+  .custom-navbarReducido .navbar-brand,
+  .custom-navbarReducido .navbar-nav .nav-link {
+    line-height: 80px;
+  }
+
+  .custom-navbarReducido .navbar-brand img {
+    max-height: 100%;
+    height: 70px;
+    width: auto;
+    transition: height 0.3s ease;
+  }
+}
+
+@media screen and (min-width: 992px) {
+}
+
+@media screen and (min-width: 1200px) {
+}
+
+@media screen and (min-width: 1440px) {
 }
