@@ -8,6 +8,33 @@
   font-family: "Antonio";
 }
 
+.header {
+  background-color: #ffffff;
+  z-index: 10;
+}
+
+.logoRacing {
+  height: 10vh;
+  width: auto;
+}
+
+.custom-navbar {
+  z-index: 1000;
+}
+
+#navbarNavAltMarkup {
+  justify-content: right;
+}
+
+.navbar-toggler {
+  background-color: #ffffff;
+  border: 2px solid #131748;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='rgba(19, 23, 72, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+}
+
 .asociate {
   color: #8bc4e5;
 }
@@ -22,14 +49,13 @@ main {
 
 .section1 {
   background-color: #131748;
-  height: calc(100vh - 100px);
+  height: 72vh;
 }
 
 .section1 .divArticle1 {
   color: #ffffff;
   height: 50vh;
   width: 60vw;
-  font-size: 40vh;
 }
 
 .section1 .divArticle2 {
@@ -41,24 +67,73 @@ main {
   height: auto;
 }
 
+.botonAsociate {
+  z-index: 1;
+}
+
 .section2 {
   background-color: #8bc4e5;
-  height: 118vh;
+  display: block;
+  height: auto;
+  overflow: hidden;
 }
 
 .article21 {
   background-color: #ffffff;
-  height: 18vh;
+  display: block;
+  height: auto;
+  overflow: hidden;
+  color: #131748;
+}
+
+.tituloProximosPartidos {
+  font-size: medium;
+}
+
+.partidosTamañoFuente {
+  font-size: small;
+}
+
+.article22 {
+  color: #ffffff;
+}
+
+.textoModalNoticias p {
+  color: #131748;
+}
+
+.tituloNoticias {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.tituloNoticias:hover {
+  text-decoration: none;
+  color: #131748;
 }
 
 .noticias img {
-  width: 20vw;
+  width: 55vw;
   height: auto;
+}
+
+.botonVerMasNoticias {
+  background-color: #8bc4e5;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+.botonVerMasNoticias:hover {
+  background-color: #131748;
+  color: #ffffff;
+  border: 2px solid #ffffff;
 }
 
 .section3 {
   background-color: #131748;
-  height: calc(100vh - 100px);
+  display: block;
+  height: auto;
+  overflow: hidden;
 }
 
 .article31 {
@@ -86,7 +161,9 @@ main {
 
 .article32 {
   color: #ffffff;
-  height: calc(87vh - 100px);
+  display: block;
+  height: auto;
+  overflow: hidden;
 }
 
 /*Mapas*/
@@ -193,8 +270,12 @@ iframe {
   position: relative;
 }
 
+/*Fin de Mapas*/
+
 .section4 {
-  height: 30vh;
+  display: block;
+  height: auto;
+  overflow: hidden;
   background-color: #8bc4e5;
   color: #ffffff;
 }
@@ -234,7 +315,10 @@ iframe {
 }
 
 footer {
-  height: 45vh;
+  background-color: #ffffff;
+  display: block;
+  height: auto;
+  overflow: hidden;
 }
 
 footer svg {
@@ -243,19 +327,26 @@ footer svg {
   width: auto;
 }
 
+.divEscudoRacing {
+  max-height: 45vh;
+  max-width: 30vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
 .escudoRacing {
-  height: 35vh;
+  max-height: 100%;
+  max-width: 100%;
+  height: auto;
   width: auto;
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.6));
 }
 
 .logosLigas {
-  height: 6vh;
+  height: 5vh;
   width: auto;
-}
-
-.producto {
-  width: 100%;
 }
 
 .bi-whatsapp:hover {
@@ -301,78 +392,124 @@ footer svg {
   border: 2px solid #ffffff;
 }
 
+/*Clases Paginas Secundarias*/
+
+.mainClub {
+  color: #131748;
+}
+
+.mainClub p {
+  font-size: smaller;
+}
+
+.mainEstadios {
+  color: #131748;
+}
+
+.mainPlantel {
+  color: #131748;
+}
+
 @media screen and (min-width: 576px) {
+  .noticias img {
+    width: 40vw;
+    height: auto;
+  }
 }
 
 @media screen and (min-width: 768px) {
+  .divArticle2 {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
   .header {
-    height: 100px;
-    background-color: #ffffff;
     position: sticky;
-    top: 0px;
-    z-index: 10;
-    font-family: "Antonio";
-    transition: height 0.3s ease;
+    top: 0;
   }
 
-  .header div {
-    height: 100px;
+  .section1 {
+    background-color: #131748;
+    height: 90vh;
   }
 
-  .headerReducido {
-    height: 80px;
-    background-color: #ffffff;
-    position: sticky;
-    top: 0px;
-    z-index: 10;
-    transition: height 0.3s ease;
+  .section1 .divArticle1 {
+    color: #ffffff;
+    height: 50vh;
+    width: 60vw;
+    font-size: 40vh;
   }
 
-  .headerReducido div {
-    height: 80px;
+  .tituloProximosPartidos {
+    font-size: large;
   }
 
-  #navbarNavAltMarkup {
-    justify-content: right;
+  .partidosTamañoFuente {
+    font-size: medium;
   }
 
-  .custom-navbar {
-    height: 100px;
-    transition: height 0.3s ease;
-    background-color: #ffffff;
+  .noticias img {
+    width: 20vw;
+    height: auto;
   }
 
-  .custom-navbar .navbar-brand,
-  .custom-navbar .navbar-nav .nav-link {
-    line-height: 100px;
+  .divEscudoRacing {
+    max-height: 45vh;
+    max-width: 50vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
   }
 
-  .custom-navbar .navbar-brand img {
+  .escudoRacing {
     max-height: 100%;
-    height: 90px;
+    width: 15vw;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.6));
+  }
+
+  footer svg {
+    color: #131748;
+    height: 5vh;
     width: auto;
-    transition: height 0.3s ease;
   }
 
-  .custom-navbarReducido {
-    height: 80px;
-    transition: height 0.3s ease;
-  }
-
-  .custom-navbarReducido .navbar-brand,
-  .custom-navbarReducido .navbar-nav .nav-link {
-    line-height: 80px;
-  }
-
-  .custom-navbarReducido .navbar-brand img {
-    max-height: 100%;
-    height: 70px;
+  .logosLigas {
+    height: 6vh;
     width: auto;
-    transition: height 0.3s ease;
+  }
+
+  .mainClub p {
+    font-size: medium;
   }
 }
 
 @media screen and (min-width: 992px) {
+  .tituloProximosPartidos {
+    font-size: x-large;
+  }
+
+  .partidosTamañoFuente {
+    font-size: large;
+  }
+
+  footer svg {
+    color: #131748;
+    height: 6vh;
+    width: auto;
+  }
+
+  .logosLigas {
+    height: 7vh;
+    width: auto;
+  }
+
+  .mainClub p {
+    font-size: large;
+  }
 }
 
 @media screen and (min-width: 1200px) {

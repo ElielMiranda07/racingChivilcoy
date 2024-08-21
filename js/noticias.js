@@ -14,23 +14,29 @@ function filtrarNoticias(categoria) {
   });
 }
 
-//Achicar Header
+//Cambio de Footer + Cambio de Botones
 
-const header = document.getElementById("header");
-const nav = document.getElementById("nav");
+function adjustClassesBasedOnWidth() {
+  const footerSmall = document.getElementById("footerSmall");
+  const footerLarge = document.getElementById("footerLarge");
+  const botones = document.querySelectorAll(".btn-sm");
 
-function handleScroll() {
-  if (window.scrollY > 50) {
-    header.classList.add("headerReducido");
-    header.classList.remove("header");
-    nav.classList.add("custom-navbarReducido");
-    nav.classList.remove("custom-navbar");
+  if (window.innerWidth >= 768) {
+    footerLarge.classList.remove("d-none");
+    footerSmall.classList.add("d-none");
+    botones.forEach((boton) => {
+      boton.classList.remove("btn-sm");
+      boton.classList.add("btn-md");
+    });
   } else {
-    header.classList.remove("headerReducido");
-    header.classList.add("header");
-    nav.classList.remove("custom-navbarReducido");
-    nav.classList.add("custom-navbar");
+    footerLarge.classList.add("d-none");
+    footerSmall.classList.remove("d-none");
+    botones.forEach((boton) => {
+      boton.classList.add("btn-sm");
+      boton.classList.remove("btn-md");
+    });
   }
 }
 
-window.addEventListener("scroll", handleScroll);
+window.addEventListener("resize", adjustClassesBasedOnWidth);
+window.addEventListener("DOMContentLoaded", adjustClassesBasedOnWidth);

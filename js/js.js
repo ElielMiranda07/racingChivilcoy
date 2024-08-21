@@ -1,23 +1,68 @@
-//Achicar Header
+//Eliminar Clases Responsive
 
-const header = document.getElementById("header");
-const nav = document.getElementById("nav");
+//Media 576
 
-function handleScroll() {
-  if (window.scrollY > 50) {
-    header.classList.add("headerReducido");
-    header.classList.remove("header");
-    nav.classList.add("custom-navbarReducido");
-    nav.classList.remove("custom-navbar");
+window.addEventListener("resize", function () {
+  if (window.innerWidth >= 576) {
   } else {
-    header.classList.remove("headerReducido");
-    header.classList.add("header");
-    nav.classList.remove("custom-navbarReducido");
-    nav.classList.add("custom-navbar");
+  }
+});
+
+//Media 768
+
+function adjustClassesBasedOnWidth() {
+  const divAsociate = document.getElementById("botonDeAsociate");
+  const partido3 = document.getElementById("partido3");
+  const botonAsociate = document.getElementById("btnDeAsociate");
+  const proximosPartidos = document.getElementById("proximosPartidos");
+  const partido1 = document.getElementById("partido1");
+  const partido2 = document.getElementById("partido2");
+  const footerSmall = document.getElementById("footerSmall");
+  const footerLarge = document.getElementById("footerLarge");
+
+  if (window.innerWidth >= 768) {
+    divAsociate.classList.remove(
+      "position-absolute",
+      "top-50",
+      "start-50",
+      "translate-middle"
+    );
+    partido3.classList.remove("d-none");
+    partido3.classList.add("d-flex", "flex-column");
+    botonAsociate.classList.remove("btn-sm");
+    botonAsociate.classList.add("btn-lg");
+    proximosPartidos.classList.remove("col-4");
+    partido1.classList.remove("col-4");
+    partido2.classList.remove("col-4");
+    proximosPartidos.classList.add("col-3");
+    partido1.classList.add("col-3");
+    partido2.classList.add("col-3");
+    footerLarge.classList.remove("d-none");
+    footerSmall.classList.add("d-none");
+  } else {
+    divAsociate.classList.add(
+      "position-absolute",
+      "top-50",
+      "start-50",
+      "translate-middle"
+    );
+    partido3.classList.add("d-none");
+    partido3.classList.remove("d-flex", "flex-column");
+    botonAsociate.classList.add("btn-sm");
+    botonAsociate.classList.remove("btn-lg");
+    proximosPartidos.classList.add("col-4");
+    partido1.classList.add("col-4");
+    partido2.classList.add("col-4");
+    proximosPartidos.classList.remove("col-3");
+    partido1.classList.remove("col-3");
+    partido2.classList.remove("col-3");
+    footerLarge.classList.add("d-none");
+    footerSmall.classList.remove("d-none");
   }
 }
 
-window.addEventListener("scroll", handleScroll);
+window.addEventListener("resize", adjustClassesBasedOnWidth);
+window.addEventListener("DOMContentLoaded", adjustClassesBasedOnWidth);
 
 //Carrusel Sponsors
 
@@ -33,15 +78,27 @@ $(".owl-carousel").owlCarousel({
   dots: false,
   responsive: {
     0: {
+      items: 2,
+      nav: false,
+    },
+    576: {
       items: 3,
       nav: false,
     },
-    600: {
-      items: 3,
+    768: {
+      items: 4,
       nav: false,
     },
-    1000: {
-      items: 3,
+    992: {
+      items: 5,
+      nav: false,
+    },
+    1200: {
+      items: 5,
+      nav: false,
+    },
+    1440: {
+      items: 5,
       nav: false,
     },
   },
