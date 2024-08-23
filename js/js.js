@@ -1,3 +1,34 @@
+//Ajustar Tamaño de la pantalla principal
+
+function adjustSectionHeight() {
+  const header = document.getElementById("header");
+  const section = document.getElementById("section1");
+  const article = document.getElementById("article21");
+  //Posición de Boton Asociate
+  const botonAsociate = document.getElementById("btnDeAsociate");
+
+  const headerHeight = header.offsetHeight;
+  const articleHeight = article.offsetHeight;
+
+  if (window.innerWidth <= 768) {
+    const availableHeightChica =
+      window.innerHeight - headerHeight - articleHeight;
+    section.style.height = `${availableHeightChica}px`;
+    const botonAsociateChica =
+      window.innerHeight - headerHeight - articleHeight;
+    botonAsociate.style.transform = `translateY(calc(${botonAsociateChica}px - 20vh))`;
+  } else {
+    const availableHeightGrande = window.innerHeight - headerHeight;
+    section.style.height = `${availableHeightGrande}px`;
+
+    const botonAsociateGrande = window.innerHeight - headerHeight;
+    botonAsociate.style.transform = `translateY(calc(${botonAsociateGrande}px - 10vh))`;
+  }
+}
+
+window.addEventListener("load", adjustSectionHeight);
+window.addEventListener("resize", adjustSectionHeight);
+
 //Eliminar Clases Responsive
 
 //Media 576
@@ -11,7 +42,6 @@ window.addEventListener("resize", function () {
 //Media 768
 
 function adjustClassesBasedOnWidth() {
-  const divAsociate = document.getElementById("botonDeAsociate");
   const partido3 = document.getElementById("partido3");
   const botonAsociate = document.getElementById("btnDeAsociate");
   const proximosPartidos = document.getElementById("proximosPartidos");
@@ -21,12 +51,6 @@ function adjustClassesBasedOnWidth() {
   const footerLarge = document.getElementById("footerLarge");
 
   if (window.innerWidth >= 768) {
-    divAsociate.classList.remove(
-      "position-absolute",
-      "top-50",
-      "start-50",
-      "translate-middle"
-    );
     partido3.classList.remove("d-none");
     partido3.classList.add("d-flex", "flex-column");
     botonAsociate.classList.remove("btn-sm");
@@ -40,12 +64,6 @@ function adjustClassesBasedOnWidth() {
     footerLarge.classList.remove("d-none");
     footerSmall.classList.add("d-none");
   } else {
-    divAsociate.classList.add(
-      "position-absolute",
-      "top-50",
-      "start-50",
-      "translate-middle"
-    );
     partido3.classList.add("d-none");
     partido3.classList.remove("d-flex", "flex-column");
     botonAsociate.classList.add("btn-sm");
