@@ -40,16 +40,32 @@ function sendEmail(nombre, apellido, telefono, email) {
 
 //Cambio de Footer
 
+const alturaHeader = header.offsetHeight;
+
 function adjustClassesBasedOnWidth() {
+  const header = document.getElementById("header");
   const footerSmall = document.getElementById("footerSmall");
   const footerLarge = document.getElementById("footerLarge");
+  const mainFormulario = document.getElementById("mainFormulario");
 
   if (window.innerWidth >= 768) {
     footerLarge.classList.remove("d-none");
     footerSmall.classList.add("d-none");
+
+    const alturaHeader = header.offsetHeight;
+    const alturaFooterLarge = footerLarge.offsetHeight;
+    const alturaMainGrande =
+      window.innerHeight - alturaHeader - alturaFooterLarge;
+    mainFormulario.style.minHeight = `${alturaMainGrande}px`;
   } else {
     footerLarge.classList.add("d-none");
     footerSmall.classList.remove("d-none");
+
+    const alturaHeader = header.offsetHeight;
+    const alturaFooterSmall = footerSmall.offsetHeight;
+    const alturaMainChico =
+      window.innerHeight - alturaHeader - alturaFooterSmall;
+    mainFormulario.style.minHeight = `${alturaMainChico}px`;
   }
 }
 

@@ -138,7 +138,11 @@ main {
 
 .article31 {
   background-color: #ffffff;
-  height: 13vh;
+  display: block;
+  height: auto;
+  overflow: hidden;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
 }
 
 .owl-carousel {
@@ -151,12 +155,22 @@ main {
   margin-right: auto;
   margin-left: auto;
   box-sizing: border-box;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.owl-item.active {
+  margin-right: 0px !important;
 }
 
 .owl-carousel img {
   width: 100%;
   height: auto;
+}
+
+.owl-stage {
+  display: flex;
+  align-items: center;
 }
 
 .article32 {
@@ -407,6 +421,10 @@ footer svg {
 }
 
 .mainPlantel {
+  color: #131748;
+}
+
+.mainProductos {
   color: #131748;
 }
 

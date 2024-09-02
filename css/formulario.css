@@ -11,7 +11,6 @@ body {
 .mainFormulario {
   background-color: #131748;
   color: #ffffff;
-  min-height: calc(55vh - 100px);
   font-family: "Antonio";
 }
 

@@ -108,7 +108,7 @@ $(".owl-carousel").owlCarousel({
       nav: false,
     },
     992: {
-      items: 5,
+      items: 4,
       nav: false,
     },
     1200: {

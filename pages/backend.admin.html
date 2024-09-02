@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Backend-Administrador</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/backend.css" />
+  </head>
+  <body>
+    <section class="container-fluid d-flex justify-content-center my-3">
+      <h2>Racing de Chivilcoy - Administrador</h2>
+    </section>
+    <section class="container-fluid my-3">
+      <article class="border">
+        <!--Próximos partidos - Actualizar-->
+        <h4 class="mt-2 text-center">Próximos Partidos</h4>
+        <div class="container-fluid d-flex flex-row col-12 mt-2">
+          <!--Partido 1 - Actualizar-->
+          <div class="col-4 my-2 border">
+            <h5 class="mt-2">Partido 1</h5>
+            <form action="" id="formActualizarPartidoUno">
+              <div class="mt-2">
+                <h6>Fecha y Hora. Formato: DD/MM - HH:MM (18/08 - 21:00)</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="unoActualizarFyH"
+                />
+              </div>
+              <div class="mt-2">
+                <h6>Rival</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="unoActualizarRival"
+                />
+              </div>
+              <div class="mt-2">
+                <h6>Ubicación</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="unoActualizarUbi"
+                />
+              </div>
+              <div class="d-flex justify-content-center mt-2 mb-3">
+                <button type="submit" class="btn btn-primary">
+                  Actualizar
+                </button>
+              </div>
+            </form>
+          </div>
+          <!--Partido 2 - Actualizar-->
+          <div class="col-4 my-2 border">
+            <h5 class="mt-2">Partido 2</h5>
+            <form action="" id="formActualizarPartidoDos">
+              <div class="mt-2">
+                <h6>Fecha y Hora. Formato: DD/MM - HH:MM (18/08 - 21:00)</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="dosActualizarFyH"
+                />
+              </div>
+              <div class="mt-2">
+                <h6>Rival</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="dosActualizarRival"
+                />
+              </div>
+              <div class="mt-2">
+                <h6>Ubicación</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="dosActualizarUbi"
+                />
+              </div>
+              <div class="d-flex justify-content-center mt-2 mb-3">
+                <button type="submit" class="btn btn-primary">
+                  Actualizar
+                </button>
+              </div>
+            </form>
+          </div>
+          <!--Partido 3 - Actualizar-->
+          <div class="col-4 my-2 border">
+            <h5 class="mt-2">Partido 3</h5>
+            <form action="" id="formActualizarPartidoTres">
+              <div class="mt-2">
+                <h6>Fecha y Hora. Formato: DD/MM - HH:MM (18/08 - 21:00)</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="tresActualizarFyH"
+                />
+              </div>
+              <div class="mt-2">
+                <h6>Rival</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="tresActualizarRival"
+                />
+              </div>
+              <div class="mt-2">
+                <h6>Ubicación</h6>
+                <input
+                  type="text"
+                  class="form-control"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-sm"
+                  id="tresActualizarUbi"
+                />
+              </div>
+              <div class="d-flex justify-content-center mt-2 mb-3">
+                <button type="submit" class="btn btn-primary">
+                  Actualizar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </article>
+      <!-- Próximos partidos - Guardar-->
+      <article class="border my-2">
+        <h4 class="my-3 text-center">Próximos Partidos</h4>
+        <form action="" id="formGuardarPartidos">
+          <div class="container-fluid col-12 d-flex flex-row">
+            <!--Partido 1 - Guardar-->
+            <div class="mt-2 col-4 border my-2">
+              <h5>Partido 1</h5>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Fecha y Hora:</h6></div>
+                <div><h6 id="unoGuardarFyH"></h6></div>
+              </div>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Rival:</h6></div>
+                <div><h6 id="unoGuardarRival"></h6></div>
+              </div>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Ubicación:</h6></div>
+                <div><h6 id="unoGuardarUbi"></h6></div>
+              </div>
+            </div>
+            <!--Partido 2 - Guardar-->
+            <div class="mt-2 col-4 border my-2">
+              <h5>Partido 2</h5>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Fecha y Hora:</h6></div>
+                <div><h6 id="dosGuardarFyH"></h6></div>
+              </div>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Rival:</h6></div>
+                <div><h6 id="dosGuardarRival"></h6></div>
+              </div>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Ubicación:</h6></div>
+                <div><h6 id="dosGuardarUbi"></h6></div>
+              </div>
+            </div>
+            <!--Partido 3 - Guardar-->
+            <div class="mt-2 col-4 border my-2">
+              <h5>Partido 3</h5>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Fecha y Hora:</h6></div>
+                <div><h6 id="tresGuardarFyH"></h6></div>
+              </div>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Rival:</h6></div>
+                <div><h6 id="tresGuardarRival"></h6></div>
+              </div>
+              <div class="mt-2 d-flex flex-row">
+                <div class="mr-2"><h6>Ubicación:</h6></div>
+                <div><h6 id="tresGuardarUbi"></h6></div>
+              </div>
+            </div>
+          </div>
+          <div class="container-fluid text-center my-3">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </article>
+    </section>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../js/backend.js"></script>
+  </body>
+</html>
