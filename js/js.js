@@ -91,7 +91,7 @@ $(".owl-carousel").owlCarousel({
   items: 3,
   autoplay: true,
   autoplayTimeout: 3500,
-  autoplayHoverPause: true,
+  autoplayHoverPause: false,
   smartSpeed: 1000,
   dots: false,
   responsive: {
