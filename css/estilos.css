@@ -430,6 +430,32 @@ footer svg {
   color: #131748;
 }
 
+.fotoPlantel {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 20%;
+}
+
+.sectionPlantel {
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.articlePlantel {
+  max-width: 95vw;
+  border: 3px solid #131748;
+  border-radius: 2vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.articlePlantel .container-fluid {
+  display: flex;
+  align-items: center;
+}
+
 @media screen and (min-width: 576px) {
   .noticias img {
     width: 40vw;
@@ -504,6 +530,10 @@ footer svg {
 
   .mainClub p {
     font-size: medium;
+  }
+
+  .articlePlantel {
+    max-width: 30vw;
   }
 }
 

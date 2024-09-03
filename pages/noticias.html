@@ -41,22 +41,25 @@
         </div>
       </nav>
     </header>
-    <main class="container-fluid d-flex flex-column align-items-center mt-2">
+    <main class="container-fluid d-flex flex-column align-items-center mt-2 p-0">
       <h1 class="mt-3 mb-3">Noticias</h1>
-      <div class="container-fluid d-flex justify-content-evenly mt-3 mb-3">
-        <button class="btn btn-sm btn-custom botonVerMas" onclick="filtrarNoticias('todas')">Todas</button>
-        <button class="btn btn-sm btn-custom botonVerMas" onclick="filtrarNoticias('categoriau20')">U-20</button>
-        <button class="btn btn-sm btn-custom botonVerMas" onclick="filtrarNoticias('categoriau23')">U-23</button>
-        <button class="btn btn-sm btn-custom botonVerMas" onclick="filtrarNoticias('categoriaP')">Primera</button>
+      <!-- Botonera Filtros -->
+      <div class="container-fluid d-flex justify-content-evenly mt-3 mb-3 p-0">
+        <button class="btn btn-sm btn-custom botonVerMas me-1 ms-1" onclick="filtrarNoticias('todas')">Todas</button>
+        <button class="btn btn-sm btn-custom botonVerMas me-1 ms-1" onclick="filtrarNoticias('categoriaI')">Inferiores</button>
+        <button class="btn btn-sm btn-custom botonVerMas me-1 ms-1" onclick="filtrarNoticias('categoriau19')">U 19</button>
+        <button class="btn btn-sm btn-custom botonVerMas me-1 ms-1" onclick="filtrarNoticias('categoriau21')">U 21</button>
+        <button class="btn btn-sm btn-custom botonVerMas me-1 ms-1" onclick="filtrarNoticias('categoriaP')">Primera Local</button>
+        <button class="btn btn-sm btn-custom botonVerMas me-1 ms-1" onclick="filtrarNoticias('categoriaLA')">Liga Argentina</button>
       </div>
       <section class="container-fluid row align-items-center p-0 contenedorNoticias">
         <!-- Noticia 1 -->
-        <div class=" todas noticiaItem categoriau20 col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
+        <div class=" todas noticiaItem categoriaI col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
             <div class="noticias d-flex flex-column align-items-center text-center">
-              <img src="../media/img12.jpg" alt="" />
-              <h2 class="mt-3 mb-3">U-20</h2>
+              <img src="../media/WhatsApp Image 2024-09-02 at 15.40.18.jpeg" alt="" />
+              <h2 class="mt-3 mb-3">Festejo del Día de la Niñez en el Club Racing</h2>
               <p>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
+                El pasado domingo se llevó a cabo la primera fiesta de la niñez en el Estadio Norte – Julio C. Nicieza.<br>Desde las 15:00Hs, participaron más de 120 padres y otros tantos jugadores/as de la escuela de básquet del Club Racing.
               </p>
               <div>
                 <button type="button" class="btn btn-sm btn-custom botonVerMas" data-bs-toggle="modal" data-bs-target="#modalNoticia6">
@@ -66,17 +69,17 @@
                   <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">U-20</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Festejo del Día de la Niñez en el Club Racing</h1>
+                        </div>
                       <div class="modal-body clearfix">
-                        <img src="../media/img12.jpg" alt="" class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
+                        <img src="../media/WhatsApp Image 2024-09-02 at 15.40.18.jpeg" alt="" class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
                         <p>
-                          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Velit perspiciatis repellendus magni. Totam neque aliquam expedita enim quidem, ullam voluptatem aut esse, sunt dolorem architecto laboriosam culpa laborum id tempore. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Architecto magnam inventore laborum alias dolorem eligendi, illo obcaecati exercitationem quas sint sequi ex consectetur suscipit excepturi eos Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum at quod alias, velit eaque obcaecati nesciunt ex nisi culpa debitis excepturi saepe facilis illo, dignissimos deserunt eveniet esse nulla asperiores? Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi ipsum accusamus fuga voluptate quidem temporibus rem amet officia atque nam! Numquam, voluptates enim doloribus placeat iure nam debitis tempora quidem? Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eveniet sunt ipsa inventore nobis fuga vitae deserunt, ab id minus? Dolorum dolor sapiente odio, mollitia omnis maxime saepe soluta nisi magni.
-                        </p>
-                        <img src="../media/img13.jpg" class="col-md-6 float-md-start mb-3 me-md-3 p-0" alt="">
-                        <p>
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis a doloribus, dicta architecto aspernatur quis illo? Quaerat nulla asperiores nisi pariatur, distinctio modi temporibus esse, non quo dolore corporis illum! Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt quaerat fuga ratione magni, nemo reprehenderit quo dolore, natus ullam, error quibusdam quam perspiciatis minus ut repellat suscipit totam? Temporibus, quidem. Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis quaerat aliquam dolore aut sequi provident id illo! Nobis expedita labore quaerat recusandae! Assumenda dolor doloremque ad eaque corporis suscipit quae. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores iusto in sapiente voluptatem distinctio quibusdam exercitationem ut, vero illum, similique commodi expedita at saepe itaque incidunt non tempora voluptatum laboriosam. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat tempora accusantium animi molestias possimus officia adipisci similique earum sequi ipsum. Nobis adipisci autem maxime reprehenderit, nisi culpa praesentium placeat quam. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad nobis ex, nulla qui et natus magnam provident maiores omnis reiciendis consectetur aliquid odio, amet neque. Blanditiis voluptates saepe inventore accusantium.
+                          El pasado domingo se llevó a cabo la primera fiesta de la niñez en el Estadio Norte – Julio C. Nicieza. <br> <br>
+                          Desde las 15:00Hs, participaron más de 120 padres y otros tantos jugadores/as de la escuela de básquet del Club Racing. <br> <br>
+                          Se realizaron varios juegos de la disciplina acompañados de profesores, cuerpo técnico y la compañía especial de los jugadores de Liga Argentina 2024/25. <br> <br>
+                          También hubo espectáculos, malabares, juegos en donde también participaron los padres, música, sorteos y mucha diversión. <br> <br>
+                          Para finalizar la tarde, compartieron entre todos una gran merienda. <br> <br>
+                          Felicitamos al cuerpo técnico, familias y jugadores del club por hacer que estas iniciativas sean posibles con el único fin de fomentar el desarrollo deportivo. <br> <br>
                         </p>
                         </div>
                       <div class="modal-footer d-flex justify-content-center">
@@ -89,10 +92,10 @@
             </div>
         </div>
         <!-- Noticia 2 -->
-        <div class=" todas noticiaItem categoriau20 col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
+        <div class=" todas noticiaItem categoriau19 col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
             <div class="noticias d-flex flex-column align-items-center text-center">
               <img src="../media/img12.jpg" alt="" />
-              <h2 class="mt-3 mb-3">U-20</h2>
+              <h2 class="mt-3 mb-3">U 19</h2>
               <p>
                 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
               </p>
@@ -104,8 +107,7 @@
                   <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">U-20</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">U 19</h1>
                       </div>
                       <div class="modal-body">
                         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
@@ -120,10 +122,10 @@
             </div>
         </div>
         <!-- Noticia 3 -->
-        <div class=" todas noticiaItem categoriau23 col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
+        <div class=" todas noticiaItem categoriau21 col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
             <div class="noticias d-flex flex-column align-items-center text-center">
               <img src="../media/img12.jpg" alt="" />
-              <h2 class="mt-3 mb-3">U-23</h2>
+              <h2 class="mt-3 mb-3">U 21</h2>
               <p>
                 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
               </p>
@@ -135,9 +137,8 @@
                   <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">U-23</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">U 21</h1>
+                        </div>
                       <div class="modal-body">
                         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
                       </div>
@@ -151,10 +152,10 @@
             </div>
         </div>
         <!-- Noticia 4 -->
-        <div class=" todas noticiaItem categoriau23 col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
+        <div class=" todas noticiaItem categoriaP col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
             <div class="noticias d-flex flex-column align-items-center text-center">
               <img src="../media/img12.jpg" alt="" />
-              <h2 class="mt-3 mb-3">U-23</h2>
+              <h2 class="mt-3 mb-3">Primera Local</h2>
               <p>
                 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
               </p>
@@ -166,9 +167,8 @@
                   <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">U-23</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Primera Local</h1>
+                        </div>
                       <div class="modal-body">
                         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
                       </div>
@@ -182,10 +182,10 @@
             </div>
         </div>
         <!-- Noticia 5 -->
-        <div class=" todas noticiaItem categoriaP col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
+        <div class=" todas noticiaItem categoriaLA col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
             <div class="noticias d-flex flex-column align-items-center text-center">
               <img src="../media/img12.jpg" alt="" />
-              <h2 class="mt-3 mb-3">Primera</h2>
+              <h2 class="mt-3 mb-3">Liga Argentina</h2>
               <p>
                 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
               </p>
@@ -197,9 +197,8 @@
                   <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Primera</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Liga Argentina</h1>
+                        </div>
                       <div class="modal-body">
                         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
                       </div>
@@ -213,10 +212,10 @@
             </div>
         </div>
         <!-- Noticia 6 -->
-        <div class=" todas noticiaItem categoriaP col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
+        <div class=" todas noticiaItem categoriaLA col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
             <div class="noticias d-flex flex-column align-items-center text-center">
               <img src="../media/img12.jpg" alt="" />
-              <h2 class="mt-3 mb-3">Primera</h2>
+              <h2 class="mt-3 mb-3">Liga Argentina</h2>
               <p>
                 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
               </p>
@@ -228,9 +227,8 @@
                   <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Primera</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Liga Argentina</h1>
+                        </div>
                       <div class="modal-body">
                         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Pariatur quam aperiam mollitia! Magni nisi repudiandae sapiente dolorum. Minima dolore consequuntur laborum sint minus consectetur. Id, maxime. Repudiandae laborum saepe praesentium.
                       </div>
