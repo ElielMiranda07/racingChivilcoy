@@ -94,6 +94,8 @@ $(".owl-carousel").owlCarousel({
   autoplayHoverPause: false,
   smartSpeed: 1000,
   dots: false,
+  mouseDrag: false,
+  touchDrag: false,
   responsive: {
     0: {
       items: 2,
@@ -144,54 +146,4 @@ toggleMapButton2.addEventListener("click", () => {
   const isHidden = mapCobertor2.classList.toggle("hidden");
   toggleMapButton2.textContent = isHidden ? "Cerrar Mapa" : "Abrir Mapa";
   botonContainer2.classList.toggle("center", !isHidden);
-});
-
-//Carrusel Productos
-
-$(".owl-carouselP").owlCarousel({
-  loop: true,
-  margin: 10,
-  responsiveClass: true,
-  autoplay: true,
-  autoplayTimeout: 3500,
-  autoplayHoverPause: true,
-  smartSpeed: 1000,
-  responsive: {
-    0: {
-      items: 2,
-      nav: false,
-      loop: true,
-      dots: false,
-    },
-    576: {
-      items: 3,
-      nav: false,
-      loop: true,
-      dots: false,
-    },
-    768: {
-      items: 3,
-      nav: false,
-      loop: true,
-      dots: false,
-    },
-    992: {
-      items: 4,
-      nav: false,
-      loop: true,
-      dots: false,
-    },
-    1200: {
-      items: 5,
-      nav: false,
-      loop: true,
-      dots: false,
-    },
-    1440: {
-      items: 6,
-      nav: false,
-      loop: true,
-      dots: false,
-    },
-  },
 });

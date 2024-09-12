@@ -30,3 +30,11 @@
     height: auto;
   }
 }
+
+@media (min-width: 992px) {
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Aquí defines el espacio entre productos */
+  }
+}

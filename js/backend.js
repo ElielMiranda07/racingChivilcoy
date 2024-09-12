@@ -1,87 +1,53 @@
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("formActualizarPartidoUno")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
+// Configurar Firebase normalmente
+const firebaseConfig = {
+  apiKey: "AIzaSyDCqe24Tu4-BKrxykDwTQvbDVIpoPBD8cY",
+  authDomain: "reactss-26771.firebaseapp.com",
+  projectId: "reactss-26771",
+};
 
-      let unoActualizarFyH = document.getElementById("unoActualizarFyH").value;
-      let unoActualizarRival =
-        document.getElementById("unoActualizarRival").value;
-      let unoActualizarUbi = document.getElementById("unoActualizarUbi").value;
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-      document.getElementById("unoGuardarFyH").textContent = unoActualizarFyH;
-      document.getElementById("unoGuardarRival").textContent =
-        unoActualizarRival;
-      document.getElementById("unoGuardarUbi").textContent = unoActualizarUbi;
-    });
-});
+// Aquí consultas a Firestore
 
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("formActualizarPartidoDos")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
+document
+  .getElementById("loginForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
 
-      let dosActualizarFyH = document.getElementById("dosActualizarFyH").value;
-      let dosActualizarRival =
-        document.getElementById("dosActualizarRival").value;
-      let dosActualizarUbi = document.getElementById("dosActualizarUbi").value;
+    const usuarioInput = document.getElementById("inputUsuario").value;
+    const contraseñaInput = document.getElementById("inputContraseña").value;
 
-      document.getElementById("dosGuardarFyH").textContent = dosActualizarFyH;
-      document.getElementById("dosGuardarRival").textContent =
-        dosActualizarRival;
-      document.getElementById("dosGuardarUbi").textContent = dosActualizarUbi;
-    });
-});
+    db.collection("usuarioContraseña")
+      .get()
+      .then((snapshot) => {
+        let usuarioEncontrado = false;
+        let mensajeDatosIncorrectos = document.getElementById(
+          "mensajeDatosIncorrectos"
+        );
 
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("formActualizarPartidoTres")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const usuarioFirestore = data.usuario;
+          const contraseñaFirestore = data.contraseña;
 
-      let tresActualizarFyH =
-        document.getElementById("tresActualizarFyH").value;
-      let tresActualizarRival = document.getElementById(
-        "tresActualizarRival"
-      ).value;
-      let tresActualizarUbi =
-        document.getElementById("tresActualizarUbi").value;
+          if (
+            usuarioInput === usuarioFirestore &&
+            contraseñaInput === contraseñaFirestore
+          ) {
+            usuarioEncontrado = true;
 
-      document.getElementById("tresGuardarFyH").textContent = tresActualizarFyH;
-      document.getElementById("tresGuardarRival").textContent =
-        tresActualizarRival;
-      document.getElementById("tresGuardarUbi").textContent = tresActualizarUbi;
-    });
-});
+            window.location.href = "./backend.admin.html";
+          }
+        });
 
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("formGuardarPartidos")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      let partidoUnoFyH = document.getElementById("unoGuardarFyH").textContent;
-      let partidoUnoRival =
-        document.getElementById("unoGuardarRival").textContent;
-      let partidoUnoUbi = document.getElementById("unoGuardarUbi").textContent;
-      let partidoDosFyH = document.getElementById("dosGuardarFyH").textContent;
-      let partidoDosRival =
-        document.getElementById("dosGuardarRival").textContent;
-      let partidoDosUbi = document.getElementById("dosGuardarUbi").textContent;
-      let partidoTresFyH =
-        document.getElementById("tresGuardarFyH").textContent;
-      let partidoTresRival =
-        document.getElementById("tresGuardarRival").textContent;
-      let partidoTresUbi =
-        document.getElementById("tresGuardarUbi").textContent;
-
-      console.log(partidoUnoFyH, partidoUnoRival, partidoUnoUbi);
-      console.log(partidoDosFyH, partidoDosRival, partidoDosUbi);
-      console.log(partidoTresFyH, partidoTresRival, partidoTresUbi);
-    });
-});
-
-/*document.getElementById("partidoUnoFyH").textContent = partidoUnoFyH;
-document.getElementById("partidoUnoRival").textContent = partidoUnoRival;
-document.getElementById("partidoUnoUbi").textContent = partidoUnoUbi;*/
+        if (!usuarioEncontrado) {
+          mensajeDatosIncorrectos.innerHTML =
+            "Usuario y/o Contraseña incorrecto/s";
+        }
+      })
+      .catch((error) => {
+        console.error("Error obteniendo los datos: ", error);
+      });
+  });

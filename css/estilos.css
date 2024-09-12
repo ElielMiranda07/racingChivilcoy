@@ -98,6 +98,10 @@ main {
   color: #ffffff;
 }
 
+.modal-header .index {
+  color: #131748;
+}
+
 .textoModalNoticias p {
   color: #131748;
 }
@@ -317,7 +321,7 @@ iframe {
 }
 
 .owl-carouselP .item {
-  width: 50%;
+  width: 60%;
   height: auto;
   margin-right: auto;
   margin-left: auto;
@@ -428,6 +432,7 @@ footer svg {
 
 .mainProductos {
   color: #131748;
+  background-color: #8bc4e5;
 }
 
 .fotoPlantel {
