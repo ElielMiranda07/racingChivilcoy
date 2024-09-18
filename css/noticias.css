@@ -17,3 +17,9 @@
 main {
   color: #131748;
 }
+
+.filtroActivo {
+  background-color: #131748;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}

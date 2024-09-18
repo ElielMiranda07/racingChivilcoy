@@ -59,6 +59,43 @@ main {
   font-size: small;
 }
 
+#imagenPrincipal {
+  max-height: 400px;
+}
+
+.miniatura {
+  display: inline-block; /* Asegura que las miniaturas se alineen en una línea */
+  cursor: pointer;
+}
+
+.miniaturaAncha {
+  object-fit: cover;
+}
+
+.miniatura:hover {
+  opacity: 0.7;
+}
+
+/* Contenedor de miniaturas */
+.miniaturasContenedor {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1vw; /* Espacio entre miniaturas */
+  overflow-x: auto; /* Habilitar scroll lateral */
+  overflow-y: hidden; /* Ocultar cualquier desbordamiento vertical */
+  white-space: nowrap; /* Asegura que las miniaturas se mantengan en una línea */
+  padding-bottom: 10px; /* Espacio adicional para evitar que el scroll tape las miniaturas */
+}
+
+.miniaturas-contenedor::-webkit-scrollbar {
+  display: none; /* Oculta el scrollbar en navegadores basados en Webkit */
+}
+
+.miniaturas-contenedor {
+  -ms-overflow-style: none; /* IE y Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 @media screen and (min-width: 576px) {
   .noticias img {
     width: 40vw;
@@ -76,6 +113,10 @@ main {
     width: 15vw;
     height: auto;
   }
+
+  .miniaturasContenedor {
+    justify-content: center;
+  }
 }
 
 @media (min-width: 992px) {
@@ -84,4 +125,7 @@ main {
     flex-wrap: wrap;
     gap: 20px; /* Aquí defines el espacio entre productos */
   }
+}
+
+@media (min-width: 1200) {
 }

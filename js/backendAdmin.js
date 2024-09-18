@@ -53,15 +53,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+//CARGA DE ARCHIVO .ENV
+
+require("firestore.env").config();
+
 // Configura Firebase normalmente
 const firebaseConfig = {
-  apiKey: "AIzaSyDCqe24Tu4-BKrxykDwTQvbDVIpoPBD8cY",
-  authDomain: "reactss-26771.firebaseapp.com",
-  projectId: "reactss-26771",
-  storageBucket: "reactss-26771.appspot.com",
-  messagingSenderId: "443520919767",
-  appId: "1:443520919767:web:7a7a0cf32adad8d087e892",
-  measurementId: "G-XBMQ9BWG70",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASURAMENT_ID,
 };
 
 // Inicializa Firebase
@@ -332,6 +336,11 @@ formProducto.addEventListener("submit", async (e) => {
     "descripcionProducto"
   ).value;
   const imagenProducto = document.getElementById("imagenProducto").files[0];
+  const imagenProducto2 = document.getElementById("imagenProducto2").files[0];
+  const imagenProducto3 = document.getElementById("imagenProducto3").files[0];
+  const imagenProducto4 = document.getElementById("imagenProducto4").files[0];
+  const imagenProducto5 = document.getElementById("imagenProducto5").files[0];
+  const imagenProducto6 = document.getElementById("imagenProducto6").files[0];
 
   // 1. Obtener la cantidad actual de documentos en la colección "productos"
   const productosRef = firebase.firestore().collection("productos");
@@ -347,11 +356,48 @@ formProducto.addEventListener("submit", async (e) => {
     const snapshotImg1 = await imagenRef.put(imagenProducto);
     const downloadURL1 = await snapshotImg1.ref.getDownloadURL();
 
+    let downloadURL2 = ""; // Valor predeterminado si no hay imagen secundaria
+    let downloadURL3 = "";
+    let downloadURL4 = "";
+    let downloadURL5 = "";
+    let downloadURL6 = "";
+
+    if (imagenProducto2) {
+      const imagenRef2 = storageRef.child(`noticias/${imagenProducto2.name}`);
+      const snapshotImg2 = await imagenRef2.put(imagenProducto2);
+      downloadURL2 = await snapshotImg2.ref.getDownloadURL();
+    }
+    if (imagenProducto3) {
+      const imagenRef3 = storageRef.child(`noticias/${imagenProducto3.name}`);
+      const snapshotImg3 = await imagenRef3.put(imagenProducto3);
+      downloadURL3 = await snapshotImg3.ref.getDownloadURL();
+    }
+    if (imagenProducto4) {
+      const imagenRef4 = storageRef.child(`noticias/${imagenProducto4.name}`);
+      const snapshotImg4 = await imagenRef4.put(imagenProducto4);
+      downloadURL4 = await snapshotImg4.ref.getDownloadURL();
+    }
+    if (imagenProducto5) {
+      const imagenRef5 = storageRef.child(`noticias/${imagenProducto5.name}`);
+      const snapshotImg5 = await imagenRef5.put(imagenProducto5);
+      downloadURL5 = await snapshotImg5.ref.getDownloadURL();
+    }
+    if (imagenProducto6) {
+      const imagenRef6 = storageRef.child(`noticias/${imagenProducto6.name}`);
+      const snapshotImg6 = await imagenRef6.put(imagenProducto6);
+      downloadURL6 = await snapshotImg6.ref.getDownloadURL();
+    }
+
     // 3. Guardar los datos en Firestore con el nombre de documento "producto X"
     await productosRef.doc(nombreDocumento).set({
       titulo: titulo,
       imagen: downloadURL1,
       descripcion: descripcionProducto,
+      imagen2: downloadURL2,
+      imagen3: downloadURL3,
+      imagen4: downloadURL4,
+      imagen5: downloadURL5,
+      imagen6: downloadURL6,
     });
 
     mensajeDeProducto.innerHTML = `Producto guardado con el nombre: ${nombreDocumento}`;
@@ -365,42 +411,123 @@ formProducto.addEventListener("submit", async (e) => {
   }
 });
 
-// 1. Función para cargar y mostrar los productos
+// Función para cargar y mostrar los productos
 async function cargarProductos() {
   const productosRef = firebase.firestore().collection("productos");
 
   try {
-    // Obtener todos los documentos en la colección "noticias"
     const snapshot = await productosRef.get();
-
-    // Contenedor donde se mostrarán las noticias
     const contenedorProductos = document.getElementById(
       "divContenedorProductos"
     );
 
-    // Recorrer cada documento y crear la plantilla HTML
+    let modalHTML = ""; // Para acumular los modales y evitar múltiples inserciones en el DOM
+    let index = 0; // Contador manual para los índices
     snapshot.forEach((doc) => {
       const producto = doc.data();
+      const modalId = `imageModal${index}`; // Generar un ID único para cada modal
 
-      // 2. Plantilla HTML para cada noticia
-      const productoHTML = `<div class="col-xl-2 col-lg-4 col-md-5 col-5 my-1 producto">
-              <div class="d-flex flex-column align-items-center">
-                <img src="${producto.imagen}" alt="" class="mt-2">
-                <h4 class="mt-2">${producto.titulo}</h4>
-                <p class="mt-1 text-center">${producto.descripcion}</p>
+      // Plantilla HTML para cada producto
+      const productoHTML = `
+        <div class="col-xl-2 col-lg-4 col-md-5 col-5 my-1 producto">
+          <div class="d-flex flex-column align-items-center">
+            <img src="${producto.imagen}" alt="" class="mt-2">
+            <h4 class="mt-2">${producto.titulo}</h4>
+            <p class="mt-1 text-center">${producto.descripcion}</p>
+            <div>
+              <button
+                type="button"
+                class="btn btn-sm btn-custom"
+                data-bs-toggle="modal"
+                data-bs-target="#${modalId}">  <!-- Usar el id único -->
+              
+                Ver más
+              </button>
+            </div>
+          </div>
+        </div>`;
+
+      // Crear el modal correspondiente a este producto
+      modalHTML += `
+        <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="imageModalLabel${index}" aria-hidden="true">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel${index}">${producto.titulo}</h5>
               </div>
-            </div>`;
+              <div class="modal-body">
+                <div class="d-flex justify-content-center mb-4">
+                  <img id="imagenPrincipal${index}" src="${producto.imagen}" class="img-fluid" alt="Imagen grande" style="max-height: 400px" />
+                </div>
+                <div class="d-flex miniaturasContenedor">`;
 
-      contenedorProductos.innerHTML += productoHTML;
+      // Verificar y agregar solo las miniaturas que existan
+      const imagenes = [
+        producto.imagen,
+        producto.imagen2,
+        producto.imagen3,
+        producto.imagen4,
+        producto.imagen5,
+        producto.imagen6,
+      ];
+      imagenes.forEach((img, i) => {
+        if (img) {
+          modalHTML += `<img src="${img}" class="img-thumbnail mx-2 miniatura" alt="Miniatura ${
+            i + 1
+          }" data-imagen="${img}" id="miniatura${index}-${i}" style="width: 100px; cursor: pointer" />`;
+        }
+      });
+
+      modalHTML += `
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+
+      contenedorProductos.innerHTML += productoHTML; // Insertar los productos
+      index++; // Incrementar el contador manual
+    });
+
+    document.body.insertAdjacentHTML("beforeend", modalHTML); // Insertar los modales al final del body
+
+    // Esperar a que las imágenes se carguen para aplicar las clases correctas
+    document.querySelectorAll(".miniatura").forEach((img) => {
+      img.onload = function () {
+        // Verificar si la imagen es más ancha que alta
+        if (img.naturalWidth > img.naturalHeight) {
+          img.classList.add("miniaturaAncha");
+        } else {
+          img.classList.add("miniaturaAngosta");
+        }
+      };
     });
   } catch (error) {
     console.error("Error al cargar los productos: ", error);
   }
 }
 
+// Inicializar los eventos en miniaturas al cargar el DOM
+document.addEventListener("DOMContentLoaded", function () {
+  cargarProductos();
+
+  // Escuchar el evento de click en miniaturas cuando se cargue el modal
+  document.body.addEventListener("click", function (event) {
+    if (event.target.classList.contains("miniatura")) {
+      const nuevaImagen = event.target.getAttribute("data-imagen");
+      const imagenPrincipal = event.target
+        .closest(".modal-body")
+        .querySelector(".img-fluid");
+      imagenPrincipal.setAttribute("src", nuevaImagen);
+    }
+  });
+});
+
 // Llamada a la función para cargar las noticias al cargar la página
 // Llamada a la función para cargar las noticias al cargar la página
 window.onload = function () {
   cargarNoticias();
-  cargarProductos();
 };
