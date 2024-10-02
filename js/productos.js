@@ -18,13 +18,13 @@ window.addEventListener("DOMContentLoaded", adjustClassesBasedOnWidth);
 
 // Configurar Firebase normalmente
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASURAMENT_ID,
+  apiKey: "AIzaSyDCqe24Tu4-BKrxykDwTQvbDVIpoPBD8cY",
+  authDomain: "reactss-26771.firebaseapp.com",
+  projectId: "reactss-26771",
+  storageBucket: "reactss-26771.appspot.com",
+  messagingSenderId: "443520919767",
+  appId: "1:443520919767:web:7a7a0cf32adad8d087e892",
+  measurementId: "G-XBMQ9BWG70",
 };
 
 // Inicializar Firebase
@@ -101,7 +101,7 @@ async function cargarProductos() {
       modalHTML += `
                 </div>
                 <div class="modal-footer d-flex justify-content-center">
-                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-sm btn-custom" data-bs-dismiss="modal">Cerrar</button>
                 </div>
               </div>
             </div>

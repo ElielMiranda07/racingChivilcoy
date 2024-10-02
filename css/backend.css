@@ -3,6 +3,12 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+.tituloRacing {
+  text-decoration: none;
+  color: #8bc4e5;
+}
+
 .border {
   border: 5px solid #131748;
   border-radius: 5px;
@@ -42,6 +48,10 @@ main {
 }
 
 .sectionDeProductos {
+  border-top: 5px solid #131748;
+}
+
+.sectionAdmin {
   border-top: 5px solid #131748;
 }
 
@@ -94,6 +104,10 @@ main {
 .miniaturas-contenedor {
   -ms-overflow-style: none; /* IE y Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.tituloAdmin {
+  color: red;
 }
 
 @media screen and (min-width: 576px) {

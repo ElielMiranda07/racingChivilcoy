@@ -1,0 +1,43 @@
+.articlePlantel {
+  max-width: 95vw;
+  border: 2px solid #131748;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.articlePlantel .container-fluid {
+  display: flex;
+  align-items: center;
+}
+
+.fotoPlantel {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.sectionPlantel {
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 576px) {
+}
+
+@media screen and (min-width: 768px) {
+  .articlePlantel {
+    max-width: 30vw;
+  }
+}
+
+@media screen and (min-width: 992px) {
+}
+
+@media screen and (min-width: 1200px) {
+}
+
+@media screen and (min-width: 1440px) {
+}

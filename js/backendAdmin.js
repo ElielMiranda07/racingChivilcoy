@@ -4,75 +4,94 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("submit", function (event) {
       event.preventDefault();
 
-      let unoActualizarFyH = document.getElementById("unoActualizarFyH").value;
-      let unoActualizarRival =
-        document.getElementById("unoActualizarRival").value;
-      let unoActualizarUbi = document.getElementById("unoActualizarUbi").value;
+      const action = event.submitter.value; // Capturar qué botón fue presionado
 
-      document.getElementById("guardarFyH1").textContent = unoActualizarFyH;
-      document.getElementById("guardarRival1").textContent = unoActualizarRival;
-      document.getElementById("guardarUbi1").textContent = unoActualizarUbi;
+      if (action === "actualizarUno") {
+        let actualizarFyH = document.getElementById("actualizarFyH").value;
+        let actualizarRival = document.getElementById("actualizarRival").value;
+        let actualizarUbi = document.getElementById("actualizarUbi").value;
+
+        document.getElementById("guardarFyH1").textContent = actualizarFyH;
+        document.getElementById("guardarRival1").textContent = actualizarRival;
+        document.getElementById("guardarUbi1").textContent = actualizarUbi;
+      } else if (action === "actualizarDos") {
+        let actualizarFyH = document.getElementById("actualizarFyH").value;
+        let actualizarRival = document.getElementById("actualizarRival").value;
+        let actualizarUbi = document.getElementById("actualizarUbi").value;
+
+        document.getElementById("guardarFyH2").textContent = actualizarFyH;
+        document.getElementById("guardarRival2").textContent = actualizarRival;
+        document.getElementById("guardarUbi2").textContent = actualizarUbi;
+      } else {
+        let actualizarFyH = document.getElementById("actualizarFyH").value;
+        let actualizarRival = document.getElementById("actualizarRival").value;
+        let actualizarUbi = document.getElementById("actualizarUbi").value;
+
+        document.getElementById("guardarFyH3").textContent = actualizarFyH;
+        document.getElementById("guardarRival3").textContent = actualizarRival;
+        document.getElementById("guardarUbi3").textContent = actualizarUbi;
+      }
     });
 });
-
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("formActualizarPartidoDos")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      let dosActualizarFyH = document.getElementById("dosActualizarFyH").value;
-      let dosActualizarRival =
-        document.getElementById("dosActualizarRival").value;
-      let dosActualizarUbi = document.getElementById("dosActualizarUbi").value;
-
-      document.getElementById("guardarFyH2").textContent = dosActualizarFyH;
-      document.getElementById("guardarRival2").textContent = dosActualizarRival;
-      document.getElementById("guardarUbi2").textContent = dosActualizarUbi;
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("formActualizarPartidoTres")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      let tresActualizarFyH =
-        document.getElementById("tresActualizarFyH").value;
-      let tresActualizarRival = document.getElementById(
-        "tresActualizarRival"
-      ).value;
-      let tresActualizarUbi =
-        document.getElementById("tresActualizarUbi").value;
-
-      document.getElementById("guardarFyH3").textContent = tresActualizarFyH;
-      document.getElementById("guardarRival3").textContent =
-        tresActualizarRival;
-      document.getElementById("guardarUbi3").textContent = tresActualizarUbi;
-    });
-});
-
-//CARGA DE ARCHIVO .ENV
-
-require("firestore.env").config();
 
 // Configura Firebase normalmente
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASURAMENT_ID,
+  apiKey: "AIzaSyDCqe24Tu4-BKrxykDwTQvbDVIpoPBD8cY",
+  authDomain: "reactss-26771.firebaseapp.com",
+  projectId: "reactss-26771",
+  storageBucket: "reactss-26771.appspot.com",
+  messagingSenderId: "443520919767",
+  appId: "1:443520919767:web:7a7a0cf32adad8d087e892",
+  measurementId: "G-XBMQ9BWG70",
 };
 
 // Inicializa Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
 // Aquí consultas a Firestore
+
+//Chequear si el usuario es ADMIN
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    // El usuario está autenticado
+    checkUserRole(user); // Llamar a tu función para verificar el rol
+  } else {
+    // No hay usuario autenticado, redirigir al inicio de sesión
+    window.location.href = "../index.html"; // Redirige a la página de inicio de sesión
+  }
+});
+
+function checkUserRole(user) {
+  // Referencia al documento del usuario en Firestore
+  const userRef = firebase.firestore().collection("usuarios").doc(user.uid);
+
+  // Verificar si el usuario tiene el rol 'admin'
+  userRef
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        const userData = doc.data();
+        if (userData.role === "admin") {
+        } else {
+          // Si no es admin, mostrar un mensaje y cerrar sesión
+          alert("No tienes permisos para acceder a esta página.");
+          firebase.auth().signOut(); // Cerrar sesión
+        }
+      } else {
+        // Si no existe el documento, cerrar sesión
+        alert("Usuario no registrado en la base de datos.");
+        firebase.auth().signOut(); // Cerrar sesión
+      }
+    })
+    .catch((error) => {
+      console.error("Error al verificar el rol del usuario: ", error);
+      alert("Error al verificar el rol del usuario.");
+      firebase.auth().signOut(); // Cerrar sesión en caso de error
+    });
+}
 
 // Traer la colección "partidos" y mostrar en HTML
 db.collection("partidos")
@@ -213,17 +232,25 @@ formNoticia.addEventListener("submit", async (e) => {
   const copete = document.getElementById("copeteACargar").value;
   const categoria = document.querySelector('input[name="btnradio"]:checked').id;
 
-  // 1. Obtener la cantidad actual de documentos en la colección "noticias"
+  // Referencia a la colección "noticias"
   const noticiasRef = firebase.firestore().collection("noticias");
-  const snapshot = await noticiasRef.get();
-  const numeroNoticias = snapshot.size + 1;
-  const nombreDocumento = `noticia ${numeroNoticias}`;
-
-  // 2. Subir las imágenes a Firebase Storage
-  const storageRef = firebase.storage().ref();
-  const imagenRef = storageRef.child(`noticias/${imagenPrincipal.name}`);
 
   try {
+    // 1. Obtener todas las noticias y encontrar el mayor número
+    const snapshot = await noticiasRef.orderBy("numero", "desc").limit(1).get();
+    let siguienteNumero = 1; // Valor por defecto si no hay noticias previas
+
+    if (!snapshot.empty) {
+      const ultimaNoticia = snapshot.docs[0].data();
+      siguienteNumero = ultimaNoticia.numero + 1; // Sumar 1 al último número
+    }
+
+    const nombreDocumento = `noticia ${siguienteNumero}`; // Nombre del documento
+
+    // 2. Subir las imágenes a Firebase Storage
+    const storageRef = firebase.storage().ref();
+    const imagenRef = storageRef.child(`noticias/${imagenPrincipal.name}`);
+
     const snapshotImg1 = await imagenRef.put(imagenPrincipal);
     const downloadURL1 = await snapshotImg1.ref.getDownloadURL();
 
@@ -235,7 +262,7 @@ formNoticia.addEventListener("submit", async (e) => {
       downloadURL2 = await snapshotImg2.ref.getDownloadURL();
     }
 
-    // 3. Guardar los datos en Firestore con el nombre de documento "noticia X"
+    // 3. Guardar los datos en Firestore con el campo "numero"
     await noticiasRef.doc(nombreDocumento).set({
       titulo: titulo,
       copete: copete,
@@ -245,18 +272,35 @@ formNoticia.addEventListener("submit", async (e) => {
       imagenSecundaria: downloadURL2,
       fechaDeCarga: firebase.firestore.FieldValue.serverTimestamp(),
       categoria: categoria,
+      numero: siguienteNumero, // Guardar el número de la noticia
     });
 
-    mensajeDeNoticia.innerHTML = `Noticia guardada con el nombre: ${nombreDocumento}`;
+    mensajeDeNoticia.innerHTML = `Noticia guardada con el nombre: ${nombreDocumento} (Número: ${siguienteNumero})`;
 
+    // Recargar la página después de unos segundos
     setTimeout(() => {
       window.location.reload();
     }, 3000);
   } catch (error) {
     mensajeDeNoticia.innerHTML =
-      `Error al guardar la noticia:` + JSON.stringify(error);
+      `Error al guardar la noticia: ` + JSON.stringify(error);
   }
 });
+
+// Función para eliminar una noticia por ID (nombre del documento)
+async function eliminarNoticia(idDocumento) {
+  if (confirm("¿Estás seguro de que deseas eliminar esta noticia?")) {
+    try {
+      const productosRef = firebase.firestore().collection("noticias");
+      await productosRef.doc(idDocumento).delete(); // Eliminar el documento
+      alert("Noticia eliminada correctamente");
+      window.location.reload(); // Recargar la página para actualizar la lista
+    } catch (error) {
+      console.error("Error al eliminar la noticia: ", error);
+      alert("Error al eliminar la noticia.");
+    }
+  }
+}
 
 // 1. Función para cargar y mostrar las noticias
 async function cargarNoticias() {
@@ -274,6 +318,7 @@ async function cargarNoticias() {
       const noticia = doc.data();
       const modalId = `${doc.id}`;
       const modalIdSinEspacios = modalId.replace(/\s+/g, "");
+      const docId = doc.id; // Obtener el ID del documento
 
       // 2. Plantilla HTML para cada noticia
       const noticiaHTML = `<div class=" todas ${noticia.categoria} noticiaItem col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
@@ -284,14 +329,25 @@ async function cargarNoticias() {
               ${noticia.copete}
               </p>
               <div>
-                <button type="button" class="btn btn-sm btn-custom botonVerMas" data-bs-toggle="modal" data-bs-target="#${modalIdSinEspacios}">
-                  Ver más
-                </button>
-              <div class="modal fade" id="${modalIdSinEspacios}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">${noticia.titulo}</h1>
+                <div>
+                  <button type="button" class="btn btn-sm btn-custom botonVerMas" data-bs-toggle="modal" data-bs-target="#${modalIdSinEspacios}">
+                    Ver más
+                  </button>
+                </div>
+                <div>
+                  <!-- Botón para eliminar la noticia -->
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger mt-2"
+                    onclick="eliminarNoticia('${docId}')">
+                    Eliminar
+                  </button>
+                </div>
+                <div class="modal fade" id="${modalIdSinEspacios}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">${noticia.titulo}</h1>
                       </div>
                       <div class="modal-body clearfix">
                         <img src="${noticia.imagenPrincipal}" alt="" class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
@@ -342,62 +398,71 @@ formProducto.addEventListener("submit", async (e) => {
   const imagenProducto5 = document.getElementById("imagenProducto5").files[0];
   const imagenProducto6 = document.getElementById("imagenProducto6").files[0];
 
-  // 1. Obtener la cantidad actual de documentos en la colección "productos"
   const productosRef = firebase.firestore().collection("productos");
-  const snapshot = await productosRef.get();
-  const numeroProductos = snapshot.size + 1;
-  const nombreDocumento = `producto ${numeroProductos}`;
-
-  // 2. Subir las imágenes a Firebase Storage
-  const storageRef = firebase.storage().ref();
-  const imagenRef = storageRef.child(`productos/${imagenProducto.name}`);
 
   try {
+    // 1. Obtener el número de producto más alto y sumar 1
+    const querySnapshot = await productosRef
+      .orderBy("numero", "desc")
+      .limit(1)
+      .get();
+    let nuevoNumero = 1;
+    if (!querySnapshot.empty) {
+      const ultimoProducto = querySnapshot.docs[0].data();
+      nuevoNumero = parseInt(ultimoProducto.numero) + 1;
+    }
+    const nombreDocumento = `producto ${nuevoNumero}`;
+
+    // 2. Subir las imágenes a Firebase Storage
+    const storageRef = firebase.storage().ref();
+    const imagenRef = storageRef.child(`productos/${imagenProducto.name}`);
+
     const snapshotImg1 = await imagenRef.put(imagenProducto);
     const downloadURL1 = await snapshotImg1.ref.getDownloadURL();
 
-    let downloadURL2 = ""; // Valor predeterminado si no hay imagen secundaria
+    let downloadURL2 = "";
     let downloadURL3 = "";
     let downloadURL4 = "";
     let downloadURL5 = "";
     let downloadURL6 = "";
 
     if (imagenProducto2) {
-      const imagenRef2 = storageRef.child(`noticias/${imagenProducto2.name}`);
+      const imagenRef2 = storageRef.child(`productos/${imagenProducto2.name}`);
       const snapshotImg2 = await imagenRef2.put(imagenProducto2);
       downloadURL2 = await snapshotImg2.ref.getDownloadURL();
     }
     if (imagenProducto3) {
-      const imagenRef3 = storageRef.child(`noticias/${imagenProducto3.name}`);
+      const imagenRef3 = storageRef.child(`productos/${imagenProducto3.name}`);
       const snapshotImg3 = await imagenRef3.put(imagenProducto3);
       downloadURL3 = await snapshotImg3.ref.getDownloadURL();
     }
     if (imagenProducto4) {
-      const imagenRef4 = storageRef.child(`noticias/${imagenProducto4.name}`);
+      const imagenRef4 = storageRef.child(`productos/${imagenProducto4.name}`);
       const snapshotImg4 = await imagenRef4.put(imagenProducto4);
       downloadURL4 = await snapshotImg4.ref.getDownloadURL();
     }
     if (imagenProducto5) {
-      const imagenRef5 = storageRef.child(`noticias/${imagenProducto5.name}`);
+      const imagenRef5 = storageRef.child(`productos/${imagenProducto5.name}`);
       const snapshotImg5 = await imagenRef5.put(imagenProducto5);
       downloadURL5 = await snapshotImg5.ref.getDownloadURL();
     }
     if (imagenProducto6) {
-      const imagenRef6 = storageRef.child(`noticias/${imagenProducto6.name}`);
+      const imagenRef6 = storageRef.child(`productos/${imagenProducto6.name}`);
       const snapshotImg6 = await imagenRef6.put(imagenProducto6);
       downloadURL6 = await snapshotImg6.ref.getDownloadURL();
     }
 
-    // 3. Guardar los datos en Firestore con el nombre de documento "producto X"
+    // 3. Guardar los datos en Firestore con el número de producto correspondiente
     await productosRef.doc(nombreDocumento).set({
       titulo: titulo,
-      imagen: downloadURL1,
       descripcion: descripcionProducto,
+      imagen: downloadURL1,
       imagen2: downloadURL2,
       imagen3: downloadURL3,
       imagen4: downloadURL4,
       imagen5: downloadURL5,
       imagen6: downloadURL6,
+      numero: nuevoNumero, // Almacenar el número del producto
     });
 
     mensajeDeProducto.innerHTML = `Producto guardado con el nombre: ${nombreDocumento}`;
@@ -406,10 +471,26 @@ formProducto.addEventListener("submit", async (e) => {
       window.location.reload();
     }, 3000);
   } catch (error) {
-    mensajeDeNoticia.innerHTML =
-      `Error al guardar el producto:` + JSON.stringify(error);
+    mensajeDeProducto.innerHTML = `Error al guardar el producto: ${JSON.stringify(
+      error
+    )}`;
   }
 });
+
+// Función para eliminar un producto por ID (nombre del documento)
+async function eliminarProducto(idDocumento) {
+  if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+    try {
+      const productosRef = firebase.firestore().collection("productos");
+      await productosRef.doc(idDocumento).delete(); // Eliminar el documento
+      alert("Producto eliminado correctamente");
+      window.location.reload(); // Recargar la página para actualizar la lista
+    } catch (error) {
+      console.error("Error al eliminar el producto: ", error);
+      alert("Error al eliminar el producto.");
+    }
+  }
+}
 
 // Función para cargar y mostrar los productos
 async function cargarProductos() {
@@ -426,8 +507,9 @@ async function cargarProductos() {
     snapshot.forEach((doc) => {
       const producto = doc.data();
       const modalId = `imageModal${index}`; // Generar un ID único para cada modal
+      const docId = doc.id; // Obtener el ID del documento
 
-      // Plantilla HTML para cada producto
+      // Plantilla HTML para cada producto con botón "Eliminar"
       const productoHTML = `
         <div class="col-xl-2 col-lg-4 col-md-5 col-5 my-1 producto">
           <div class="d-flex flex-column align-items-center">
@@ -439,9 +521,17 @@ async function cargarProductos() {
                 type="button"
                 class="btn btn-sm btn-custom"
                 data-bs-toggle="modal"
-                data-bs-target="#${modalId}">  <!-- Usar el id único -->
-              
+                data-bs-target="#${modalId}">
                 Ver más
+              </button>
+            </div>
+            <div class="my-1">
+            <!-- Botón para eliminar el producto -->
+              <button
+                type="button"
+                class="btn btn-sm btn-danger mt-2"
+                onclick="eliminarProducto('${docId}')">
+                Eliminar
               </button>
             </div>
           </div>
@@ -531,3 +621,43 @@ document.addEventListener("DOMContentLoaded", function () {
 window.onload = function () {
   cargarNoticias();
 };
+
+// Sección carga y bajas de Admin
+
+// Escuchar el evento de submit en el formulario
+
+document
+  .getElementById("adminACargar")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const mail = document.getElementById("mailAdmin").value;
+    const action = e.submitter.value; // Captura qué botón fue presionado
+
+    // Referencia a la colección de usuarios en Firestore
+    const usuariosRef = firebase.firestore().collection("usuarios");
+
+    try {
+      // Obtener el documento del usuario basado en el email
+      const querySnapshot = await usuariosRef.where("email", "==", mail).get();
+
+      if (!querySnapshot.empty) {
+        // Asumimos que los emails son únicos y solo hay un documento por email
+        const userDoc = querySnapshot.docs[0];
+
+        if (action === "agregarAdmin") {
+          // Actualizar el rol a "admin"
+          await userDoc.ref.update({ role: "admin" });
+          alert("Rol cambiado a Admin");
+        } else if (action === "quitarAdmin") {
+          // Actualizar el rol a "user"
+          await userDoc.ref.update({ role: "user" });
+          alert("Rol cambiado a User");
+        }
+      } else {
+        alert("No se encontró un usuario con ese correo.");
+      }
+    } catch (error) {
+      console.error("Error al actualizar el rol: ", error);
+    }
+  });

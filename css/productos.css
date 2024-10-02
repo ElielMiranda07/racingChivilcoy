@@ -29,7 +29,7 @@
 }
 
 .miniatura {
-  display: inline-block; /* Asegura que las miniaturas se alineen en una línea */
+  display: inline-block;
   cursor: pointer;
 }
 
@@ -45,20 +45,20 @@
 .miniaturasContenedor {
   display: flex;
   justify-content: flex-start;
-  gap: 1vw; /* Espacio entre miniaturas */
-  overflow-x: auto; /* Habilitar scroll lateral */
-  overflow-y: hidden; /* Ocultar cualquier desbordamiento vertical */
-  white-space: nowrap; /* Asegura que las miniaturas se mantengan en una línea */
-  padding-bottom: 10px; /* Espacio adicional para evitar que el scroll tape las miniaturas */
+  gap: 1vw;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding-bottom: 10px;
 }
 
-.miniaturas-contenedor::-webkit-scrollbar {
-  display: none; /* Oculta el scrollbar en navegadores basados en Webkit */
+.miniaturasContenedor::-webkit-scrollbar {
+  display: none;
 }
 
-.miniaturas-contenedor {
-  -ms-overflow-style: none; /* IE y Edge */
-  scrollbar-width: none; /* Firefox */
+.miniaturasContenedor {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @media screen and (min-width: 576px) {

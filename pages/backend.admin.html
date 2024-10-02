@@ -14,17 +14,28 @@
   </head>
   <body>
     <section class="container-fluid d-flex justify-content-center my-3">
-      <h2>Racing de Chivilcoy - Administrador</h2>
+      <h2>
+        <a
+          class="tituloRacing"
+          href="../index.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Racing de Chivilcoy</a
+        >
+      </h2>
+      <h2>- Administrador</h2>
     </section>
-    <!-- Próximos partidos - FireStore -->
+    <!-- Próximos partidos - FireBase -->
     <section class="container-fluid my-3 p-0">
       <!--Próximos partidos - Actualizar-->
       <article class="border">
         <h2 class="mt-2 text-center">Próximos Partidos</h2>
-        <div class="container-fluid d-flex flex-row col-12 mt-2">
-          <!--Partido 1 - Actualizar-->
+        <div
+          class="container-fluid d-flex flex-row justify-content-center col-12 mt-2"
+        >
+          <!--Partidos - Actualizar-->
           <div class="col-4 my-2 border">
-            <h5 class="mt-2">Partido 1</h5>
+            <h5 class="mt-2">Partidos</h5>
             <form action="" id="formActualizarPartidoUno">
               <div class="mt-2">
                 <h6>Fecha y Hora. Formato: DD/MM - HH:MM (18/08 - 21:00)</h6>
@@ -33,7 +44,7 @@
                   class="form-control"
                   aria-label="Sizing example input"
                   aria-describedby="inputGroup-sizing-sm"
-                  id="unoActualizarFyH"
+                  id="actualizarFyH"
                 />
               </div>
               <div class="mt-2">
@@ -43,7 +54,7 @@
                   class="form-control"
                   aria-label="Sizing example input"
                   aria-describedby="inputGroup-sizing-sm"
-                  id="unoActualizarRival"
+                  id="actualizarRival"
                 />
               </div>
               <div class="mt-2">
@@ -53,94 +64,30 @@
                   class="form-control"
                   aria-label="Sizing example input"
                   aria-describedby="inputGroup-sizing-sm"
-                  id="unoActualizarUbi"
+                  id="actualizarUbi"
                 />
               </div>
-              <div class="d-flex justify-content-center mt-2 mb-3">
-                <button type="submit" class="btn btn-primary">
-                  Actualizar
+              <div class="d-flex justify-content-between mt-2 mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-primary ms-1"
+                  value="actualizarUno"
+                >
+                  Actualizar uno
                 </button>
-              </div>
-            </form>
-          </div>
-          <!--Partido 2 - Actualizar-->
-          <div class="col-4 my-2 border">
-            <h5 class="mt-2">Partido 2</h5>
-            <form action="" id="formActualizarPartidoDos">
-              <div class="mt-2">
-                <h6>Fecha y Hora. Formato: DD/MM - HH:MM (18/08 - 21:00)</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="dosActualizarFyH"
-                />
-              </div>
-              <div class="mt-2">
-                <h6>Rival</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="dosActualizarRival"
-                />
-              </div>
-              <div class="mt-2">
-                <h6>Ubicación</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="dosActualizarUbi"
-                />
-              </div>
-              <div class="d-flex justify-content-center mt-2 mb-3">
-                <button type="submit" class="btn btn-primary">
-                  Actualizar
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  value="actualizarDos"
+                >
+                  Actualizar dos
                 </button>
-              </div>
-            </form>
-          </div>
-          <!--Partido 3 - Actualizar-->
-          <div class="col-4 my-2 border">
-            <h5 class="mt-2">Partido 3</h5>
-            <form action="" id="formActualizarPartidoTres">
-              <div class="mt-2">
-                <h6>Fecha y Hora. Formato: DD/MM - HH:MM (18/08 - 21:00)</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="tresActualizarFyH"
-                />
-              </div>
-              <div class="mt-2">
-                <h6>Rival</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="tresActualizarRival"
-                />
-              </div>
-              <div class="mt-2">
-                <h6>Ubicación</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="tresActualizarUbi"
-                />
-              </div>
-              <div class="d-flex justify-content-center mt-2 mb-3">
-                <button type="submit" class="btn btn-primary">
-                  Actualizar
+                <button
+                  type="submit"
+                  class="btn btn-primary me-1"
+                  value="actualizarTres"
+                >
+                  Actualizar tres
                 </button>
               </div>
             </form>
@@ -221,7 +168,7 @@
         </form>
       </article>
     </section>
-    <!-- Noticias - FireStore -->
+    <!-- Noticias - FireBase -->
     <section class="sectionDeNoticias p-0">
       <!-- Carga de Noticias -->
       <article
@@ -398,7 +345,7 @@
         ></div>
       </article>
     </section>
-    <!-- Productos - FireStore -->
+    <!-- Productos - FireBase -->
     <section class="sectionDeProductos p-0">
       <article class="d-flex flex-column align-items-center">
         <h2 class="my-3">Carga de Productos</h2>
@@ -522,6 +469,55 @@
         ></div>
       </article>
     </section>
+    <!-- Dar Rango Administrador - FireBase -->
+    <section class="sectionAdmin p-0">
+      <article class="d-flex flex-column align-items-center">
+        <h2 class="my-3 tituloAdmin">Dar Rango de "Administrador"</h2>
+        <form
+          action=""
+          class="d-flex flex-column col-12 col-md-6"
+          id="adminACargar"
+        >
+          <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default"
+              >Mail</span
+            >
+            <input
+              type="email"
+              class="form-control"
+              aria-label="Sizing example input"
+              aria-describedby="inputGroup-sizing-default"
+              id="mailAdmin"
+              requiered
+            />
+          </div>
+          <div
+            class="container-fluid d-flex flex-row justify-content-evenly text-center my-3"
+          >
+            <div>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                name="action"
+                value="agregarAdmin"
+              >
+                Guardar Nuevo Admin
+              </button>
+            </div>
+            <div>
+              <button
+                type="submit"
+                class="btn btn-danger"
+                name="action"
+                value="quitarAdmin"
+              >
+                Quitar Admin
+              </button>
+            </div>
+          </div>
+        </form>
+      </article>
+    </section>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -532,6 +528,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="../js/backendAdmin.js"></script>
   </body>
 </html>
