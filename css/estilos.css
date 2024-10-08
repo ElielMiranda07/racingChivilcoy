@@ -64,6 +64,7 @@ main {
 .akdBlanco {
   max-width: 100%;
   height: auto;
+  color: #ffffff;
 }
 
 #btnDeAsociate {
@@ -182,6 +183,16 @@ main {
   display: block;
   height: auto;
   overflow: hidden;
+}
+
+.tituloEstadios {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.tituloEstadios:hover {
+  text-decoration: none;
+  color: #8bc4e5;
 }
 
 /*Mapas*/
@@ -312,6 +323,10 @@ iframe {
   height: 20vh;
   display: flex;
   align-items: center;
+  /*fondo AKD*/
+  background-image: url("../media/akdDobleDoble.png");
+  background-repeat: repeat;
+  background-size: 72px 54px; /* Ajusta el tamaño del patrón */
 }
 
 .owl-carouselP {
@@ -435,6 +450,11 @@ footer svg {
   background-color: #8bc4e5;
 }
 
+.imagenClub {
+  width: 40vw;
+  height: auto;
+}
+
 @media screen and (min-width: 576px) {
   .noticias img {
     width: 40vw;
@@ -478,6 +498,13 @@ footer svg {
   .noticias img {
     width: 20vw;
     height: auto;
+  }
+
+  .carruselProductos {
+    /*fondo AKD*/
+    background-image: url("../media/akdDobleDoble.png");
+    background-repeat: repeat;
+    background-size: 144px 108px; /* Ajusta el tamaño del patrón */
   }
 
   .divEscudoRacing {
