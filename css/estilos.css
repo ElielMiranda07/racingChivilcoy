@@ -324,8 +324,10 @@ iframe {
   display: flex;
   align-items: center;
   /*fondo AKD*/
-  background-image: url("../media/fondoAkdRepetido.png");
-  background-size: 800px 336px; /* Ajusta el tamaño del patrón */
+  background-image: url("../media/fondoAKDAHORA.png");
+  background-repeat: repeat-x; /* La imagen se repite solo en el eje horizontal */
+  background-size: auto 100%; /* Mantiene la proporción original de la imagen, ajustando el alto al 100% del contenedor */
+  background-position: top center; /* Alinea la imagen en el centro horizontal y arriba en vertical */
 }
 
 .owl-carouselP {
@@ -461,7 +463,6 @@ footer svg {
   }
   .carruselProductos {
     /*fondo AKD*/
-    background-size: 960px 403px; /* Ajusta el tamaño del patrón */
   }
 }
 
@@ -505,7 +506,6 @@ footer svg {
 
   .carruselProductos {
     /*fondo AKD*/
-    background-size: 1166px 443px; /* Ajusta el tamaño del patrón */
   }
 
   .divEscudoRacing {
@@ -565,20 +565,17 @@ footer svg {
   }
   .carruselProductos {
     /*fondo AKD*/
-    background-size: 1166px 443px; /* Ajusta el tamaño del patrón */
   }
 }
 
 @media screen and (min-width: 1200px) {
   .carruselProductos {
     /*fondo AKD*/
-    background-size: 1440px 604px; /* Ajusta el tamaño del patrón */
   }
 }
 
 @media screen and (min-width: 1440px) {
   .carruselProductos {
     /*fondo AKD*/
-    background-size: 2000px 838px; /* Ajusta el tamaño del patrón */
   }
 }
