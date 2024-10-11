@@ -87,8 +87,41 @@ main {
   color: #131748;
 }
 
+.botonFixture {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botonFixture:hover,
+.botonFixture:focus {
+  background-color: transparent;
+  box-shadow: none;
+  outline: none;
+  color: #131748;
+}
+
+.botonFixture:active {
+  background-color: transparent;
+  transform: scale(0.98);
+}
+
 .tituloProximosPartidos {
   font-size: medium;
+}
+
+.tituloFixtureCompleto {
+  color: #8bc4e5;
+  font-size: x-large;
+}
+
+.custom-modal-width {
+  width: 95%; /* El modal siempre ocupará el 95% del ancho de la pantalla */
+  max-width: 95%; /* Asegura que no se expanda más allá del 95% */
 }
 
 .partidosTamañoFuente {
@@ -461,9 +494,6 @@ footer svg {
     width: 40vw;
     height: auto;
   }
-  .carruselProductos {
-    /*fondo AKD*/
-  }
 }
 
 @media screen and (min-width: 768px) {
@@ -504,8 +534,8 @@ footer svg {
     height: auto;
   }
 
-  .carruselProductos {
-    /*fondo AKD*/
+  .custom-modal-width {
+    max-width: 95%; /* Mantiene el 95% del ancho en pantallas más grandes */
   }
 
   .divEscudoRacing {
@@ -563,19 +593,10 @@ footer svg {
   .mainClub p {
     font-size: large;
   }
-  .carruselProductos {
-    /*fondo AKD*/
-  }
 }
 
 @media screen and (min-width: 1200px) {
-  .carruselProductos {
-    /*fondo AKD*/
-  }
 }
 
 @media screen and (min-width: 1440px) {
-  .carruselProductos {
-    /*fondo AKD*/
-  }
 }
