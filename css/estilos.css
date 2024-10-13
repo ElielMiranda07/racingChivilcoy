@@ -124,6 +124,16 @@ main {
   max-width: 95%; /* Asegura que no se expanda más allá del 95% */
 }
 
+.fixtureCompletoH7 h7 {
+  color: #8bc4e5;
+}
+
+.contenedoresFixtures {
+  width: 50%;
+  border: 2px solid #131748;
+  border-radius: 5px;
+}
+
 .partidosTamañoFuente {
   font-size: small;
 }
