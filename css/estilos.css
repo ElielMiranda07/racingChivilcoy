@@ -477,10 +477,6 @@ footer svg {
   color: #131748;
 }
 
-.mainClub p {
-  font-size: smaller;
-}
-
 .mainEstadios {
   color: #131748;
 }
@@ -497,6 +493,10 @@ footer svg {
 .imagenClub {
   max-width: 100%;
   height: auto;
+}
+
+.parrafoClub {
+  font-size: 1.1rem;
 }
 
 @media screen and (min-width: 576px) {
@@ -575,8 +575,8 @@ footer svg {
     width: auto;
   }
 
-  .mainClub p {
-    font-size: medium;
+  .parrafoClub {
+    font-size: 1.3rem;
   }
 }
 
@@ -598,10 +598,6 @@ footer svg {
   .logosLigas {
     height: 7vh;
     width: auto;
-  }
-
-  .mainClub p {
-    font-size: large;
   }
 }
 
