@@ -495,7 +495,7 @@ footer svg {
 }
 
 .imagenClub {
-  width: 40vw;
+  max-width: 100%;
   height: auto;
 }
 
