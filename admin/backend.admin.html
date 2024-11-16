@@ -17,8 +17,10 @@
     <link rel="stylesheet" href="../css/backend.css" />
   </head>
   <body>
-    <section class="container-fluid d-flex justify-content-center my-3">
-      <h2>
+    <section
+      class="container-fluid d-flex flex-row justify-content-center my-3"
+    >
+      <h2 class="titulo">
         <a
           class="tituloRacing"
           href="../index.html"
@@ -27,7 +29,7 @@
           >Racing de Chivilcoy</a
         >
       </h2>
-      <h2>- Administrador</h2>
+      <h2 class="titulo">- Administrador</h2>
     </section>
     <!-- Próximos partidos - FireBase -->
     <section class="container-fluid my-3 p-0">
@@ -38,7 +40,7 @@
           class="container-fluid d-flex flex-row justify-content-center col-12 mt-2"
         >
           <!--Partidos - Actualizar-->
-          <div class="col-4 my-2 border">
+          <div class="col-12 col-sm-4 my-2 border">
             <h5 class="mt-2">Partidos</h5>
             <form action="" id="formActualizarPartidoUno">
               <div class="mt-2">
@@ -106,49 +108,49 @@
             <!--Partido 1 - Guardar-->
             <div class="mt-2 col-4 border my-2">
               <h5 id="partido1">Partido 1</h5>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Fecha y Hora:</h6></div>
-                <div><h6 id="guardarFyH1"></h6></div>
+                <div><h6 id="guardarFyH1" class="datos"></h6></div>
               </div>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Rival:</h6></div>
-                <div><h6 id="guardarRival1"></h6></div>
+                <div><h6 id="guardarRival1" class="datos"></h6></div>
               </div>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Ubicación:</h6></div>
-                <div><h6 id="guardarUbi1"></h6></div>
+                <div><h6 id="guardarUbi1" class="datos"></h6></div>
               </div>
             </div>
             <!--Partido 2 - Guardar-->
             <div class="mt-2 col-4 border my-2">
               <h5 id="partido2">Partido 2</h5>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Fecha y Hora:</h6></div>
-                <div><h6 id="guardarFyH2"></h6></div>
+                <div><h6 id="guardarFyH2" class="datos"></h6></div>
               </div>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Rival:</h6></div>
-                <div><h6 id="guardarRival2"></h6></div>
+                <div><h6 id="guardarRival2" class="datos"></h6></div>
               </div>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Ubicación:</h6></div>
-                <div><h6 id="guardarUbi2"></h6></div>
+                <div><h6 id="guardarUbi2" class="datos"></h6></div>
               </div>
             </div>
             <!--Partido 3 - Guardar-->
             <div class="mt-2 col-4 border my-2">
               <h5 id="partido3">Partido 3</h5>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Fecha y Hora:</h6></div>
-                <div><h6 id="guardarFyH3"></h6></div>
+                <div><h6 id="guardarFyH3" class="datos"></h6></div>
               </div>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Rival:</h6></div>
-                <div><h6 id="guardarRival3"></h6></div>
+                <div><h6 id="guardarRival3" class="datos"></h6></div>
               </div>
-              <div class="mt-2 d-flex flex-row">
+              <div class="mt-2 d-flex flex-column">
                 <div class="mr-2"><h6>Ubicación:</h6></div>
-                <div><h6 id="guardarUbi3"></h6></div>
+                <div><h6 id="guardarUbi3" class="datos"></h6></div>
               </div>
             </div>
           </div>
@@ -355,7 +357,7 @@
         <h2 class="my-3">Carga de Productos</h2>
         <form
           action=""
-          class="d-flex flex-column col-12 col-md-6"
+          class="d-flex flex-column col-11 col-md-6"
           id="productoACargar"
         >
           <div class="input-group input-group-sm mb-3">
@@ -479,7 +481,7 @@
         <h2 class="my-3 tituloAdmin">Dar Rango de "Administrador"</h2>
         <form
           action=""
-          class="d-flex flex-column col-12 col-md-6"
+          class="d-flex flex-column col-11 col-md-6"
           id="adminACargar"
         >
           <div class="input-group input-group-sm mb-3">

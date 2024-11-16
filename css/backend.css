@@ -4,9 +4,17 @@
   box-sizing: border-box;
 }
 
+.titulo {
+  font-size: 3vh;
+}
+
 .tituloRacing {
   text-decoration: none;
   color: #8bc4e5;
+}
+
+.datos {
+  color: rgb(21, 231, 21);
 }
 
 .border {
