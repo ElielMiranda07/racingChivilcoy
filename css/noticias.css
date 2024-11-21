@@ -1,3 +1,7 @@
+main {
+  min-height: 100vh;
+}
+
 .noticiaItem[hidden] {
   display: none;
 }
@@ -22,4 +26,19 @@ main {
   background-color: #131748;
   color: #ffffff;
   border: 2px solid #ffffff;
+}
+
+.contenedorSeparador {
+  position: relative;
+  width: 100%; /* El contenedor ocupa el 100% del ancho */
+  text-align: center; /* Centra el contenido dentro del contenedor */
+}
+
+.contenedorSeparador::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 5%; /* Centra el borde reduciendo el ancho en los lados */
+  width: 90%; /* El borde ocupa el 80% del ancho */
+  border-bottom: 3px solid #8bc4e5; /* Ajusta el grosor y color del borde */
 }

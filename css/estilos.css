@@ -49,6 +49,7 @@ main {
 
 .section1 {
   background-color: #131748;
+  min-height: 70vh;
 }
 
 .section1 .divArticle1 {
@@ -136,6 +137,53 @@ main {
 
 .partidosTamañoFuente {
   font-size: small;
+}
+
+.contenedorSeparador {
+  position: relative;
+  width: 100%; /* El contenedor ocupa el 100% del ancho */
+  text-align: center; /* Centra el contenido dentro del contenedor */
+}
+
+.contenedorSeparador::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 5%; /* Centra el borde reduciendo el ancho en los lados */
+  width: 90%; /* El borde ocupa el 80% del ancho */
+  border-bottom: 3px solid #8bc4e5; /* Ajusta el grosor y color del borde */
+}
+
+.article21Bis {
+  background-color: #ffffff;
+}
+
+.tituloEntradas {
+  color: #131748;
+}
+
+.logoBasquetId {
+  width: 28vw;
+  height: auto;
+}
+
+.logoBasquetId:hover #rectSvg {
+  fill: rgb(210, 105, 30);
+}
+
+.cls-1 {
+  fill: #131748;
+  transition: fill 0.3s ease;
+}
+
+.cls-2 {
+  fill: #131748;
+  transition: fill 0.3s ease;
+}
+
+#rectSvg {
+  fill: #ffffff;
+  transition: fill 0.3s ease;
 }
 
 .article22 {
@@ -488,6 +536,7 @@ footer svg {
 .mainProductos {
   color: #131748;
   background-color: #8bc4e5;
+  min-height: 100vh;
 }
 
 .imagenClub {
@@ -502,6 +551,11 @@ footer svg {
 @media screen and (min-width: 576px) {
   .noticias img {
     width: 40vw;
+    height: auto;
+  }
+
+  .logoBasquetId {
+    width: 20vw;
     height: auto;
   }
 }
@@ -537,6 +591,11 @@ footer svg {
 
   .partidosTamañoFuente {
     font-size: medium;
+  }
+
+  .logoBasquetId {
+    width: 13vw;
+    height: auto;
   }
 
   .noticias img {
