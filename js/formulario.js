@@ -16,8 +16,8 @@ document
 function sendEmail(nombre, apellido, telefono, email) {
   const statusDiv = document.getElementById("status");
 
-  const serviceID = "service_u5ls0bl";
-  const templateID = "template_ikl8anc";
+  const serviceID = "service_kv8xbjr";
+  const templateID = "template_ged351x";
 
   emailjs
     .send(serviceID, templateID, {
@@ -32,6 +32,7 @@ function sendEmail(nombre, apellido, telefono, email) {
         document.getElementById("contactForm").reset();
       },
       (err) => {
+        console.error("Error al enviar el correo:", err);
         statusDiv.innerHTML =
           "Hubo un error al enviar el mensaje: " + JSON.stringify(err);
       }
