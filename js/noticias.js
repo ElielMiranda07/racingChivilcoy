@@ -78,7 +78,7 @@ async function cargarNoticias() {
 
   try {
     // Obtener todos los documentos en la colección "noticias"
-    const snapshot = await noticiasRef.get();
+    const snapshot = await noticiasRef.orderBy("fechaDeCarga", "desc").get();
 
     // Contenedor donde se mostrarán las noticias
     const contenedorNoticias = document.getElementById("contenedorNoticias");
@@ -127,18 +127,6 @@ async function cargarNoticias() {
             </div>
           </div>
         </div>`;
-      /*`
-        <div class="noticia">
-          <h2>${noticia.titulo}</h2>
-          <img src="${noticia.imagenPrincipal}" alt="${noticia.titulo}">
-          <p>${noticia.copete}</p>
-          <p>${noticia.cuerpoNoticia}</p>
-          <p>${noticia.cuerpoNoticia2}</p>
-          <img src="${noticia.imagenSecundaria}" alt="${noticia.titulo}">
-          <span>Categoría: ${noticia.categoria}</span>
-          <span>Fecha de Carga: ${noticia.fechaDeCarga?.toDate().toLocaleString()}</span>
-        </div>
-      `;*/
 
       // 3. Insertar la plantilla en el DOM
       contenedorNoticias.innerHTML += noticiaHTML;

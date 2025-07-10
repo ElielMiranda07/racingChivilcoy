@@ -411,8 +411,9 @@ iframe {
 }
 
 .carruselProductos {
-  height: 20vh;
-  display: flex;
+  display: block;
+  height: auto;
+  overflow: hidden;
   align-items: center;
   /*fondo AKD*/
   background-image: url("../media/fondoAKDAHORA.png");

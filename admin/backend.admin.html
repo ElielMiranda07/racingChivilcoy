@@ -329,6 +329,17 @@
                 <label class="btn btn-outline-primary" for="categoriaLA"
                   >Liga Argentina</label
                 >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="btnradio"
+                  id="categoriaLN"
+                  autocomplete="off"
+                />
+                <label class="btn btn-outline-primary" for="categoriaLN"
+                  >Liga Nacional</label
+                >
               </div>
             </div>
             <div class="container-fluid text-center my-3">
@@ -370,6 +381,18 @@
               aria-label="Sizing example input"
               aria-describedby="inputGroup-sizing-default"
               id="tituloACargarProducto"
+            />
+          </div>
+          <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default"
+              >Precio $</span
+            >
+            <input
+              type="text"
+              class="form-control"
+              aria-label="Sizing example input"
+              aria-describedby="inputGroup-sizing-default"
+              id="precioACargarProducto"
             />
           </div>
           <div class="input-group input-group-sm mb-3">
@@ -474,6 +497,248 @@
           id="divContenedorProductos"
         ></div>
       </article>
+      <!-- Modal para modificar producto -->
+      <div
+        class="modal fade"
+        id="modalModificarProducto"
+        tabindex="-1"
+        aria-labelledby="modalModificarProductoLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <!-- Header del modal -->
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalModificarProductoLabel">
+                Modificar producto
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"
+              ></button>
+            </div>
+
+            <!-- Body del modal -->
+            <div class="modal-body">
+              <form id="formModificarProducto">
+                <input type="hidden" id="docIdProducto" />
+
+                <div class="mb-3">
+                  <label for="tituloModificar" class="form-label">Título</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="tituloModificar"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="precioModificar" class="form-label">Precio</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="precioModificar"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="descripcionModificar" class="form-label"
+                    >Descripción</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="descripcionModificar"
+                    rows="3"
+                  ></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Imágenes</label>
+
+                  <!-- Imagen 1 (obligatoria) -->
+                  <div class="d-flex align-items-center my-2">
+                    <input
+                      type="file"
+                      class="form-control me-2"
+                      id="imagenModificar1"
+                      accept="image/*"
+                    />
+                    <img
+                      id="previewModificar1"
+                      src=""
+                      alt="Vista previa"
+                      style="width: 80px; height: auto"
+                      class="me-2"
+                    />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="eliminarImagen1"
+                      />
+                      <label class="form-check-label" for="eliminarImagen1"
+                        >Eliminar</label
+                      >
+                    </div>
+                  </div>
+                  <!-- Imagen 2 -->
+                  <div class="d-flex align-items-center my-2">
+                    <input
+                      type="file"
+                      class="form-control me-2"
+                      id="imagenModificar2"
+                      accept="image/*"
+                    />
+                    <img
+                      id="previewModificar2"
+                      src=""
+                      alt="Vista previa"
+                      style="width: 80px; height: auto"
+                      class="me-2"
+                    />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="eliminarImagen2"
+                      />
+                      <label class="form-check-label" for="eliminarImagen2"
+                        >Eliminar</label
+                      >
+                    </div>
+                  </div>
+                  <!-- Imagen 3 -->
+                  <div class="d-flex align-items-center my-2">
+                    <input
+                      type="file"
+                      class="form-control me-2"
+                      id="imagenModificar3"
+                      accept="image/*"
+                    />
+                    <img
+                      id="previewModificar3"
+                      src=""
+                      alt="Vista previa"
+                      style="width: 80px; height: auto"
+                      class="me-2"
+                    />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="eliminarImagen3"
+                      />
+                      <label class="form-check-label" for="eliminarImagen3"
+                        >Eliminar</label
+                      >
+                    </div>
+                  </div>
+                  <!-- Imagen 4 -->
+                  <div class="d-flex align-items-center my-2">
+                    <input
+                      type="file"
+                      class="form-control me-2"
+                      id="imagenModificar4"
+                      accept="image/*"
+                    />
+                    <img
+                      id="previewModificar4"
+                      src=""
+                      alt="Vista previa"
+                      style="width: 80px; height: auto"
+                      class="me-2"
+                    />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="eliminarImagen4"
+                      />
+                      <label class="form-check-label" for="eliminarImagen4"
+                        >Eliminar</label
+                      >
+                    </div>
+                  </div>
+                  <!-- Imagen 5 -->
+                  <div class="d-flex align-items-center my-2">
+                    <input
+                      type="file"
+                      class="form-control me-2"
+                      id="imagenModificar5"
+                      accept="image/*"
+                    />
+                    <img
+                      id="previewModificar5"
+                      src=""
+                      alt="Vista previa"
+                      style="width: 80px; height: auto"
+                      class="me-2"
+                    />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="eliminarImagen5"
+                      />
+                      <label class="form-check-label" for="eliminarImagen5"
+                        >Eliminar</label
+                      >
+                    </div>
+                  </div>
+                  <!-- Imagen 6 -->
+                  <div class="d-flex align-items-center my-2">
+                    <input
+                      type="file"
+                      class="form-control me-2"
+                      id="imagenModificar6"
+                      accept="image/*"
+                    />
+                    <img
+                      id="previewModificar6"
+                      src=""
+                      alt="Vista previa"
+                      style="width: 80px; height: auto"
+                      class="me-2"
+                    />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="eliminarImagen6"
+                      />
+                      <label class="form-check-label" for="eliminarImagen6"
+                        >Eliminar</label
+                      >
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Footer del modal -->
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="formModificarProducto"
+                class="btn btn-primary"
+              >
+                Guardar Cambios
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
     <!-- Dar Rango Administrador - FireBase -->
     <section class="sectionAdmin p-0">

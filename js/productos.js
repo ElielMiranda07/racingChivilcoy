@@ -54,6 +54,7 @@ async function cargarProductos() {
             <img src="${producto.imagen}" alt="" class="mt-2">
             <h4 class="mt-2">${producto.titulo}</h4>
             <p class="mt-1 text-center">${producto.descripcion}</p>
+            <h5 class="mt-1">$${producto.precio}</h5>
             <div>
               <button
                 type="button"

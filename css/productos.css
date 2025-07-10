@@ -1,3 +1,15 @@
+.linkATienda {
+  text-decoration: none;
+  color: #131748;
+}
+
+.fondoTexto {
+  background-color: #ffffff;
+  border-radius: 8px;
+  display: inline;
+  padding: 0.5vh 0.8vw;
+}
+
 .botonVerMas {
   background-color: #ffffff;
   color: #131748;

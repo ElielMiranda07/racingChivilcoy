@@ -375,6 +375,12 @@ async function cargarNoticias() {
   }
 }
 
+// Llamada a la función para cargar las noticias al cargar la página
+// Llamada a la función para cargar las noticias al cargar la página
+window.onload = function () {
+  cargarNoticias();
+};
+
 //FINAL DE SECCIÓN NOTICIAS
 //FINAL DE SECCIÓN NOTICIAS
 //FINAL DE SECCIÓN NOTICIAS
@@ -388,6 +394,7 @@ formProducto.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const titulo = document.getElementById("tituloACargarProducto").value;
+  const precio = document.getElementById("precioACargarProducto").value;
   const descripcionProducto = document.getElementById(
     "descripcionProducto"
   ).value;
@@ -401,7 +408,6 @@ formProducto.addEventListener("submit", async (e) => {
   const productosRef = firebase.firestore().collection("productos");
 
   try {
-    // 1. Obtener el número de producto más alto y sumar 1
     const querySnapshot = await productosRef
       .orderBy("numero", "desc")
       .limit(1)
@@ -412,49 +418,34 @@ formProducto.addEventListener("submit", async (e) => {
       nuevoNumero = parseInt(ultimoProducto.numero) + 1;
     }
     const nombreDocumento = `producto ${nuevoNumero}`;
-
-    // 2. Subir las imágenes a Firebase Storage
     const storageRef = firebase.storage().ref();
-    const imagenRef = storageRef.child(`productos/${imagenProducto.name}`);
 
-    const snapshotImg1 = await imagenRef.put(imagenProducto);
-    const downloadURL1 = await snapshotImg1.ref.getDownloadURL();
+    const uploadAndGetURL = async (file) => {
+      const ref = storageRef.child(`productos/${Date.now()}_${file.name}`);
+      const snapshot = await ref.put(file);
+      return await snapshot.ref.getDownloadURL();
+    };
 
-    let downloadURL2 = "";
-    let downloadURL3 = "";
-    let downloadURL4 = "";
-    let downloadURL5 = "";
-    let downloadURL6 = "";
+    const downloadURL1 = await uploadAndGetURL(imagenProducto);
+    const downloadURL2 = imagenProducto2
+      ? await uploadAndGetURL(imagenProducto2)
+      : "";
+    const downloadURL3 = imagenProducto3
+      ? await uploadAndGetURL(imagenProducto3)
+      : "";
+    const downloadURL4 = imagenProducto4
+      ? await uploadAndGetURL(imagenProducto4)
+      : "";
+    const downloadURL5 = imagenProducto5
+      ? await uploadAndGetURL(imagenProducto5)
+      : "";
+    const downloadURL6 = imagenProducto6
+      ? await uploadAndGetURL(imagenProducto6)
+      : "";
 
-    if (imagenProducto2) {
-      const imagenRef2 = storageRef.child(`productos/${imagenProducto2.name}`);
-      const snapshotImg2 = await imagenRef2.put(imagenProducto2);
-      downloadURL2 = await snapshotImg2.ref.getDownloadURL();
-    }
-    if (imagenProducto3) {
-      const imagenRef3 = storageRef.child(`productos/${imagenProducto3.name}`);
-      const snapshotImg3 = await imagenRef3.put(imagenProducto3);
-      downloadURL3 = await snapshotImg3.ref.getDownloadURL();
-    }
-    if (imagenProducto4) {
-      const imagenRef4 = storageRef.child(`productos/${imagenProducto4.name}`);
-      const snapshotImg4 = await imagenRef4.put(imagenProducto4);
-      downloadURL4 = await snapshotImg4.ref.getDownloadURL();
-    }
-    if (imagenProducto5) {
-      const imagenRef5 = storageRef.child(`productos/${imagenProducto5.name}`);
-      const snapshotImg5 = await imagenRef5.put(imagenProducto5);
-      downloadURL5 = await snapshotImg5.ref.getDownloadURL();
-    }
-    if (imagenProducto6) {
-      const imagenRef6 = storageRef.child(`productos/${imagenProducto6.name}`);
-      const snapshotImg6 = await imagenRef6.put(imagenProducto6);
-      downloadURL6 = await snapshotImg6.ref.getDownloadURL();
-    }
-
-    // 3. Guardar los datos en Firestore con el número de producto correspondiente
     await productosRef.doc(nombreDocumento).set({
-      titulo: titulo,
+      titulo,
+      precio: precio,
       descripcion: descripcionProducto,
       imagen: downloadURL1,
       imagen2: downloadURL2,
@@ -462,7 +453,7 @@ formProducto.addEventListener("submit", async (e) => {
       imagen4: downloadURL4,
       imagen5: downloadURL5,
       imagen6: downloadURL6,
-      numero: nuevoNumero, // Almacenar el número del producto
+      numero: nuevoNumero,
     });
 
     mensajeDeProducto.innerHTML = `Producto guardado con el nombre: ${nombreDocumento}`;
@@ -477,14 +468,106 @@ formProducto.addEventListener("submit", async (e) => {
   }
 });
 
+// Submit del formulario de modificación
+document
+  .getElementById("formModificarProducto")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!confirm("¿Estás seguro de que querés modificar este producto?"))
+      return;
+
+    const docId = document.getElementById("docIdProducto").value;
+    const productosRef = firebase
+      .firestore()
+      .collection("productos")
+      .doc(docId);
+    const storageRef = firebase.storage().ref();
+
+    const titulo = document.getElementById("tituloModificar").value;
+    const precio = document.getElementById("precioModificar").value;
+    const descripcion = document.getElementById("descripcionModificar").value;
+
+    const files = [],
+      eliminar = [];
+    for (let i = 1; i <= 6; i++) {
+      files.push(document.getElementById(`imagenModificar${i}`).files[0]);
+      eliminar.push(document.getElementById(`eliminarImagen${i}`).checked);
+    }
+
+    const originalesRaw = document.getElementById("formModificarProducto")
+      .dataset.originales;
+    const urlsOriginales = originalesRaw ? JSON.parse(originalesRaw) : {};
+    const nuevasURLs = [];
+
+    for (let i = 0; i < 6; i++) {
+      const key = i === 0 ? "imagen" : `imagen${i + 1}`;
+      const file = files[i];
+      const eliminarEsta = eliminar[i];
+      const urlOriginal = urlsOriginales[key] || "";
+
+      if (eliminarEsta && urlOriginal) {
+        try {
+          const path = decodeURIComponent(
+            new URL(urlOriginal).pathname.split("/o/")[1].split("?")[0]
+          );
+          await storageRef.child(path).delete();
+        } catch (err) {
+          console.warn(`No se pudo eliminar imagen ${key}:`, err);
+        }
+        nuevasURLs.push("");
+      } else if (file) {
+        if (urlOriginal) {
+          try {
+            const path = decodeURIComponent(
+              new URL(urlOriginal).pathname.split("/o/")[1].split("?")[0]
+            );
+            await storageRef.child(path).delete();
+          } catch (err) {
+            console.warn(`No se pudo eliminar imagen anterior: ${key}`, err);
+          }
+        }
+
+        const nombre = `productos/${Date.now()}_${file.name}`;
+        const snapshot = await storageRef.child(nombre).put(file);
+        const url = await snapshot.ref.getDownloadURL();
+        nuevasURLs.push(url);
+      } else {
+        nuevasURLs.push(urlOriginal);
+      }
+    }
+
+    try {
+      await productosRef.update({
+        titulo,
+        precio,
+        descripcion,
+        imagen: nuevasURLs[0],
+        imagen2: nuevasURLs[1],
+        imagen3: nuevasURLs[2],
+        imagen4: nuevasURLs[3],
+        imagen5: nuevasURLs[4],
+        imagen6: nuevasURLs[5],
+      });
+
+      alert("Producto modificado con éxito.");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error al modificar producto:", error);
+      alert("Hubo un error al guardar los cambios.");
+    }
+  });
+
 // Función para eliminar un producto por ID (nombre del documento)
 async function eliminarProducto(idDocumento) {
   if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
     try {
-      const productosRef = firebase.firestore().collection("productos");
-      await productosRef.doc(idDocumento).delete(); // Eliminar el documento
+      await firebase
+        .firestore()
+        .collection("productos")
+        .doc(idDocumento)
+        .delete();
       alert("Producto eliminado correctamente");
-      window.location.reload(); // Recargar la página para actualizar la lista
+      window.location.reload();
     } catch (error) {
       console.error("Error al eliminar el producto: ", error);
       alert("Error al eliminar el producto.");
@@ -492,6 +575,70 @@ async function eliminarProducto(idDocumento) {
   }
 }
 
+// Función para modificar un producto por ID (nombre del documento)
+async function modificarProducto(docId) {
+  const docRef = firebase.firestore().collection("productos").doc(docId);
+  const docSnap = await docRef.get();
+
+  if (docSnap.exists) {
+    const data = docSnap.data();
+
+    document.getElementById("docIdProducto").value = docId;
+    document.getElementById("tituloModificar").value = data.titulo;
+    document.getElementById("precioModificar").value = data.precio;
+    document.getElementById("descripcionModificar").value = data.descripcion;
+
+    document.getElementById("formModificarProducto").dataset.originales =
+      JSON.stringify({
+        imagen: data.imagen || "",
+        imagen2: data.imagen2 || "",
+        imagen3: data.imagen3 || "",
+        imagen4: data.imagen4 || "",
+        imagen5: data.imagen5 || "",
+        imagen6: data.imagen6 || "",
+      });
+
+    for (let i = 1; i <= 6; i++) {
+      const inputFile = document.getElementById(`imagenModificar${i}`);
+      const imgPreview = document.getElementById(`previewModificar${i}`);
+      const checkEliminar = document.getElementById(`eliminarImagen${i}`);
+
+      const url = i === 1 ? data.imagen : data[`imagen${i}`];
+
+      if (url) {
+        imgPreview.src = url;
+        imgPreview.style.display = "inline-block";
+      } else {
+        imgPreview.src = "";
+        imgPreview.style.display = "none";
+      }
+
+      inputFile.value = "";
+      checkEliminar.checked = false;
+    }
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("modalModificarProducto")
+    );
+    modal.show();
+  }
+}
+// Mostrar vista previa al seleccionar nuevas imágenes
+for (let i = 1; i <= 6; i++) {
+  const input = document.getElementById(`imagenModificar${i}`);
+  const preview = document.getElementById(`previewModificar${i}`);
+
+  input.addEventListener("change", function () {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = "inline-block";
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  });
+}
 // Función para cargar y mostrar los productos
 async function cargarProductos() {
   const productosRef = firebase.firestore().collection("productos");
@@ -501,102 +648,80 @@ async function cargarProductos() {
     const contenedorProductos = document.getElementById(
       "divContenedorProductos"
     );
+    let modalHTML = "",
+      index = 0;
 
-    let modalHTML = ""; // Para acumular los modales y evitar múltiples inserciones en el DOM
-    let index = 0; // Contador manual para los índices
     snapshot.forEach((doc) => {
       const producto = doc.data();
-      const modalId = `imageModal${index}`; // Generar un ID único para cada modal
-      const docId = doc.id; // Obtener el ID del documento
+      const modalId = `imageModal${index}`;
+      const docId = doc.id;
 
-      // Plantilla HTML para cada producto con botón "Eliminar"
-      const productoHTML = `
+      contenedorProductos.innerHTML += `
         <div class="col-xl-2 col-lg-4 col-md-5 col-5 my-1 producto">
           <div class="d-flex flex-column align-items-center">
             <img src="${producto.imagen}" alt="" class="mt-2">
             <h4 class="mt-2">${producto.titulo}</h4>
             <p class="mt-1 text-center">${producto.descripcion}</p>
+            <h5 class="mt-1">$${producto.precio}</h5>
             <div>
-              <button
-                type="button"
-                class="btn btn-sm btn-custom"
-                data-bs-toggle="modal"
-                data-bs-target="#${modalId}">
-                Ver más
-              </button>
+              <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#${modalId}">Ver más</button>
             </div>
             <div class="my-1">
-            <!-- Botón para eliminar el producto -->
-              <button
-                type="button"
-                class="btn btn-sm btn-danger mt-2"
-                onclick="eliminarProducto('${docId}')">
-                Eliminar
-              </button>
+              <button type="button" class="btn btn-sm btn-success mt-2" onclick="modificarProducto('${docId}')">Modificar</button>
+              <button type="button" class="btn btn-sm btn-danger mt-2" onclick="eliminarProducto('${docId}')">Eliminar</button>
             </div>
           </div>
-        </div>`;
+        </div>
+      `;
 
-      // Crear el modal correspondiente a este producto
       modalHTML += `
         <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="imageModalLabel${index}" aria-hidden="true">
           <div class="modal-dialog modal-xl">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel${index}">${producto.titulo}</h5>
+                <h5 class="modal-title" id="imageModalLabel${index}">${
+        producto.titulo
+      }</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
               </div>
-              <div class="modal-body">
-                <div class="d-flex justify-content-center mb-4">
-                  <img id="imagenPrincipal${index}" src="${producto.imagen}" class="img-fluid" alt="Imagen grande" style="max-height: 400px" />
-                </div>
-                <div class="d-flex miniaturasContenedor">`;
-
-      // Verificar y agregar solo las miniaturas que existan
-      const imagenes = [
-        producto.imagen,
-        producto.imagen2,
-        producto.imagen3,
-        producto.imagen4,
-        producto.imagen5,
-        producto.imagen6,
-      ];
-      imagenes.forEach((img, i) => {
-        if (img) {
-          modalHTML += `<img src="${img}" class="img-thumbnail mx-2 miniatura" alt="Miniatura ${
-            i + 1
-          }" data-imagen="${img}" id="miniatura${index}-${i}" style="width: 100px; cursor: pointer" />`;
-        }
-      });
-
-      modalHTML += `
-                </div>
-                <div class="modal-footer d-flex justify-content-center">
-                  <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
+              <div class="modal-body text-center">
+                <img src="${producto.imagen}" class="img-fluid mb-2"><br>
+                ${
+                  producto.imagen2
+                    ? `<img src="${producto.imagen2}" class="img-fluid mb-2"><br>`
+                    : ""
+                }
+                ${
+                  producto.imagen3
+                    ? `<img src="${producto.imagen3}" class="img-fluid mb-2"><br>`
+                    : ""
+                }
+                ${
+                  producto.imagen4
+                    ? `<img src="${producto.imagen4}" class="img-fluid mb-2"><br>`
+                    : ""
+                }
+                ${
+                  producto.imagen5
+                    ? `<img src="${producto.imagen5}" class="img-fluid mb-2"><br>`
+                    : ""
+                }
+                ${
+                  producto.imagen6
+                    ? `<img src="${producto.imagen6}" class="img-fluid mb-2"><br>`
+                    : ""
+                }
               </div>
             </div>
           </div>
         </div>`;
-
-      contenedorProductos.innerHTML += productoHTML; // Insertar los productos
-      index++; // Incrementar el contador manual
+      index++;
     });
 
-    document.body.insertAdjacentHTML("beforeend", modalHTML); // Insertar los modales al final del body
-
-    // Esperar a que las imágenes se carguen para aplicar las clases correctas
-    document.querySelectorAll(".miniatura").forEach((img) => {
-      img.onload = function () {
-        // Verificar si la imagen es más ancha que alta
-        if (img.naturalWidth > img.naturalHeight) {
-          img.classList.add("miniaturaAncha");
-        } else {
-          img.classList.add("miniaturaAngosta");
-        }
-      };
-    });
+    // Agregamos todos los modales al final del body
+    document.body.insertAdjacentHTML("beforeend", modalHTML);
   } catch (error) {
-    console.error("Error al cargar los productos: ", error);
+    console.error("Error al cargar productos:", error);
   }
 }
 
@@ -616,11 +741,38 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Llamada a la función para cargar las noticias al cargar la página
-// Llamada a la función para cargar las noticias al cargar la página
-window.onload = function () {
-  cargarNoticias();
-};
+// Función para cargar el formulario de modificación con los datos del producto
+function cargarPreviewYListeners(data) {
+  for (let i = 1; i <= 6; i++) {
+    const key = i === 1 ? "imagen" : `imagen${i}`;
+    const preview = document.getElementById(`previewModificar${i}`);
+    preview.src = data[key] || "";
+  }
+
+  for (let i = 1; i <= 6; i++) {
+    document
+      .getElementById(`imagenModificar${i}`)
+      .addEventListener("change", function () {
+        const file = this.files[0];
+        const preview = document.getElementById(`previewModificar${i}`);
+        if (file) {
+          preview.src = URL.createObjectURL(file);
+        }
+      });
+  }
+
+  // Guardar URLs originales para comparar
+  const urlsOriginales = {
+    imagen: data.imagen || "",
+    imagen2: data.imagen2 || "",
+    imagen3: data.imagen3 || "",
+    imagen4: data.imagen4 || "",
+    imagen5: data.imagen5 || "",
+    imagen6: data.imagen6 || "",
+  };
+  document.getElementById("formModificarProducto").dataset.originales =
+    JSON.stringify(urlsOriginales);
+}
 
 // Sección carga y bajas de Admin
 
