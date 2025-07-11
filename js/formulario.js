@@ -16,7 +16,7 @@ document
 function sendEmail(nombre, apellido, telefono, email) {
   const statusDiv = document.getElementById("status");
 
-  const serviceID = "service_kv8xbjr";
+  const serviceID = "service_6kra6k5";
   const templateID = "template_ged351x";
 
   emailjs
