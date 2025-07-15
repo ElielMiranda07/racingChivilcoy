@@ -343,6 +343,14 @@ async function cargarNoticias() {
                     Eliminar
                   </button>
                 </div>
+                <div>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-info mt-2"
+                    onclick="compartirNoticia('${modalIdSinEspacios}')">
+                    Compartir esta noticia
+                  </button>
+                </div>
                 <div class="modal fade" id="${modalIdSinEspacios}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-lg modal-dialog-scrollable">
                     <div class="modal-content">
@@ -376,10 +384,26 @@ async function cargarNoticias() {
 }
 
 // Llamada a la función para cargar las noticias al cargar la página
-// Llamada a la función para cargar las noticias al cargar la página
 window.onload = function () {
   cargarNoticias();
 };
+
+function compartirNoticia(modalId) {
+  // Reemplazá esto con la URL real de tu sitio
+  const baseUrl = "https://www.racingclubchivilcoy.com.ar/pages/noticias.html";
+  const urlCompleta = `${baseUrl}?noticia=${modalId}`;
+
+  // Copiar al portapapeles
+  navigator.clipboard
+    .writeText(urlCompleta)
+    .then(() => {
+      alert("¡Enlace copiado al portapapeles!");
+    })
+    .catch((err) => {
+      console.error("Error al copiar el enlace: ", err);
+      alert("Ocurrió un error al copiar el enlace.");
+    });
+}
 
 //FINAL DE SECCIÓN NOTICIAS
 //FINAL DE SECCIÓN NOTICIAS
