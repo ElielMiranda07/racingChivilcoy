@@ -6,6 +6,15 @@ main {
   display: none;
 }
 
+.noticiaItem {
+  border: 2px solid #131748;
+  border-radius: 5px;
+}
+
+.noticias img {
+  border-radius: 5px;
+}
+
 .botonVerMas {
   background-color: #ffffff;
   color: #131748;

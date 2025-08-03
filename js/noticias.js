@@ -85,13 +85,13 @@ async function cargarNoticias() {
       const modalId = `${doc.id}`;
       const modalIdSinEspacios = modalId.replace(/\s+/g, "");
 
-      const noticiaHTML = `<div class=" todas ${noticia.categoria} noticiaItem col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
+      const noticiaHTML = `<div class=" todas ${noticia.categoria} noticiaItem col-xl-3 col-lg-5 col-md-5 col-sm-11 col-11 m-2">
         <div class="noticias d-flex flex-column align-items-center text-center">
-          <img src="${noticia.imagenPrincipal}" alt="" />
+          <img class="mt-1" src="${noticia.imagenPrincipal}" alt="" />
           <h2 class="mt-3 mb-3">${noticia.titulo}</h2>
           <p>${noticia.copete}</p>
           <div>
-            <button type="button" class="btn btn-sm btn-custom botonVerMas" data-bs-toggle="modal" data-bs-target="#${modalIdSinEspacios}">
+            <button type="button" class="btn btn-sm btn-custom mb-1 botonVerMas" data-bs-toggle="modal" data-bs-target="#${modalIdSinEspacios}">
               Ver más
             </button>
             <div class="modal fade" id="${modalIdSinEspacios}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

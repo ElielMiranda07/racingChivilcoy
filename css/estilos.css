@@ -19,7 +19,7 @@
 }
 
 .custom-navbar {
-  z-index: 10000;
+  z-index: 1000;
 }
 
 #navbarNavAltMarkup {
@@ -547,6 +547,10 @@ footer svg {
 
 .parrafoClub {
   font-size: 1.1rem;
+}
+
+.modal-open {
+  z-index: 999999999999;
 }
 
 @media screen and (min-width: 576px) {

@@ -30,6 +30,7 @@
 .producto img {
   width: 80vw;
   height: auto;
+  border-radius: 5px;
 }
 
 .producto p {
