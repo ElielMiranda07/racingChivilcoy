@@ -485,6 +485,16 @@ footer svg {
   color: #1877f2;
 }
 
+.bi-twitter-x {
+  color: #131748; /* color inicial */
+  transition: color 0.3s;
+}
+
+.bi-instagram {
+  color: #131748;
+  transition: color 0.3s;
+}
+
 .bi-instagram:hover {
   background: linear-gradient(
     45deg,
@@ -494,7 +504,7 @@ footer svg {
     #833ab4,
     #405de6
   );
-  border-radius: 10px;
+  border-radius: 15%;
   color: #ffffff;
 }
 
