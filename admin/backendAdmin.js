@@ -93,6 +93,82 @@ function checkUserRole(user) {
     });
 }
 
+////////// Contador de Clicks WhatsApp ///////////
+
+const contadorElement = document.getElementById("contadorClicks");
+const verDetallesBtn = document.getElementById("verDetalles");
+const tablaClicks = document.getElementById("tablaClicks");
+
+// 🟢 Mostrar el contador actual
+async function cargarContador() {
+  try {
+    const contadorRef = db.collection("clicksAsociate").doc("contador");
+    const doc = await contadorRef.get();
+
+    if (doc.exists) {
+      contadorElement.textContent = doc.data().ultimoNumero;
+    } else {
+      contadorElement.textContent = "0";
+    }
+  } catch (error) {
+    console.error("Error al obtener el contador:", error);
+    contadorElement.textContent = "Error";
+  }
+}
+
+// 🟢 Cargar los detalles al abrir el modal
+async function cargarDetalles() {
+  try {
+    tablaClicks.innerHTML = `
+        <tr><td colspan="2" class="text-center text-muted">Cargando...</td></tr>
+      `;
+
+    const snapshot = await db
+      .collection("clicksAsociate")
+      .orderBy("numero", "desc")
+      .get();
+
+    // Filtrar el documento "contador" (no es un click)
+    const clicks = snapshot.docs.filter((doc) => doc.id !== "contador");
+
+    if (clicks.length === 0) {
+      tablaClicks.innerHTML = `
+          <tr><td colspan="2" class="text-center text-muted">No hay registros aún</td></tr>
+        `;
+      return;
+    }
+
+    // Construir tabla
+    let filas = "";
+    clicks.forEach((doc) => {
+      const data = doc.data();
+      filas += `
+          <tr>
+            <td>${data.numero}</td>
+            <td>${data.nombre}</td>
+          </tr>
+        `;
+    });
+
+    tablaClicks.innerHTML = filas;
+  } catch (error) {
+    console.error("Error al obtener los detalles:", error);
+    tablaClicks.innerHTML = `
+        <tr><td colspan="2" class="text-center text-danger">Error al cargar los datos</td></tr>
+      `;
+  }
+}
+
+// 🟢 Abrir modal y cargar datos solo al hacer click
+verDetallesBtn.addEventListener("click", () => {
+  cargarDetalles();
+  const modal = new bootstrap.Modal(document.getElementById("modalDetalles"));
+  modal.show();
+});
+
+// Cargar el contador al entrar
+cargarContador();
+
 // Traer la colección "partidos" y mostrar en HTML
 db.collection("partidos")
   .get()
