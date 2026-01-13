@@ -98,148 +98,146 @@
         </div>
       </div>
     </section>
+    <!-- Contador de Clicks Inscribirse -->
+    <section class="container-fluid my-3 p-0">
+      <div class="container my-5">
+        <h4 class="mb-4">Panel de Inscribirse a Iniciales</h4>
+
+        <div class="card text-center p-4 shadow-sm">
+          <h5>Contador de clicks a Inscribirse a Iniciales</h5>
+          <p
+            id="contadorClicksIniciales"
+            class="fs-3 fw-bold text-success mb-3"
+          >
+            Cargando...
+          </p>
+          <button id="verDetallesIniciales" class="btn btn-primary">
+            Ver detalles
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Bootstrap -->
+      <div
+        class="modal fade"
+        id="modalDetallesIniciales"
+        tabindex="-1"
+        aria-labelledby="modalDetallesInicialesLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalDetallesInicialesLabel">
+                Detalles de clicks a Inscribirse a Iniciales
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Número de click</th>
+                      <th>Nombre del usuario</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaClicksIniciales">
+                    <tr>
+                      <td colspan="2" class="text-center text-muted">
+                        Cargando...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- Próximos partidos - FireBase -->
     <section class="container-fluid my-3 p-0">
       <!--Próximos partidos - Actualizar-->
-      <article class="border">
-        <h2 class="mt-2 text-center">Próximos Partidos</h2>
-        <div
-          class="container-fluid d-flex flex-row justify-content-center col-12 mt-2"
-        >
-          <!--Partidos - Actualizar-->
-          <div class="col-12 col-sm-4 my-2 border">
-            <h5 class="mt-2">Partidos</h5>
-            <form action="" id="formActualizarPartidoUno">
-              <div class="mt-2">
-                <h6>Fecha y Hora. Formato: DD/MM - HH:MM (18/08 - 21:00)</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="actualizarFyH"
-                />
-              </div>
-              <div class="mt-2">
-                <h6>Rival</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="actualizarRival"
-                />
-              </div>
-              <div class="mt-2">
-                <h6>Ubicación</h6>
-                <input
-                  type="text"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="inputGroup-sizing-sm"
-                  id="actualizarUbi"
-                />
-              </div>
-              <div class="d-flex justify-content-between mt-2 mb-3">
-                <button
-                  type="submit"
-                  class="btn btn-primary ms-1"
-                  value="actualizarUno"
-                >
-                  Actualizar uno
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  value="actualizarDos"
-                >
-                  Actualizar dos
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-primary me-1"
-                  value="actualizarTres"
-                >
-                  Actualizar tres
-                </button>
-              </div>
-            </form>
+      <section class="container my-4">
+        <h2 class="text-center mb-4">Administrar Partidos</h2>
+
+        <form id="formPartido" class="card p-4 shadow-sm">
+          <!-- ID oculto para edición -->
+          <input type="hidden" id="partidoId" />
+
+          <div class="mb-3">
+            <label class="form-label">Equipo Local</label>
+            <input type="text" id="equipoLocal" class="form-control" required />
           </div>
-        </div>
-      </article>
-      <!-- Próximos partidos - Guardar-->
-      <article class="border my-2">
-        <h4 class="my-3 text-center">Próximos Partidos</h4>
-        <form action="" id="formGuardarPartidos">
-          <div class="container-fluid col-12 d-flex flex-row">
-            <!--Partido 1 - Guardar-->
-            <div class="mt-2 col-4 border my-2">
-              <h5 id="partido1">Partido 1</h5>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Fecha y Hora:</h6></div>
-                <div><h6 id="guardarFyH1" class="datos"></h6></div>
-              </div>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Rival:</h6></div>
-                <div><h6 id="guardarRival1" class="datos"></h6></div>
-              </div>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Ubicación:</h6></div>
-                <div><h6 id="guardarUbi1" class="datos"></h6></div>
-              </div>
-            </div>
-            <!--Partido 2 - Guardar-->
-            <div class="mt-2 col-4 border my-2">
-              <h5 id="partido2">Partido 2</h5>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Fecha y Hora:</h6></div>
-                <div><h6 id="guardarFyH2" class="datos"></h6></div>
-              </div>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Rival:</h6></div>
-                <div><h6 id="guardarRival2" class="datos"></h6></div>
-              </div>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Ubicación:</h6></div>
-                <div><h6 id="guardarUbi2" class="datos"></h6></div>
-              </div>
-            </div>
-            <!--Partido 3 - Guardar-->
-            <div class="mt-2 col-4 border my-2">
-              <h5 id="partido3">Partido 3</h5>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Fecha y Hora:</h6></div>
-                <div><h6 id="guardarFyH3" class="datos"></h6></div>
-              </div>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Rival:</h6></div>
-                <div><h6 id="guardarRival3" class="datos"></h6></div>
-              </div>
-              <div class="mt-2 d-flex flex-column">
-                <div class="mr-2"><h6>Ubicación:</h6></div>
-                <div><h6 id="guardarUbi3" class="datos"></h6></div>
-              </div>
-            </div>
+
+          <div class="mb-3">
+            <label class="form-label">Equipo Visitante</label>
+            <input
+              type="text"
+              id="equipoVisitante"
+              class="form-control"
+              required
+            />
           </div>
-          <div class="container-fluid text-center my-3">
-            <button type="submit" class="btn btn-primary">Guardar</button>
+
+          <div class="mb-3">
+            <label class="form-label">Fecha y Hora</label>
+            <input
+              type="datetime-local"
+              id="fechaYHora"
+              class="form-control"
+              required
+            />
           </div>
-          <div class="container-fluid p-0 d-flex mensajesDeGuardar">
-            <div class="mt-2 col-4 border my-2">
-              <h6>Estado:</h6>
-              <h6 id="mensajeDeGuardar1"></h6>
-            </div>
-            <div class="mt-2 col-4 border my-2">
-              <h6>Estado:</h6>
-              <h6 id="mensajeDeGuardar2"></h6>
-            </div>
-            <div class="mt-2 col-4 border my-2">
-              <h6>Estado:</h6>
-              <h6 id="mensajeDeGuardar3"></h6>
-            </div>
+
+          <div class="mb-3">
+            <label class="form-label">Lugar</label>
+            <input type="text" id="lugar" class="form-control" required />
           </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            Guardar Partido
+          </button>
+
+          <p id="mensaje" class="text-center mt-3"></p>
         </form>
-      </article>
+      </section>
+    </section>
+    <section class="container my-5">
+      <h3 class="text-center mb-3">Listado de Partidos</h3>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Local</th>
+              <th>Visitante</th>
+              <th>Lugar</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPartidos">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
     </section>
     <!-- Noticias - FireBase -->
     <section class="sectionDeNoticias p-0">

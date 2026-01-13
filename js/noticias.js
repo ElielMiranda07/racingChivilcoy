@@ -1,33 +1,3 @@
-function filtrarNoticias(categoria) {
-  // Primero, desactivar todos los botones
-  document.querySelectorAll(".btn-custom").forEach((button) => {
-    button.classList.remove("filtroActivo");
-  });
-
-  // Luego, activar el botón seleccionado
-  const botonSeleccionado = document.querySelector(
-    `button[onclick="filtrarNoticias('${categoria}')"]`
-  );
-  if (botonSeleccionado) {
-    botonSeleccionado.classList.add("filtroActivo");
-  }
-
-  // Filtrar las noticias
-  const noticiaItem = document.querySelectorAll(".noticiaItem");
-
-  noticiaItem.forEach((item) => {
-    if (categoria === "todas") {
-      item.hidden = false;
-    } else {
-      if (item.classList.contains(categoria)) {
-        item.hidden = false;
-      } else {
-        item.hidden = true;
-      }
-    }
-  });
-}
-
 //Cambio de Footer + Cambio de Botones
 
 function adjustClassesBasedOnWidth() {
@@ -70,6 +40,29 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+let paginaActual = 1;
+const noticiasPorPagina = 9;
+let categoriaActual = "todas";
+
+function filtrarNoticias(categoria) {
+  categoriaActual = categoria;
+  paginaActual = 1;
+
+  document.querySelectorAll(".btn-custom").forEach((button) => {
+    button.classList.remove("filtroActivo");
+  });
+
+  const botonSeleccionado = document.querySelector(
+    `button[onclick="filtrarNoticias('${categoria}')"]`
+  );
+
+  if (botonSeleccionado) {
+    botonSeleccionado.classList.add("filtroActivo");
+  }
+
+  renderNoticias(); // ⭐
+}
+
 // Aquí consultas a Firestore
 
 // 1. Función para cargar y mostrar las noticias
@@ -79,36 +72,46 @@ async function cargarNoticias() {
   try {
     const snapshot = await noticiasRef.orderBy("fechaDeCarga", "desc").get();
     const contenedorNoticias = document.getElementById("contenedorNoticias");
+    contenedorNoticias.innerHTML = ""; // ⭐ limpiar
 
     snapshot.forEach((doc) => {
       const noticia = doc.data();
-      const modalId = `${doc.id}`;
-      const modalIdSinEspacios = modalId.replace(/\s+/g, "");
+      const modalId = doc.id.replace(/\s+/g, "");
 
-      const noticiaHTML = `<div class=" todas ${noticia.categoria} noticiaItem col-xl-3 col-lg-5 col-md-5 col-sm-11 col-11 m-2">
+      const noticiaHTML = `
+      <div class="todas ${noticia.categoria} noticiaItem col-xl-3 col-lg-5 col-md-5 col-sm-11 col-11 m-2">
         <div class="noticias d-flex flex-column align-items-center text-center">
-          <img class="mt-1" src="${noticia.imagenPrincipal}" alt="" />
+          <img class="mt-1" src="${noticia.imagenPrincipal}" alt="">
           <h2 class="mt-3 mb-3">${noticia.titulo}</h2>
           <p>${noticia.copete}</p>
-          <div>
-            <button type="button" class="btn btn-sm btn-custom mb-1 botonVerMas" data-bs-toggle="modal" data-bs-target="#${modalIdSinEspacios}">
-              Ver más
-            </button>
-            <div class="modal fade" id="${modalIdSinEspacios}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">${noticia.titulo}</h1>
-                  </div>
-                  <div class="modal-body clearfix">
-                    <img src="${noticia.imagenPrincipal}" alt="" class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
-                    <p>${noticia.cuerpoNoticia}</p>
-                    <img src="${noticia.imagenSecundaria}" class="col-md-6 float-md-start mb-3 me-md-3 p-0" alt="">
-                    <p>${noticia.cuerpoNoticia2}</p>
-                  </div>
-                  <div class="modal-footer d-flex justify-content-center">
-                    <button type="button" class="btn btn-sm btn-secondary botonVerMas" data-bs-dismiss="modal">Cerrar</button>
-                  </div>
+
+          <button type="button" class="btn btn-sm btn-custom mb-1 botonVerMas"
+            data-bs-toggle="modal" data-bs-target="#${modalId}">
+            Ver más
+          </button>
+
+          <div class="modal fade" id="${modalId}" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5">${noticia.titulo}</h1>
+                </div>
+
+                <div class="modal-body clearfix">
+                  <img src="${noticia.imagenPrincipal}"
+                       class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
+                  <p>${noticia.cuerpoNoticia}</p>
+
+                  <img src="${noticia.imagenSecundaria}"
+                       class="col-md-6 float-md-start mb-3 me-md-3 p-0">
+                  <p>${noticia.cuerpoNoticia2}</p>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-center">
+                  <button type="button" class="btn btn-sm btn-secondary"
+                          data-bs-dismiss="modal">
+                    Cerrar
+                  </button>
                 </div>
               </div>
             </div>
@@ -119,23 +122,87 @@ async function cargarNoticias() {
       contenedorNoticias.innerHTML += noticiaHTML;
     });
 
-    // 👇🏻 Aquí se abre el modal si hay parámetro en la URL
+    renderNoticias(); // ⭐ activar filtro + paginado
+
+    // ⭐ abrir modal desde URL
     const params = new URLSearchParams(window.location.search);
     const noticiaParam = params.get("noticia");
 
     if (noticiaParam) {
-      const modalId = noticiaParam.replace(/\s+/g, "");
-      const modalEl = document.getElementById(modalId);
+      const modalEl = document.getElementById(noticiaParam.replace(/\s+/g, ""));
       if (modalEl) {
-        const modal = new bootstrap.Modal(modalEl);
-        modal.show();
-      } else {
-        console.warn("No se encontró el modal con ID:", modalId);
+        new bootstrap.Modal(modalEl).show();
       }
     }
   } catch (error) {
-    console.error("Error al cargar las noticias: ", error);
+    console.error("Error al cargar noticias:", error);
   }
 }
+
+function renderNoticias() {
+  const noticias = Array.from(document.querySelectorAll(".noticiaItem"));
+
+  const filtradas = noticias.filter((n) => {
+    if (categoriaActual === "todas") return true;
+    return n.classList.contains(categoriaActual);
+  });
+
+  const totalPaginas = Math.ceil(filtradas.length / noticiasPorPagina);
+  const inicio = (paginaActual - 1) * noticiasPorPagina;
+  const fin = inicio + noticiasPorPagina;
+
+  noticias.forEach((n) => (n.hidden = true));
+
+  filtradas.slice(inicio, fin).forEach((n) => (n.hidden = false));
+
+  renderPaginacion(totalPaginas);
+}
+
+function renderPaginacion(totalPaginas) {
+  const pagDiv = document.getElementById("paginacion");
+  pagDiv.innerHTML = "";
+
+  if (totalPaginas <= 1) return;
+
+  // ⬅ Anterior
+  const prev = document.createElement("button");
+  prev.textContent = "«";
+  prev.className = "btn btn-sm btn-custom botonVerMas";
+  prev.disabled = paginaActual === 1;
+  prev.onclick = () => {
+    paginaActual--;
+    renderNoticias();
+    window.scrollTo({ top: 0, behavior: "smooth" }); // ⭐
+  };
+  pagDiv.appendChild(prev);
+
+  // Números
+  for (let i = 1; i <= totalPaginas; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className = `btn btn-sm ${
+      i === paginaActual ? "filtroActivo" : "botonVerMas"
+    }`;
+    btn.onclick = () => {
+      paginaActual = i;
+      renderNoticias();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    pagDiv.appendChild(btn);
+  }
+
+  // ➡ Siguiente
+  const next = document.createElement("button");
+  next.textContent = "»";
+  next.className = "btn btn-sm btn-custom";
+  next.disabled = paginaActual === totalPaginas;
+  next.onclick = () => {
+    paginaActual++;
+    renderNoticias();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  pagDiv.appendChild(next);
+}
+
 // Llamada a la función para cargar las noticias al cargar la página
 window.onload = cargarNoticias;

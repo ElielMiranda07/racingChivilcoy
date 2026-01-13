@@ -84,44 +84,9 @@ window.addEventListener("DOMContentLoaded", adjustClassesBasedOnWidth);
 
 //Carrusel Sponsors
 
-$(".owl-carousel").owlCarousel({
-  loop: true,
-  margin: 10,
-  responsiveClass: true,
-  items: 3,
-  autoplay: true,
-  autoplayTimeout: 3500,
-  autoplayHoverPause: false,
-  smartSpeed: 1000,
-  dots: false,
-  mouseDrag: false,
-  touchDrag: false,
-  responsive: {
-    0: {
-      items: 2,
-      nav: false,
-    },
-    576: {
-      items: 3,
-      nav: false,
-    },
-    768: {
-      items: 4,
-      nav: false,
-    },
-    992: {
-      items: 4,
-      nav: false,
-    },
-    1200: {
-      items: 5,
-      nav: false,
-    },
-    1440: {
-      items: 5,
-      nav: false,
-    },
-  },
+document.querySelectorAll(".sponsors-marquee").forEach((marquee) => {
+  const track = marquee.querySelector(".marquee-track");
+  track.innerHTML += track.innerHTML;
 });
 
 //Cobertor de Map

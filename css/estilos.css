@@ -129,10 +129,12 @@ main {
   color: #8bc4e5;
 }
 
-.contenedoresFixtures {
-  width: 50%;
-  border: 2px solid #131748;
-  border-radius: 5px;
+.table td {
+  color: #131748;
+}
+
+.table th {
+  color: #131748;
 }
 
 .partidosTamañoFuente {
@@ -241,32 +243,56 @@ main {
   padding-bottom: 1vh;
 }
 
-.owl-carousel {
-  z-index: 100;
-}
-
-.owl-carousel .item {
-  width: 50%;
+.article311 {
+  background-color: #ffffff;
+  display: block;
   height: auto;
-  margin-right: auto;
-  margin-left: auto;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
+  overflow: hidden;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
 }
 
-.owl-item.active {
-  margin-right: 0px !important;
-}
-
-.owl-carousel img {
+.sponsors-marquee {
+  overflow: hidden;
   width: 100%;
-  height: auto;
 }
 
-.owl-stage {
+.marquee-track {
   display: flex;
-  align-items: center;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.sponsors-marquee-big img {
+  height: 6vh;
+}
+
+.sponsors-marquee-mini img {
+  height: 3vh;
+}
+
+.sponsors-marquee-big .marquee-track {
+  gap: 8vw;
+  animation-duration: 77s;
+}
+
+.sponsors-marquee-mini .marquee-track {
+  gap: 5vw;
+  animation-duration: 45s;
+}
+
+.item img {
+  object-fit: contain;
+  display: block;
 }
 
 .article32 {
@@ -440,6 +466,7 @@ iframe {
 .owl-carouselP img {
   width: 100%;
   height: auto;
+  border-radius: 1vh;
 }
 
 footer {
@@ -573,6 +600,24 @@ footer svg {
     width: 20vw;
     height: auto;
   }
+
+  .sponsors-marquee-big img {
+    height: 8vh;
+  }
+
+  .sponsors-marquee-mini img {
+    height: 4vh;
+  }
+
+  .sponsors-marquee-big .marquee-track {
+    gap: 8vw;
+    animation-duration: 77s;
+  }
+
+  .sponsors-marquee-mini .marquee-track {
+    gap: 5vw;
+    animation-duration: 45s;
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -652,6 +697,24 @@ footer svg {
   .parrafoClub {
     font-size: 1.3rem;
   }
+
+  .sponsors-marquee-big img {
+    height: 12vh;
+  }
+
+  .sponsors-marquee-mini img {
+    height: 6vh;
+  }
+
+  .sponsors-marquee-big .marquee-track {
+    gap: 8vw;
+    animation-duration: 77s;
+  }
+
+  .sponsors-marquee-mini .marquee-track {
+    gap: 5vw;
+    animation-duration: 45s;
+  }
 }
 
 @media screen and (min-width: 992px) {
@@ -673,10 +736,62 @@ footer svg {
     height: 7vh;
     width: auto;
   }
+
+  .sponsors-marquee-big img {
+    height: 10vh;
+  }
+
+  .sponsors-marquee-mini img {
+    height: 5vh;
+  }
+
+  .sponsors-marquee-big .marquee-track {
+    gap: 8vw;
+    animation-duration: 77s;
+  }
+
+  .sponsors-marquee-mini .marquee-track {
+    gap: 5vw;
+    animation-duration: 45s;
+  }
 }
 
 @media screen and (min-width: 1200px) {
+  .sponsors-marquee-big img {
+    height: 8vh;
+  }
+
+  .sponsors-marquee-mini img {
+    height: 4vh;
+  }
+
+  .sponsors-marquee-big .marquee-track {
+    gap: 8vw;
+    animation-duration: 77s;
+  }
+
+  .sponsors-marquee-mini .marquee-track {
+    gap: 5vw;
+    animation-duration: 45s;
+  }
 }
 
 @media screen and (min-width: 1440px) {
+  .sponsors-marquee-big img {
+    height: 10vh;
+  }
+
+  .sponsors-marquee-mini img {
+    height: 5vh;
+  }
+
+  .sponsors-marquee-big .marquee-track {
+    gap: 8vw;
+    animation-duration: 77s;
+  }
+
+  .sponsors-marquee-mini .marquee-track {
+    gap: 5vw;
+    animation-duration: 45s;
+  }
 }

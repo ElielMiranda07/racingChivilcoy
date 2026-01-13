@@ -1,39 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-  document
-    .getElementById("formActualizarPartidoUno")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      const action = event.submitter.value; // Capturar qué botón fue presionado
-
-      if (action === "actualizarUno") {
-        let actualizarFyH = document.getElementById("actualizarFyH").value;
-        let actualizarRival = document.getElementById("actualizarRival").value;
-        let actualizarUbi = document.getElementById("actualizarUbi").value;
-
-        document.getElementById("guardarFyH1").textContent = actualizarFyH;
-        document.getElementById("guardarRival1").textContent = actualizarRival;
-        document.getElementById("guardarUbi1").textContent = actualizarUbi;
-      } else if (action === "actualizarDos") {
-        let actualizarFyH = document.getElementById("actualizarFyH").value;
-        let actualizarRival = document.getElementById("actualizarRival").value;
-        let actualizarUbi = document.getElementById("actualizarUbi").value;
-
-        document.getElementById("guardarFyH2").textContent = actualizarFyH;
-        document.getElementById("guardarRival2").textContent = actualizarRival;
-        document.getElementById("guardarUbi2").textContent = actualizarUbi;
-      } else {
-        let actualizarFyH = document.getElementById("actualizarFyH").value;
-        let actualizarRival = document.getElementById("actualizarRival").value;
-        let actualizarUbi = document.getElementById("actualizarUbi").value;
-
-        document.getElementById("guardarFyH3").textContent = actualizarFyH;
-        document.getElementById("guardarRival3").textContent = actualizarRival;
-        document.getElementById("guardarUbi3").textContent = actualizarUbi;
-      }
-    });
-});
-
 // Configura Firebase normalmente
 const firebaseConfig = {
   apiKey: "AIzaSyDCqe24Tu4-BKrxykDwTQvbDVIpoPBD8cY",
@@ -169,120 +133,219 @@ verDetallesBtn.addEventListener("click", () => {
 // Cargar el contador al entrar
 cargarContador();
 
-// Traer la colección "partidos" y mostrar en HTML
-db.collection("partidos")
-  .get()
-  .then((querySnapshot) => {
-    let contador = 1;
-    querySnapshot.forEach((doc) => {
+////////// Contador de Clicks Inscribirse ///////////
+
+const contadorElementIniciales = document.getElementById(
+  "contadorClicksIniciales"
+);
+const verDetallesBtnIniciales = document.getElementById("verDetallesIniciales");
+const tablaClicksIniciales = document.getElementById("tablaClicksIniciales");
+
+// 🟢 Mostrar el contador actual
+async function cargarContadorIniciales() {
+  try {
+    const contadorRef = db.collection("clicksInscribirse").doc("contador");
+    const doc = await contadorRef.get();
+
+    if (doc.exists) {
+      contadorElementIniciales.textContent = doc.data().ultimoNumero;
+    } else {
+      contadorElementIniciales.textContent = "0";
+    }
+  } catch (error) {
+    console.error("Error al obtener el contador:", error);
+    contadorElementIniciales.textContent = "Error";
+  }
+}
+
+// 🟢 Cargar los detalles al abrir el modal
+async function cargarDetallesIniciales() {
+  try {
+    tablaClicksIniciales.innerHTML = `
+        <tr><td colspan="2" class="text-center text-muted">Cargando...</td></tr>
+      `;
+
+    const snapshot = await db
+      .collection("clicksInscribirse")
+      .orderBy("numero", "desc")
+      .get();
+
+    // Filtrar el documento "contador" (no es un click)
+    const clicks = snapshot.docs.filter((doc) => doc.id !== "contador");
+
+    if (clicks.length === 0) {
+      tablaClicksIniciales.innerHTML = `
+          <tr><td colspan="2" class="text-center text-muted">No hay registros aún</td></tr>
+        `;
+      return;
+    }
+
+    // Construir tabla
+    let filas = "";
+    clicks.forEach((doc) => {
       const data = doc.data();
-
-      // Insertar datos en los contenedores del HTML
-      document.getElementById(`guardarFyH${contador}`).textContent = data.fyh;
-      document.getElementById(`guardarRival${contador}`).textContent =
-        data.rival;
-      document.getElementById(`guardarUbi${contador}`).textContent = data.ubi;
-
-      contador++; // Para pasar al siguiente contenedor
+      filas += `
+          <tr>
+            <td>${data.numero}</td>
+            <td>${data.nombre}</td>
+          </tr>
+        `;
     });
-  })
-  .catch((error) => {
-    console.error("Error obteniendo los datos: ", error);
-  });
 
-// Guardar en Base de Datos la actualización de partidos
-const form = document.getElementById("formGuardarPartidos");
-const mensajeDeGuardar1 = document.getElementById("mensajeDeGuardar1");
-const mensajeDeGuardar2 = document.getElementById("mensajeDeGuardar2");
-const mensajeDeGuardar3 = document.getElementById("mensajeDeGuardar3");
+    tablaClicksIniciales.innerHTML = filas;
+  } catch (error) {
+    console.error("Error al obtener los detalles:", error);
+    tablaClicksIniciales.innerHTML = `
+        <tr><td colspan="2" class="text-center text-danger">Error al cargar los datos</td></tr>
+      `;
+  }
+}
 
-form.addEventListener("submit", function (e) {
+// 🟢 Abrir modal y cargar datos solo al hacer click
+verDetallesBtnIniciales.addEventListener("click", () => {
+  cargarDetallesIniciales();
+  const modal = new bootstrap.Modal(
+    document.getElementById("modalDetallesIniciales")
+  );
+  modal.show();
+});
+
+// Cargar el contador al entrar
+cargarContadorIniciales();
+
+////////// Partidos ///////////
+
+const form = document.getElementById("formPartido");
+const mensaje = document.getElementById("mensaje");
+
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Obtener los valores del formulario
-  const fyh1 = document.getElementById("guardarFyH1").textContent;
-  const rival1 = document.getElementById("guardarRival1").textContent;
-  const ubi1 = document.getElementById("guardarUbi1").textContent;
-  const partidoId1 = document.getElementById("partido1").textContent;
+  const partidoId = document.getElementById("partidoId").value;
+  const equipoLocal = document.getElementById("equipoLocal").value.trim();
+  const equipoVisitante = document
+    .getElementById("equipoVisitante")
+    .value.trim();
+  const fechaInput = document.getElementById("fechaYHora").value;
+  const lugar = document.getElementById("lugar").value.trim();
 
-  const fyh2 = document.getElementById("guardarFyH2").textContent;
-  const rival2 = document.getElementById("guardarRival2").textContent;
-  const ubi2 = document.getElementById("guardarUbi2").textContent;
-  const partidoId2 = document.getElementById("partido2").textContent;
-
-  const fyh3 = document.getElementById("guardarFyH3").textContent;
-  const rival3 = document.getElementById("guardarRival3").textContent;
-  const ubi3 = document.getElementById("guardarUbi3").textContent;
-  const partidoId3 = document.getElementById("partido3").textContent;
-
-  // Validar Campos Llenos
-
-  if (
-    !fyh1 ||
-    !rival1 ||
-    !ubi1 ||
-    !partidoId1 ||
-    !fyh2 ||
-    !rival2 ||
-    !ubi2 ||
-    !partidoId2 ||
-    !fyh3 ||
-    !rival3 ||
-    !ubi3 ||
-    !partidoId3
-  ) {
-    mensajeDeGuardar1.innerHTML = "Rellenar todos los campos";
-    mensajeDeGuardar2.innerHTML = "Rellenar todos los campos";
-    mensajeDeGuardar3.innerHTML = "Rellenar todos los campos";
+  if (!equipoLocal || !equipoVisitante || !fechaInput || !lugar) {
+    mensaje.textContent = "Completar todos los campos";
+    mensaje.className = "text-danger";
     return;
   }
 
-  // Actualizar el documento en Firestore
-  db.collection("partidos")
-    .doc(partidoId1)
-    .set({
-      fyh: fyh1,
-      rival: rival1,
-      ubi: ubi1,
-    })
-    .then(() => {
-      mensajeDeGuardar1.innerHTML = " Actualizado correctamente.";
-    })
-    .catch((error) => {
-      mensajeDeGuardar1.innerHTML =
-        "Error actualizando el documento: " + JSON.stringify(error);
-    });
+  const fechaYHora = firebase.firestore.Timestamp.fromDate(
+    new Date(fechaInput)
+  );
 
-  db.collection("partidos")
-    .doc(partidoId2)
-    .set({
-      fyh: fyh2,
-      rival: rival2,
-      ubi: ubi2,
-    })
-    .then(() => {
-      mensajeDeGuardar2.innerHTML = " Actualizado correctamente.";
-    })
-    .catch((error) => {
-      mensajeDeGuardar2.innerHTML =
-        "Error actualizando el documento: " + JSON.stringify(error);
-    });
+  const data = {
+    equipoLocal,
+    equipoVisitante,
+    fechaYHora,
+    lugar,
+  };
 
-  db.collection("partidos")
-    .doc(partidoId3)
-    .set({
-      fyh: fyh3,
-      rival: rival3,
-      ubi: ubi3,
-    })
-    .then(() => {
-      mensajeDeGuardar3.innerHTML = "  Actualizado correctamente.";
-    })
-    .catch((error) => {
-      mensajeDeGuardar3.innerHTML =
-        "Error actualizando el documento: " + JSON.stringify(error);
-    });
+  try {
+    if (partidoId) {
+      // ✏️ Editar partido
+      await db.collection("partidos").doc(partidoId).update(data);
+      mensaje.textContent = "Partido actualizado correctamente";
+    } else {
+      // ➕ Crear partido
+      await db.collection("partidos").add(data);
+      mensaje.textContent = "Partido creado correctamente";
+    }
+
+    mensaje.className = "text-success";
+    form.reset();
+    document.getElementById("partidoId").value = "";
+  } catch (error) {
+    mensaje.textContent = "Error al guardar el partido";
+    mensaje.className = "text-danger";
+    console.error(error);
+  }
 });
+
+const tablaPartidos = document.getElementById("tablaPartidos");
+
+db.collection("partidos")
+  .orderBy("fechaYHora", "asc")
+  .onSnapshot((snapshot) => {
+    tablaPartidos.innerHTML = "";
+
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const fecha = data.fechaYHora.toDate();
+
+      const fechaStr = fecha.toLocaleDateString("es-AR");
+      const horaStr = fecha.toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${fechaStr}</td>
+        <td>${horaStr}</td>
+        <td>${data.equipoLocal}</td>
+        <td>${data.equipoVisitante}</td>
+        <td>${data.lugar}</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-warning me-1"
+            onclick="editarPartido('${doc.id}')">
+            Editar
+          </button>
+          <button class="btn btn-sm btn-danger"
+            onclick="eliminarPartido('${doc.id}')">
+            Eliminar
+          </button>
+        </td>
+      `;
+
+      tablaPartidos.appendChild(tr);
+    });
+  });
+
+function editarPartido(id) {
+  db.collection("partidos")
+    .doc(id)
+    .get()
+    .then((doc) => {
+      if (!doc.exists) return;
+
+      const data = doc.data();
+
+      document.getElementById("partidoId").value = doc.id;
+      document.getElementById("equipoLocal").value = data.equipoLocal;
+      document.getElementById("equipoVisitante").value = data.equipoVisitante;
+      document.getElementById("lugar").value = data.lugar;
+
+      const fecha = data.fechaYHora.toDate();
+      document.getElementById("fechaYHora").value = fecha
+        .toISOString()
+        .slice(0, 16);
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+}
+
+function eliminarPartido(id) {
+  const confirmar = confirm("¿Eliminar este partido?");
+  if (!confirmar) return;
+
+  db.collection("partidos")
+    .doc(id)
+    .delete()
+    .then(() => {
+      cargarListadoPartidos();
+      alert("Partido eliminado");
+    })
+    .catch((error) => {
+      console.error("Error eliminando partido:", error);
+    });
+}
 
 // FIN DE SECCIÍON PARTIDOS
 
