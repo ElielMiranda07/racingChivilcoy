@@ -32,9 +32,9 @@
       <h2 class="titulo">- Administrador</h2>
     </section>
     <!-- Contador de Clicks WhatsApp -->
-    <section class="container-fluid my-3 p-0">
+    <section class="sectionClicksWahtsapp container-fluid my-3 p-0">
       <div class="container my-5">
-        <h4 class="mb-4">Panel de Asociación</h4>
+        <h2 class="text-center mb-4">Panel de Asociación</h2>
 
         <div class="card text-center p-4 shadow-sm">
           <h5>Contador de clicks a WhatsApp</h5>
@@ -99,9 +99,9 @@
       </div>
     </section>
     <!-- Contador de Clicks Inscribirse -->
-    <section class="container-fluid my-3 p-0">
+    <section class="sectionInscribirse container-fluid my-3 p-0">
       <div class="container my-5">
-        <h4 class="mb-4">Panel de Inscribirse a Iniciales</h4>
+        <h2 class="text-center mb-4">Panel de Inscribirse a Iniciales</h2>
 
         <div class="card text-center p-4 shadow-sm">
           <h5>Contador de clicks a Inscribirse a Iniciales</h5>
@@ -171,7 +171,7 @@
       </div>
     </section>
     <!-- Próximos partidos - FireBase -->
-    <section class="container-fluid my-3 p-0">
+    <section class="sectionPartidos container-fluid my-3 p-0">
       <!--Próximos partidos - Actualizar-->
       <section class="container my-4">
         <h2 class="text-center mb-4">Administrar Partidos</h2>
@@ -221,22 +221,39 @@
     <section class="container my-5">
       <h3 class="text-center mb-3">Listado de Partidos</h3>
 
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
-          <thead class="table-dark">
-            <tr>
-              <th>Fecha</th>
-              <th>Hora</th>
-              <th>Local</th>
-              <th>Visitante</th>
-              <th>Lugar</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tablaPartidos">
-            <!-- JS -->
-          </tbody>
-        </table>
+      <div class="container-fluid d-flex justify-content-center">
+        <button
+          class="btn btn-outline-primary mb-3"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapsePartidos"
+          aria-expanded="false"
+          aria-controls="collapsePartidos"
+          id="btnTogglePartidos"
+        >
+          Ver partidos
+        </button>
+      </div>
+
+      <div class="collapse" id="collapsePartidos">
+        <div class="card card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Local</th>
+                  <th>Visitante</th>
+                  <th>Ubicación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyPartidos">
+                <!-- Firestore inserta filas acá -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </section>
     <!-- Noticias - FireBase -->
@@ -435,7 +452,34 @@
         <div
           class="container-fluid row align-items-center p-0 contenedorNoticias"
           id="divContenedorNoticias"
-        ></div>
+        >
+          <div class="modal fade" id="modalNoticia" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalTitulo"></h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                  ></button>
+                </div>
+
+                <div class="modal-body">
+                  <img id="modalImgPrincipal" class="img-fluid mb-3" />
+                  <p id="modalCuerpo1"></p>
+                  <img id="modalImgSecundaria" class="img-fluid my-3" />
+                  <p id="modalCuerpo2"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center my-4">
+          <button id="btnCargarMas" class="btn btn-outline-primary">
+            Cargar más noticias
+          </button>
+        </div>
       </article>
     </section>
     <!-- Productos - FireBase -->
@@ -572,6 +616,11 @@
           class="row align-items-center justify-content-evenly"
           id="divContenedorProductos"
         ></div>
+        <div class="text-center my-4">
+          <button id="btnCargarMasProductos" class="btn btn-outline-primary">
+            Cargar más productos
+          </button>
+        </div>
       </article>
       <!-- Modal para modificar producto -->
       <div

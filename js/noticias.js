@@ -79,7 +79,9 @@ async function cargarNoticias() {
       const modalId = doc.id.replace(/\s+/g, "");
 
       const noticiaHTML = `
-      <div class="todas ${noticia.categoria} noticiaItem col-xl-3 col-lg-5 col-md-5 col-sm-11 col-11 m-2">
+      <div class="todas ${
+        noticia.categoria
+      } noticiaItem col-xl-3 col-lg-5 col-md-5 col-sm-11 col-11 m-2">
         <div class="noticias d-flex flex-column align-items-center text-center">
           <img class="mt-1" src="${noticia.imagenPrincipal}" alt="">
           <h2 class="mt-3 mb-3">${noticia.titulo}</h2>
@@ -102,9 +104,17 @@ async function cargarNoticias() {
                        class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
                   <p>${noticia.cuerpoNoticia}</p>
 
+                  ${
+                    noticia.imagenSecundaria
+                      ? `
                   <img src="${noticia.imagenSecundaria}"
-                       class="col-md-6 float-md-start mb-3 me-md-3 p-0">
+                    class="col-md-6 float-md-start mb-3 me-md-3 p-0">
                   <p>${noticia.cuerpoNoticia2}</p>
+                  `
+                      : `
+                  <p class="mt-3">${noticia.cuerpoNoticia2}</p>
+                  `
+                  }
                 </div>
 
                 <div class="modal-footer d-flex justify-content-center">

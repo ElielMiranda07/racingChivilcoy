@@ -189,17 +189,28 @@ async function cargarUltimasNoticias() {
                     <div class="modal-dialog modal-lg modal-dialog-scrollable">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h1 class="modal-title fs-5 index" id="exampleModalLabel">${noticia.titulo}</h1>
+                          <h1 class="modal-title fs-5 index" id="exampleModalLabel">${
+                            noticia.titulo
+                          }</h1>
                         </div>
                         <div class="modal-body clearfix textoModalNoticias">
-                          <img src="${noticia.imagenPrincipal}" alt="" class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
+                          <img src="${
+                            noticia.imagenPrincipal
+                          }" alt="" class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
                           <p>
                             ${noticia.cuerpoNoticia}
                           </p>
-                          <img src="${noticia.imagenSecundaria}" class="col-md-6 float-md-start mb-3 me-md-3 p-0" alt=""/>
-                          <p>
-                            ${noticia.cuerpoNoticia2}
-                          </p>
+                           ${
+                             noticia.imagenSecundaria
+                               ? `
+                  <img src="${noticia.imagenSecundaria}"
+                    class="col-md-6 float-md-start mb-3 me-md-3 p-0">
+                  <p>${noticia.cuerpoNoticia2}</p>
+                  `
+                               : `
+                  <p class="mt-3">${noticia.cuerpoNoticia2}</p>
+                  `
+                           }
                         </div>
                         <div class="modal-footer d-flex justify-content-center">
                           <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Cerrar</button>

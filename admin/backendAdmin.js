@@ -267,12 +267,12 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-const tablaPartidos = document.getElementById("tablaPartidos");
+const tbodyPartidos = document.getElementById("tbodyPartidos");
 
 db.collection("partidos")
   .orderBy("fechaYHora", "asc")
   .onSnapshot((snapshot) => {
-    tablaPartidos.innerHTML = "";
+    tbodyPartidos.innerHTML = "";
 
     snapshot.forEach((doc) => {
       const data = doc.data();
@@ -304,7 +304,7 @@ db.collection("partidos")
         </td>
       `;
 
-      tablaPartidos.appendChild(tr);
+      tbodyPartidos.appendChild(tr);
     });
   });
 
@@ -346,6 +346,17 @@ function eliminarPartido(id) {
       console.error("Error eliminando partido:", error);
     });
 }
+
+const btn = document.getElementById("btnTogglePartidos");
+const collapse = document.getElementById("collapsePartidos");
+
+collapse.addEventListener("shown.bs.collapse", () => {
+  btn.textContent = "Ocultar partidos";
+});
+
+collapse.addEventListener("hidden.bs.collapse", () => {
+  btn.textContent = "Ver partidos";
+});
 
 // FIN DE SECCIÍON PARTIDOS
 
@@ -441,91 +452,97 @@ async function eliminarNoticia(idDocumento) {
   }
 }
 
-// 1. Función para cargar y mostrar las noticias
+let ultimoDoc = null;
+const LIMITE_NOTICIAS = 6;
+
 async function cargarNoticias() {
   const noticiasRef = firebase.firestore().collection("noticias");
+  const contenedorNoticias = document.getElementById("divContenedorNoticias");
 
   try {
-    // Obtener todos los documentos en la colección "noticias"
-    const snapshot = await noticiasRef.get();
+    let query = noticiasRef
+      .orderBy("fechaDeCarga", "desc")
+      .limit(LIMITE_NOTICIAS);
 
-    // Contenedor donde se mostrarán las noticias
-    const contenedorNoticias = document.getElementById("divContenedorNoticias");
+    if (ultimoDoc) {
+      query = query.startAfter(ultimoDoc);
+    }
 
-    // Recorrer cada documento y crear la plantilla HTML
+    const snapshot = await query.get();
+
+    if (snapshot.empty) {
+      document.getElementById("btnCargarMas").style.display = "none";
+      return;
+    }
+
+    ultimoDoc = snapshot.docs[snapshot.docs.length - 1];
+
     snapshot.forEach((doc) => {
       const noticia = doc.data();
-      const modalId = `${doc.id}`;
-      const modalIdSinEspacios = modalId.replace(/\s+/g, "");
-      const docId = doc.id; // Obtener el ID del documento
+      const modalId = doc.id.replace(/\s+/g, "");
+      const docId = doc.id;
 
-      // 2. Plantilla HTML para cada noticia
-      const noticiaHTML = `<div class=" todas ${noticia.categoria} noticiaItem col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 my-2">
-            <div class="noticias d-flex flex-column align-items-center text-center">
-              <img src="${noticia.imagenPrincipal}" alt="" />
-              <h2 class="mt-3 mb-3">${noticia.titulo}</h2>
-              <p>
-              ${noticia.copete}
-              </p>
-              <div>
-                <div>
-                  <button type="button" class="btn btn-sm btn-custom botonVerMas" data-bs-toggle="modal" data-bs-target="#${modalIdSinEspacios}">
-                    Ver más
-                  </button>
-                </div>
-                <div>
-                  <!-- Botón para eliminar la noticia -->
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-danger mt-2"
-                    onclick="eliminarNoticia('${docId}')">
-                    Eliminar
-                  </button>
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-info mt-2"
-                    onclick="compartirNoticia('${modalIdSinEspacios}')">
-                    Compartir esta noticia
-                  </button>
-                </div>
-                <div class="modal fade" id="${modalIdSinEspacios}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">${noticia.titulo}</h1>
-                      </div>
-                      <div class="modal-body clearfix">
-                        <img src="${noticia.imagenPrincipal}" alt="" class="imagenModal col-md-6 float-md-end mb-3 ms-md-3 p-0">
-                        <p>
-                          ${noticia.cuerpoNoticia}
-                        </p>
-                        <img src="${noticia.imagenSecundaria}" class="col-md-6 float-md-start mb-3 me-md-3 p-0" alt="">
-                        <p>
-                          ${noticia.cuerpoNoticia2}
-                        </p>
-                      </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                      <button type="button" class="btn btn-sm btn-secondary botonVerMas" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      const noticiaHTML = `
+        <div class="todas ${noticia.categoria} noticiaItem col-xl-3 col-lg-6 col-md-6 col-sm-12 my-2">
+          <div class="noticias d-flex flex-column align-items-center text-center">
+            <img src="${noticia.imagenPrincipal}" alt="">
+            <h2 class="mt-3 mb-3">${noticia.titulo}</h2>
+            <p>${noticia.copete}</p>
+
+            <button
+              class="btn btn-sm btn-custom botonVerMas"
+              onclick="abrirModalNoticia('${doc.id}')">
+                Ver más
+            </button>
+
+            <button class="btn btn-sm btn-danger mt-2"
+              onclick="eliminarNoticia('${docId}')">
+              Eliminar
+            </button>
+
+            <button class="btn btn-sm btn-info mt-2"
+              onclick="compartirNoticia('${modalId}')">
+              Compartir esta noticia
+            </button>
           </div>
-        </div>`;
-      contenedorNoticias.innerHTML += noticiaHTML;
+        </div>
+      `;
+
+      contenedorNoticias.insertAdjacentHTML("beforeend", noticiaHTML);
     });
   } catch (error) {
-    console.error("Error al cargar las noticias: ", error);
+    console.error("Error al cargar noticias:", error);
   }
 }
 
-// Llamada a la función para cargar las noticias al cargar la página
-window.onload = function () {
+document.getElementById("btnCargarMas").addEventListener("click", () => {
+  cargarNoticias();
+});
+
+window.onload = () => {
   cargarNoticias();
 };
+
+async function abrirModalNoticia(idNoticia) {
+  const doc = await firebase
+    .firestore()
+    .collection("noticias")
+    .doc(idNoticia)
+    .get();
+
+  if (!doc.exists) return;
+
+  const noticia = doc.data();
+
+  document.getElementById("modalTitulo").textContent = noticia.titulo;
+  document.getElementById("modalImgPrincipal").src = noticia.imagenPrincipal;
+  document.getElementById("modalCuerpo1").textContent = noticia.cuerpoNoticia;
+  document.getElementById("modalImgSecundaria").src = noticia.imagenSecundaria;
+  document.getElementById("modalCuerpo2").textContent = noticia.cuerpoNoticia2;
+
+  const modal = new bootstrap.Modal(document.getElementById("modalNoticia"));
+  modal.show();
+}
 
 function compartirNoticia(modalId) {
   // Reemplazá esto con la URL real de tu sitio
@@ -802,53 +819,81 @@ for (let i = 1; i <= 6; i++) {
     }
   });
 }
+
+let ultimoProductoDoc = null;
+const LIMITE_PRODUCTOS = 8;
+let indexProducto = 0;
+
 // Función para cargar y mostrar los productos
 async function cargarProductos() {
   const productosRef = firebase.firestore().collection("productos");
+  const contenedorProductos = document.getElementById("divContenedorProductos");
 
   try {
-    const snapshot = await productosRef.get();
-    const contenedorProductos = document.getElementById(
-      "divContenedorProductos"
-    );
-    let modalHTML = "",
-      index = 0;
+    let query = productosRef.limit(LIMITE_PRODUCTOS);
+
+    if (ultimoProductoDoc) {
+      query = query.startAfter(ultimoProductoDoc);
+    }
+
+    const snapshot = await query.get();
+
+    if (snapshot.empty) {
+      document.getElementById("btnCargarMasProductos").style.display = "none";
+      return;
+    }
+
+    ultimoProductoDoc = snapshot.docs[snapshot.docs.length - 1];
+
+    let modalHTML = "";
 
     snapshot.forEach((doc) => {
       const producto = doc.data();
-      const modalId = `imageModal${index}`;
+      const modalId = `imageModal${indexProducto}`;
       const docId = doc.id;
 
-      contenedorProductos.innerHTML += `
+      contenedorProductos.insertAdjacentHTML(
+        "beforeend",
+        `
         <div class="col-xl-2 col-lg-4 col-md-5 col-5 my-1 producto">
           <div class="d-flex flex-column align-items-center">
             <img src="${producto.imagen}" alt="" class="mt-2">
             <h4 class="mt-2">${producto.titulo}</h4>
             <p class="mt-1 text-center">${producto.descripcion}</p>
             <h5 class="mt-1">$${producto.precio}</h5>
-            <div>
-              <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#${modalId}">Ver más</button>
-            </div>
+
+            <button class="btn btn-sm btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#${modalId}">
+              Ver más
+            </button>
+
             <div class="my-1">
-              <button type="button" class="btn btn-sm btn-success mt-2" onclick="modificarProducto('${docId}')">Modificar</button>
-              <button type="button" class="btn btn-sm btn-danger mt-2" onclick="eliminarProducto('${docId}')">Eliminar</button>
+              <button class="btn btn-sm btn-success mt-2"
+                onclick="modificarProducto('${docId}')">
+                Modificar
+              </button>
+              <button class="btn btn-sm btn-danger mt-2"
+                onclick="eliminarProducto('${docId}')">
+                Eliminar
+              </button>
             </div>
           </div>
         </div>
-      `;
+        `
+      );
 
       modalHTML += `
-        <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="imageModalLabel${index}" aria-hidden="true">
+        <div class="modal fade" id="${modalId}" tabindex="-1">
           <div class="modal-dialog modal-xl">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel${index}">${
-        producto.titulo
-      }</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title">${producto.titulo}</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
               </div>
               <div class="modal-body text-center">
                 <img src="${producto.imagen}" class="img-fluid mb-2"><br>
+
                 ${
                   producto.imagen2
                     ? `<img src="${producto.imagen2}" class="img-fluid mb-2"><br>`
@@ -877,16 +922,23 @@ async function cargarProductos() {
               </div>
             </div>
           </div>
-        </div>`;
-      index++;
+        </div>
+      `;
+
+      indexProducto++;
     });
 
-    // Agregamos todos los modales al final del body
     document.body.insertAdjacentHTML("beforeend", modalHTML);
   } catch (error) {
     console.error("Error al cargar productos:", error);
   }
 }
+
+document
+  .getElementById("btnCargarMasProductos")
+  .addEventListener("click", () => {
+    cargarProductos();
+  });
 
 // Inicializar los eventos en miniaturas al cargar el DOM
 document.addEventListener("DOMContentLoaded", function () {

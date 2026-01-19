@@ -51,6 +51,18 @@ main {
   height: auto;
 }
 
+.sectionClicksWahtsapp {
+  border-top: 5px solid #131748;
+}
+
+.sectionInscribirse {
+  border-top: 5px solid #131748;
+}
+
+.sectionPartidos {
+  border-top: 5px solid #131748;
+}
+
 .sectionDeNoticias {
   border-top: 5px solid #131748;
 }
