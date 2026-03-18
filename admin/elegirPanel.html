@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Backend-Registro</title>
+    <title>Elegir Panel</title>
     <link
       rel="canonical"
-      href="https://www.racingclubchivilcoy.com.ar/admin/backend.html"
+      href="https://www.racingclubchivilcoy.com.ar/admin/elegitPanel.html"
     />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
@@ -21,12 +21,25 @@
   </head>
   <body>
     <section class="container-fluid d-flex justify-content-center my-3">
-      <h2 class="my-4">Racing de Chivilcoy - Panel de Administradores</h2>
+      <h2 class="my-4">Racing de Chivilcoy - Paneles de Administradores</h2>
     </section>
     <section class="container-fluid d-flex flex-column align-items-center my-3">
       <div class="my-4">
-        <button class="btn btn-primary" id="loginGoogle">
-          Iniciar sesión con Google
+        <button
+          class="btn btn-primary"
+          id="elegirWeb"
+          onclick="location.href = './backend.admin.html'"
+        >
+          Web
+        </button>
+      </div>
+      <div class="my-4">
+        <button
+          class="btn btn-primary"
+          id="elegirApp"
+          onclick="location.href = './app.backend.html'"
+        >
+          App
         </button>
       </div>
     </section>
@@ -38,6 +51,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="./backend.js"></script>
+    <script src="./elegirPanel.js"></script>
   </body>
 </html>

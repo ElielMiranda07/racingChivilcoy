@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const paymentId = params.get("payment_id");
+
+      console.log("Payment ID:", paymentId);
+
+      if (paymentId) {
+        fetch(
+          "https://us-central1-reactss-26771.cloudfunctions.net/confirmarPago",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ paymentId }),
+          },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("Respuesta:", data);
+
+            if (data.success) {
+              document.body.innerHTML = "<h2>✅ Pago confirmado</h2>";
+            } else {
+              document.body.innerHTML = "<h2>⏳ Pago pendiente</h2>";
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            document.body.innerHTML = "<h2>❌ Error al confirmar pago</h2>";
+          });
+      }
+    </script>
+  </body>
+</html>

@@ -72,7 +72,7 @@ function checkUserRole(user) {
         const userData = doc.data();
         if (userData.role === "admin") {
           // Redirigir a la página de administración si es admin
-          window.location.href = "./backend.admin.html";
+          window.location.href = "./elegirPanel.html";
         } else {
           // Si no es admin, mostrar mensaje y cerrar sesión
           alert("No tienes permisos para acceder a esta página.");
