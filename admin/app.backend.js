@@ -13,22 +13,22 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
+const functions = firebase.app().functions("us-central1");
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+let usuarioActual = null;
 
 firebase.auth().onAuthStateChanged((user) => {
   if (!user) {
     console.log("No hay usuario aún");
+    usuarioActual = null;
     return;
   }
 
   console.log("Usuario listo:", user.uid);
 
-  const functions = firebase.functions();
-  const crearUsuarioFunction = functions.httpsCallable("crearUsuarioSocio");
-
-  window.crearUsuarioFunction = crearUsuarioFunction;
+  usuarioActual = user; // 🔥 CLAVE
 });
-
-let usuarioActual = null;
 
 function esperarAuth() {
   return new Promise((resolve) => {
@@ -96,6 +96,10 @@ function mostrar(modulo) {
 
   if (modulo === "buscar") {
     cargarBuscadorSocios();
+  }
+
+  if (modulo === "precios") {
+    cargarModuloPrecios();
   }
 }
 
@@ -737,6 +741,44 @@ Mostrar preview
 `;
 
 ////////////////////// Buscar y editar SOCIOS //////////////////////
+////////////////////// Buscar y editar SOCIOS //////////////////////
+
+////////////////////// CACHE ACTIVIDADES //////////////////////
+
+let cache_actividades = {};
+
+async function cargarActividadesCache() {
+  if (Object.keys(cache_actividades).length > 0) return;
+
+  const actividadesSnap = await db
+    .collection("actividades")
+    .where("activa", "==", true)
+    .get();
+
+  const categoriasSnap = await db.collectionGroup("categorias").get();
+
+  // cargar actividades
+  actividadesSnap.forEach((doc) => {
+    cache_actividades[doc.id] = {
+      nombre: doc.data().nombre,
+      categorias: [],
+    };
+  });
+
+  // cargar categorias
+  categoriasSnap.forEach((doc) => {
+    const actividadId = doc.ref.parent.parent.id;
+
+    if (!cache_actividades[actividadId]) return;
+
+    cache_actividades[actividadId].categorias.push({
+      id: doc.id,
+      ...doc.data(),
+    });
+  });
+}
+
+////////////////////// BUSCADOR SOCIOS //////////////////////
 
 function cargarBuscadorSocios() {
   document.getElementById("buscar").innerHTML = `
@@ -746,23 +788,50 @@ function cargarBuscadorSocios() {
 <input
 id="busquedaSocio"
 class="form-control"
-placeholder="Buscar por nombre o DNI"
-oninput="buscarSocios()">
+placeholder="Buscar por DNI"
+inputmode="numeric"
+pattern="[0-9]*"
+oninput="debounceBuscar()">
 
 <div id="resultado" class="mt-3"></div>
 
 `;
 }
 
-async function buscarSocios() {
-  const texto = document.getElementById("busquedaSocio").value.toLowerCase();
+let timerBusqueda;
 
-  if (texto.length < 2) {
+function debounceBuscar() {
+  clearTimeout(timerBusqueda);
+
+  timerBusqueda = setTimeout(() => {
+    buscarSocioPorDni();
+  }, 300);
+}
+
+async function buscarSocioPorDni() {
+  const dni = document.getElementById("busquedaSocio").value.trim();
+
+  if (dni.length < 5) {
     document.getElementById("resultado").innerHTML = "";
     return;
   }
 
-  const snapshot = await db.collection("socios").get();
+  const snapshot = await db
+    .collection("socios")
+    .where("dni", ">=", dni)
+    .where("dni", "<=", dni + "\uf8ff")
+    .limit(10)
+    .get();
+
+  if (snapshot.empty) {
+    document.getElementById("resultado").innerHTML = `
+      <div class="alert alert-warning">
+        No se encontró ningún socio
+      </div>
+    `;
+
+    return;
+  }
 
   let html = `<div class="list-group">`;
 
@@ -770,11 +839,7 @@ async function buscarSocios() {
     const socio = doc.data();
     const id = doc.id;
 
-    if (
-      socio.nombre.toLowerCase().includes(texto) ||
-      socio.dni.includes(texto)
-    ) {
-      html += `
+    html += `
 
 <div class="list-group-item d-flex justify-content-between align-items-center">
 
@@ -784,7 +849,7 @@ async function buscarSocios() {
 
 DNI: ${socio.dni}<br>
 
-Estado: ${socio.estadoCuota}
+Estado: ${socio.estadoCuota || "sin estado"}
 
 </div>
 
@@ -799,7 +864,6 @@ Editar
 </div>
 
 `;
-    }
   });
 
   html += `</div>`;
@@ -807,36 +871,117 @@ Editar
   document.getElementById("resultado").innerHTML = html;
 }
 
+////////////////////// EDITAR SOCIO //////////////////////
+
 async function editarSocio(id) {
   mostrar("editar");
 
-  const doc = await db.collection("socios").doc(id).get();
+  await cargarActividadesCache();
 
+  const doc = await db.collection("socios").doc(id).get();
   const socio = doc.data();
+
+  let actividadesHTML = "";
+
+  Object.entries(cache_actividades).forEach(([actId, act]) => {
+    const activo =
+      socio.actividades &&
+      socio.actividades[actId] &&
+      socio.actividades[actId].activo;
+
+    const checked = activo ? "checked" : "";
+
+    let categoriasHTML = "";
+
+    act.categorias.forEach((cat) => {
+      const seleccionado =
+        socio.actividades &&
+        socio.actividades[actId] &&
+        socio.actividades[actId].categoria === cat.id
+          ? "checked"
+          : "";
+
+      categoriasHTML += `
+
+<div class="form-check ms-3">
+
+<input 
+class="form-check-input"
+type="radio"
+name="cat-${actId}"
+value="${cat.id}"
+${seleccionado}>
+
+<label class="form-check-label">
+${cat.nombre}
+</label>
+
+</div>
+
+`;
+    });
+
+    actividadesHTML += `
+
+<div class="border p-2 mb-2">
+
+<div class="form-check">
+
+<input 
+class="form-check-input actividad-check"
+type="checkbox"
+value="${actId}"
+id="act-${actId}"
+${checked}>
+
+<label class="form-check-label">
+${act.nombre}
+</label>
+
+</div>
+
+${categoriasHTML}
+
+</div>
+
+`;
+  });
 
   document.getElementById("editar").innerHTML = `
 
 <h2>Editar socio</h2>
 
+<label>Nombre</label>
 <input id="nombreEdit"
 class="form-control"
 value="${socio.nombre}">
 
+<label class="mt-3">Estado cuota</label>
 <select id="estadoEdit"
-class="form-control mt-2">
+class="form-control">
 
 <option value="al_dia">Al día</option>
-
 <option value="vencida">Vencida</option>
 
 </select>
 
-<input id="vencimientoEdit"
-class="form-control mt-2"
-type="date"
-value="${socio.vencimientoCuota}">
+<label class="mt-3">Grupo familiar</label>
 
-<button class="btn btn-success mt-2"
+<select id="grupoFamiliarEdit" class="form-control">
+
+<option value="">Sin grupo</option>
+<option value="3">3 integrantes</option>
+<option value="4">4 integrantes</option>
+<option value="5">5 integrantes</option>
+<option value="6">6 integrantes</option>
+
+</select>
+
+<h4 class="mt-4">Actividades</h4>
+
+${actividadesHTML}
+
+<button class="btn btn-success mt-3"
 onclick="guardarSocio('${id}')">
 
 Guardar
@@ -844,9 +989,35 @@ Guardar
 </button>
 
 `;
+
+  document.getElementById("estadoEdit").value = socio.estadoCuota || "al_dia";
+
+  document.getElementById("grupoFamiliarEdit").value =
+    socio.grupoFamiliar || "";
 }
 
+////////////////////// GUARDAR SOCIO //////////////////////
+
 async function guardarSocio(id) {
+  const checks = document.querySelectorAll(".actividad-check");
+
+  let actividades = {};
+
+  checks.forEach((check) => {
+    if (check.checked) {
+      const actId = check.value;
+
+      const radio = document.querySelector(
+        `input[name="cat-${actId}"]:checked`,
+      );
+
+      actividades[actId] = {
+        activo: true,
+        categoria: radio ? radio.value : null,
+      };
+    }
+  });
+
   await db
     .collection("socios")
     .doc(id)
@@ -855,7 +1026,10 @@ async function guardarSocio(id) {
 
       estadoCuota: document.getElementById("estadoEdit").value,
 
-      vencimientoCuota: document.getElementById("vencimientoEdit").value,
+      grupoFamiliar:
+        Number(document.getElementById("grupoFamiliarEdit").value) || null,
+
+      actividades: actividades,
 
       ultimaActualizacion: firebase.firestore.Timestamp.now(),
     });
@@ -863,4 +1037,403 @@ async function guardarSocio(id) {
   await recalcularEstadisticas();
 
   alert("Socio actualizado");
+
+  // volver automáticamente al buscador
+  mostrar("buscar");
+  cargarBuscadorSocios();
+}
+
+////////////////////// MODULO PRECIOS //////////////////////
+
+///////////////////// CALCULO DE DEUDAS (((MANUAL))) /////////////////////
+
+function getUsuarioSeguro() {
+  return new Promise((resolve) => {
+    const user = firebase.auth().currentUser;
+
+    if (user) {
+      resolve(user);
+      return;
+    }
+
+    const unsub = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        unsub();
+        resolve(user);
+      }
+    });
+  });
+}
+
+const calcularDeudas = functions.httpsCallable("calcularDeudas");
+
+async function ejecutarCalculo() {
+  const btn = document.getElementById("btnCalcular");
+  const estado = document.getElementById("estadoCalculo");
+
+  try {
+    // 🔥 USAR USUARIO SEGURO
+    const user = await getUsuarioSeguro();
+
+    btn.disabled = true;
+    btn.innerText = "Calculando...";
+
+    estado.innerHTML = `<span class="text-warning">Procesando...</span>`;
+
+    const res = await calcularDeudas();
+
+    console.log(res.data);
+
+    estado.innerHTML = `
+      <span class="text-success">
+        ✔ ${res.data.procesados || 0} deudas calculadas correctamente
+      </span>
+    `;
+  } catch (e) {
+    console.error(e);
+
+    if (e.code === "unauthenticated") {
+      estado.innerHTML = `<span class="text-danger">❌ Usuario no autenticado</span>`;
+    } else if (e.code === "permission-denied") {
+      estado.innerHTML = `<span class="text-danger">❌ No tenés permisos</span>`;
+    } else {
+      estado.innerHTML = `<span class="text-danger">❌ Error al calcular</span>`;
+    }
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "Calcular deuda de todos los socios";
+  }
+}
+
+let CACHE_ACTIVIDADES = {};
+let CACHE_CATEGORIAS = {};
+
+async function cargarModuloPrecios() {
+  const contenedor = document.getElementById("precios");
+
+  contenedor.innerHTML = `
+  
+  <h3>Calcular Deudas</h3>
+  <div class="card p-3 mt-4">
+  
+
+    <button 
+      class="btn btn-danger"
+      onclick="ejecutarCalculo()"
+      id="btnCalcular">
+
+      Calcular deuda de todos los socios
+
+    </button>
+
+    <div id="estadoCalculo" class="mt-2"></div>
+  </div>
+
+  <h4>Configuración</h4>
+
+  <div class="mb-4">
+    <label>Cuota social</label>
+
+    <input type="number" id="cuotaSocial" class="form-control mb-2">
+
+    <button class="btn btn-success" onclick="guardarCuota()">
+      Actualizar cuota
+    </button>
+  </div>
+
+  <hr>
+
+  <h5>Actividades</h5>
+
+  <div id="listaActividades"></div>
+
+  <hr>
+
+  <h5>Nueva actividad</h5>
+
+  <input 
+    type="text"
+    id="nuevaActividadNombre"
+    class="form-control mb-2"
+    placeholder="Nombre actividad">
+
+  <button class="btn btn-primary" onclick="crearActividad()">
+    Crear actividad
+  </button>
+
+  `;
+
+  await cargarCuota();
+  await cargarActividades();
+}
+
+////////////////////////////////////////////////////////////
+//////////////////// CUOTA SOCIAL //////////////////////////
+////////////////////////////////////////////////////////////
+
+async function cargarCuota() {
+  const doc = await db.collection("configuracion").doc("general").get();
+
+  if (doc.exists) {
+    document.getElementById("cuotaSocial").value = doc.data().cuotaSocial || 0;
+  }
+}
+
+async function guardarCuota() {
+  const cuota = Number(document.getElementById("cuotaSocial").value);
+
+  await db.collection("configuracion").doc("general").set({
+    cuotaSocial: cuota,
+  });
+
+  alert("Cuota actualizada");
+}
+
+////////////////////////////////////////////////////////////
+//////////////////// ACTIVIDADES ///////////////////////////
+////////////////////////////////////////////////////////////
+
+async function cargarActividades() {
+  const contenedor = document.getElementById("listaActividades");
+
+  contenedor.innerHTML = "";
+
+  CACHE_ACTIVIDADES = {};
+  CACHE_CATEGORIAS = {};
+
+  const actividadesSnap = await db.collection("actividades").get();
+
+  // guardar actividades en cache
+  actividadesSnap.forEach((doc) => {
+    CACHE_ACTIVIDADES[doc.id] = doc.data();
+  });
+
+  // traer TODAS las categorías en una sola consulta
+  const categoriasSnap = await db.collectionGroup("categorias").get();
+
+  categoriasSnap.forEach((doc) => {
+    const actividadId = doc.ref.parent.parent.id;
+
+    if (!CACHE_CATEGORIAS[actividadId]) {
+      CACHE_CATEGORIAS[actividadId] = [];
+    }
+
+    CACHE_CATEGORIAS[actividadId].push({
+      id: doc.id,
+      ...doc.data(),
+    });
+  });
+
+  let html = "";
+
+  Object.entries(CACHE_ACTIVIDADES).forEach(([id, data]) => {
+    const estado = data.activa ? "Activa" : "Pausada";
+    const claseEstado = data.activa ? "text-success" : "text-danger";
+    const textoBoton = data.activa ? "Pausar" : "Activar";
+
+    html += `
+
+    <div class="card mb-3 p-3">
+
+      <div class="d-flex justify-content-between align-items-center">
+
+        <strong>${data.nombre}</strong>
+
+        <span class="${claseEstado}">
+          ${estado}
+        </span>
+
+      </div>
+
+      <div class="d-flex gap-2 my-2">
+
+        <button 
+          class="btn btn-warning btn-sm"
+          onclick="toggleActividad('${id}', ${data.activa})">
+
+          ${textoBoton}
+
+        </button>
+
+      </div>
+
+      <hr>
+
+      <h6>Categorías</h6>
+
+      ${renderCategorias(id)}
+
+      <div class="mt-2">
+
+        <input 
+          type="text"
+          placeholder="Nombre categoría"
+          id="catNombre-${id}"
+          class="form-control mb-1">
+
+        <input 
+          type="number"
+          placeholder="Precio"
+          id="catPrecio-${id}"
+          class="form-control mb-1">
+
+        <button 
+          class="btn btn-primary btn-sm"
+          onclick="crearCategoria('${id}')">
+
+          Agregar categoría
+
+        </button>
+
+      </div>
+
+    </div>
+
+    `;
+  });
+
+  contenedor.innerHTML = html;
+}
+
+////////////////////////////////////////////////////////////
+//////////////////// RENDER CATEGORIAS /////////////////////
+////////////////////////////////////////////////////////////
+
+function renderCategorias(actividadId) {
+  const categorias = CACHE_CATEGORIAS[actividadId] || [];
+
+  let html = "";
+
+  categorias.forEach((cat) => {
+    html += `
+
+    <div class="d-flex gap-2 mb-2">
+
+      <input 
+        type="text"
+        value="${cat.nombre}"
+        class="form-control"
+        disabled>
+
+      <input 
+        type="number"
+        value="${cat.precio}"
+        id="precioCat-${actividadId}-${cat.id}"
+        class="form-control">
+
+      <button 
+        class="btn btn-success btn-sm"
+        onclick="actualizarCategoria('${actividadId}','${cat.id}')">
+
+        Guardar
+
+      </button>
+
+      <button 
+        class="btn btn-danger btn-sm"
+        onclick="eliminarCategoria('${actividadId}','${cat.id}')">
+
+        Eliminar
+
+      </button>
+
+    </div>
+
+    `;
+  });
+
+  return html;
+}
+
+async function eliminarCategoria(actividadId, categoriaId) {
+  const confirmar = confirm("¿Eliminar esta categoría?");
+
+  if (!confirmar) return;
+
+  await db
+    .collection("actividades")
+    .doc(actividadId)
+    .collection("categorias")
+    .doc(categoriaId)
+    .delete();
+
+  cargarActividades();
+}
+
+////////////////////////////////////////////////////////////
+//////////////////// CREAR ACTIVIDAD ///////////////////////
+////////////////////////////////////////////////////////////
+
+async function crearActividad() {
+  const nombre = document.getElementById("nuevaActividadNombre").value;
+
+  const id = nombre.toLowerCase().replaceAll(" ", "_");
+
+  await db.collection("actividades").doc(id).set({
+    nombre: nombre,
+    activa: true,
+  });
+
+  document.getElementById("nuevaActividadNombre").value = "";
+
+  cargarActividades();
+}
+
+////////////////////////////////////////////////////////////
+//////////////////// PAUSAR ACTIVIDAD //////////////////////
+////////////////////////////////////////////////////////////
+
+async function toggleActividad(id, estadoActual) {
+  await db.collection("actividades").doc(id).update({
+    activa: !estadoActual,
+  });
+
+  cargarActividades();
+}
+
+////////////////////////////////////////////////////////////
+//////////////////// CREAR CATEGORIA ///////////////////////
+////////////////////////////////////////////////////////////
+
+async function crearCategoria(actividadId) {
+  const nombre = document.getElementById(`catNombre-${actividadId}`).value;
+
+  const precio = Number(
+    document.getElementById(`catPrecio-${actividadId}`).value,
+  );
+
+  const id = nombre.toLowerCase().replaceAll(" ", "_");
+
+  await db
+    .collection("actividades")
+    .doc(actividadId)
+    .collection("categorias")
+    .doc(id)
+    .set({
+      nombre: nombre,
+      precio: precio,
+    });
+
+  cargarActividades();
+}
+
+////////////////////////////////////////////////////////////
+//////////////////// ACTUALIZAR PRECIO /////////////////////
+////////////////////////////////////////////////////////////
+
+async function actualizarCategoria(actividadId, categoriaId) {
+  const precio = Number(
+    document.getElementById(`precioCat-${actividadId}-${categoriaId}`).value,
+  );
+
+  await db
+    .collection("actividades")
+    .doc(actividadId)
+    .collection("categorias")
+    .doc(categoriaId)
+    .update({
+      precio: precio,
+    });
+
+  alert("Precio actualizado");
 }

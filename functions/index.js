@@ -2,11 +2,13 @@ const { onCall, onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const mercadopago = require("mercadopago");
 
+const functions = require("firebase-functions");
+
 const { MercadoPagoConfig, Preference, Payment } = mercadopago;
 
 admin.initializeApp();
 
-///////////// Esportar socios individualmente /////////////
+///////////// Exportar socios individualmente /////////////
 
 exports.crearUsuarioSocio = onCall(async (request) => {
   if (!request.auth) {
@@ -88,7 +90,6 @@ exports.crearPreferencia = onRequest((req, res) => {
         return res.status(400).json({ error: "UID no recibido" });
       }
 
-      // 🔥 Validar que el usuario exista
       const userRef = admin.firestore().collection("socios").doc(uid);
       const userDoc = await userRef.get();
 
@@ -105,13 +106,12 @@ exports.crearPreferencia = onRequest((req, res) => {
               title: "Cuota mensual",
               quantity: 1,
               currency_id: "ARS",
-              unit_price: 10, // después podés hacerlo dinámico
+              unit_price: 10,
             },
           ],
 
           metadata: { uid },
 
-          // 🔥 MUY IMPORTANTE EN PRODUCCIÓN
           payer: {
             email: userDoc.data().email || "test@test.com",
           },
@@ -179,7 +179,6 @@ exports.webhookMercadoPago = onRequest(async (req, res) => {
         return res.status(200).send("OK");
       }
 
-      // 🔥 Evitar duplicados
       if (doc.data().estadoCuota === "al_dia") {
         console.log("Ya estaba al día");
         return res.status(200).send("OK");
@@ -196,7 +195,7 @@ exports.webhookMercadoPago = onRequest(async (req, res) => {
     res.status(200).send("OK");
   } catch (error) {
     console.error("❌ Error webhook:", error);
-    res.status(200).send("OK"); // 👈 IMPORTANTE (MP reintenta si tirás error)
+    res.status(200).send("OK");
   }
 });
 
@@ -238,7 +237,6 @@ exports.confirmarPago = onRequest(async (req, res) => {
       return res.status(404).json({ error: "Usuario no existe" });
     }
 
-    // 🔥 Evitar duplicados
     if (doc.data().estadoCuota === "al_dia") {
       console.log("⚠️ Ya estaba al día:", uid);
 
@@ -267,4 +265,16 @@ exports.confirmarPago = onRequest(async (req, res) => {
       error: error.message,
     });
   }
+});
+
+///////////// Calcular Deudas mensuales de Socios /////////////
+
+exports.calcularDeudas = functions.https.onCall(async (data, context) => {
+  console.log("CONTEXT:", context);
+  console.log("AUTH:", context.auth);
+
+  return {
+    ok: true,
+    auth: context.auth || null,
+  };
 });
