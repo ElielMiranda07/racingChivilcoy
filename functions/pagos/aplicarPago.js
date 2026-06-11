@@ -4,9 +4,20 @@ async function aplicarPago({
   socioId,
   items,
   metodo = "manual",
-  usuarioId = null,
-  usuarioNombre = "",
+
+  cobradoPorId = null,
+  cobradoPorNombre = "",
+
   paymentId = null,
+
+  pagadorId = null,
+  pagadorNombre = "",
+
+  pagaPorGrupo = false,
+
+  grupoPagoId = null,
+
+  montoPagadoGrupo = null,
 }) {
   const db = admin.firestore();
 
@@ -57,6 +68,8 @@ async function aplicarPago({
   let itemsPago = [];
 
   let periodosAfectados = new Set();
+
+  let cobradoMorasPorConcepto = {};
 
   // ITEMS
 
@@ -124,6 +137,9 @@ async function aplicarPago({
 
       const refMora = db.collection("estadisticasMensuales").doc(periodoMora);
 
+      const categoria =
+        socio.actividades?.[moraKey]?.categoria || "sin_categoria";
+
       let updateMora = {
         totalCobrado: admin.firestore.FieldValue.increment(monto),
 
@@ -132,16 +148,33 @@ async function aplicarPago({
         cobradoMoras: admin.firestore.FieldValue.increment(monto),
       };
 
-      if (moraKey === "cuotaSocial") {
-        updateMora.cobradoCuotaSocial =
-          admin.firestore.FieldValue.increment(monto);
-      } else {
-        updateMora.cobradoActividades =
-          admin.firestore.FieldValue.increment(monto);
-
-        updateMora[`actividades.${moraKey}.cobrado`] =
-          admin.firestore.FieldValue.increment(monto);
+      if (!updateMora.moras) {
+        updateMora.moras = {};
       }
+
+      if (!updateMora.moras[moraKey]) {
+        updateMora.moras[moraKey] = {};
+      }
+
+      updateMora.moras[moraKey].cantidad =
+        admin.firestore.FieldValue.increment(1);
+
+      updateMora.moras[moraKey].cobrado =
+        admin.firestore.FieldValue.increment(monto);
+
+      if (!updateMora.moras[moraKey].categorias) {
+        updateMora.moras[moraKey].categorias = {};
+      }
+
+      if (!updateMora.moras[moraKey].categorias[categoria]) {
+        updateMora.moras[moraKey].categorias[categoria] = {};
+      }
+
+      updateMora.moras[moraKey].categorias[categoria].cantidad =
+        admin.firestore.FieldValue.increment(1);
+
+      updateMora.moras[moraKey].categorias[categoria].cobrado =
+        admin.firestore.FieldValue.increment(monto);
 
       batch.set(refMora, updateMora, {
         merge: true,
@@ -152,9 +185,14 @@ async function aplicarPago({
         periodo: periodoMora,
         monto,
         origen: "mora",
+
+        actividad: moraKey !== "cuotaSocial" ? moraKey : null,
       });
 
       periodosAfectados.add(periodoMora);
+
+      cobradoMorasPorConcepto[moraKey] =
+        (cobradoMorasPorConcepto[moraKey] || 0) + monto;
     }
   }
 
@@ -252,8 +290,10 @@ async function aplicarPago({
 
   const pagoRef = db.collection("pagos").doc();
 
-  batch.set(pagoRef, {
+  const pagoData = {
     pagoId: pagoRef.id,
+
+    grupoPagoId,
 
     socioId,
 
@@ -267,9 +307,8 @@ async function aplicarPago({
 
     estado: "aprobado",
 
-    usuarioId,
-
-    usuarioNombre,
+    cobradoPorId,
+    cobradoPorNombre,
 
     paymentId,
 
@@ -280,7 +319,20 @@ async function aplicarPago({
     periodosAfectados: [...periodosAfectados],
 
     items: itemsPago,
-  });
+
+    pagadorId: pagadorId || socioId,
+
+    pagadorNombre: pagadorNombre || socio.nombreCompleto || socio.nombre || "",
+
+    pagaPorGrupo,
+  };
+
+  // SOLO EL PAGO PRINCIPAL
+  if (montoPagadoGrupo !== null) {
+    pagoData.montoPagadoGrupo = montoPagadoGrupo;
+  }
+
+  batch.set(pagoRef, pagoData);
 
   // ESTADISTICAS PERIODO ACTUAL
 

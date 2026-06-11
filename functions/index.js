@@ -628,17 +628,15 @@ exports.calcularDeudas = onCall(async (request) => {
 
     let actividadesContadas = {};
 
+    // 🔥 CONTROL CATEGORIAS UNICAS
+
     let categoriasContadas = {};
 
     // ACTIVIDADES
 
     if (socio.actividades) {
       Object.entries(socio.actividades).forEach(([actId, actData]) => {
-        // 🔥 NO USA ACTIVIDAD
-
         if (!actData.activo) return;
-
-        // 🔥 ACTIVIDAD PAUSADA
 
         if (!actividadesActivas[actId]) return;
 
@@ -657,8 +655,11 @@ exports.calcularDeudas = onCall(async (request) => {
         // Crear categoría si no existe
         if (!estadisticasGlobales.actividades[actId].categorias[categoriaId]) {
           estadisticasGlobales.actividades[actId].categorias[categoriaId] = {
+            nombre:
+              categoriasInfo?.[actId]?.[categoriaId]?.nombre || categoriaId,
             total: 0,
             cantidadSocios: 0,
+            cobrado: 0,
           };
         }
 
@@ -666,46 +667,26 @@ exports.calcularDeudas = onCall(async (request) => {
 
         if (!precio) return;
 
-        // 🔥 SUMAR DEUDA
-
         deuda += precio;
-
-        // 🔥 DETALLE
 
         detalleDeudas[actId] = precio;
 
-        // 🔥 CREAR ESTADISTICA
-
-        if (!estadisticasGlobales.actividades[actId].categorias[categoriaId]) {
-          estadisticasGlobales.actividades[actId].categorias[categoriaId] = {
-            nombre: categoriasInfo[actId]?.[categoriaId]?.nombre || categoriaId,
-
-            total: 0,
-
-            cantidadSocios: 0,
-
-            cobrado: 0,
-          };
-        }
-
-        // 🔥 FACTURACION
+        // FACTURACIÓN
 
         estadisticasGlobales.actividades[actId].total += precio;
 
         estadisticasGlobales.actividades[actId].categorias[categoriaId].total +=
           precio;
 
-        estadisticasGlobales.actividades[actId].categorias[
-          categoriaId
-        ].cantidadSocios += 1;
-
-        // 🔥 CONTAR SOLO UNA VEZ
+        // CONTAR SOCIOS POR ACTIVIDAD
 
         if (!actividadesContadas[actId]) {
           estadisticasGlobales.actividades[actId].cantidadSocios += 1;
 
           actividadesContadas[actId] = true;
         }
+
+        // CONTAR SOCIOS POR CATEGORÍA
 
         const keyCategoria = `${actId}_${categoriaId}`;
 
@@ -896,9 +877,65 @@ exports.registrarPagoManual = onCall(async (request) => {
     throw new HttpsError("invalid-argument", "No se recibieron pagos");
   }
 
+  // TITULAR DEL GRUPO
+
+  const primerSocioId = pagos[0].socioId;
+
+  const primerSocioDoc = await db.collection("socios").doc(primerSocioId).get();
+
+  if (!primerSocioDoc.exists) {
+    throw new Error("Socio inexistente");
+  }
+
+  const primerSocio = primerSocioDoc.data();
+
+  const pagoGrupal = pagos.length > 1;
+
+  let titularId = primerSocioId;
+  let titularNombre = primerSocio.nombreCompleto || primerSocio.nombre || "";
+
+  if (primerSocio.grupoFamiliar?.id) {
+    titularId = primerSocio.grupoFamiliar.id.replace("grupo_", "");
+
+    const titularDoc = await db.collection("socios").doc(titularId).get();
+
+    if (!titularDoc.exists) {
+      throw new Error(`No existe el titular del grupo: ${titularId}`);
+    }
+
+    const titularData = titularDoc.data();
+
+    titularNombre = titularData.nombreCompleto || titularData.nombre || "";
+  }
+
+  // TOTAL DEL PAGO DEL GRUPO
+
+  const grupoPagoId = pagoGrupal ? db.collection("pagos").doc().id : null;
+  let montoPagadoGrupo = 0;
+
+  pagos.forEach((pago) => {
+    pago.items.forEach((item) => {
+      montoPagadoGrupo += Number(item.monto || 0);
+    });
+  });
+
+  // PAGOS
+
   const resultados = [];
 
   for (const pago of pagos) {
+    const esTitular = pago.socioId === titularId;
+
+    const socioDoc = await db.collection("socios").doc(pago.socioId).get();
+
+    const socioData = socioDoc.data();
+
+    const pagadorIdReal = pagoGrupal ? titularId : pago.socioId;
+
+    const pagadorNombreReal = pagoGrupal
+      ? titularNombre
+      : socioData.nombreCompleto || socioData.nombre || "";
+
     const resultado = await aplicarPago({
       socioId: pago.socioId,
 
@@ -906,16 +943,64 @@ exports.registrarPagoManual = onCall(async (request) => {
 
       metodo: "manual",
 
-      usuarioId: request.auth.uid,
+      cobradoPorId: request.auth.uid,
 
-      usuarioNombre,
+      cobradoPorNombre: usuarioNombre,
+
+      pagadorId: pagadorIdReal,
+
+      pagadorNombre: pagadorNombreReal,
+
+      pagaPorGrupo: pagoGrupal ? !esTitular : false,
+
+      grupoPagoId,
+
+      montoPagadoGrupo: pagoGrupal && esTitular ? montoPagadoGrupo : null,
     });
 
     resultados.push(resultado);
   }
 
+  // DETALLE DEL PAGO GRUPAL
+
+  if (pagoGrupal) {
+    const pagosGrupoSnapshot = await db
+      .collection("pagos")
+      .where("grupoPagoId", "==", grupoPagoId)
+      .get();
+
+    const detalleGrupo = [];
+
+    let reciboTitularRef = null;
+
+    pagosGrupoSnapshot.forEach((doc) => {
+      const pago = doc.data();
+
+      detalleGrupo.push({
+        pagoId: pago.pagoId,
+        socioId: pago.socioId,
+        socioNombre: pago.socioNombre,
+        montoTotal: pago.montoTotal,
+        pagaPorGrupo: pago.pagaPorGrupo,
+      });
+
+      if (pago.socioId === titularId) {
+        reciboTitularRef = doc.ref;
+      }
+    });
+
+    if (reciboTitularRef) {
+      await reciboTitularRef.update({
+        detalleGrupo,
+      });
+    }
+  }
+
   return {
     ok: true,
+    grupoPagoId,
+    titularId,
+    montoPagadoGrupo,
     resultados,
   };
 });
