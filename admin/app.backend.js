@@ -25,8 +25,6 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 
   usuarioActual = user;
-
-  cargarConfiguracionSistema();
 });
 
 function esperarAuth() {
@@ -122,6 +120,10 @@ function mostrar(modulo) {
 
   if (modulo === "configuracion") {
     cargarConfiguracion();
+  }
+
+  if (modulo === "notificaciones") {
+    cargarModuloNotificaciones();
   }
 }
 

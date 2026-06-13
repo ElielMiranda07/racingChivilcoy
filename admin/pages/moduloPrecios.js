@@ -71,7 +71,7 @@ async function cargarModuloPrecios() {
 
   contenedor.innerHTML = `
   
-  <h3>Calcular Deudas</h3>
+  <h3 class="colorPrincipal">Calcular Deudas</h3>
   <div class="card p-3 mt-4">
   
 
@@ -87,10 +87,10 @@ async function cargarModuloPrecios() {
     <div id="estadoCalculo" class="mt-2"></div>
   </div>
 
-  <h4>Configuración</h4>
+  <h4 class="colorPrincipal">Configuración</h4>
 
   <div class="mb-4">
-    <label>Cuota social</label>
+    <label class="colorSecundario fw-bold">Cuota social</label>
 
     <input type="number" id="cuotaSocial" class="form-control mb-2">
 
@@ -101,13 +101,13 @@ async function cargarModuloPrecios() {
 
   <hr>
 
-  <h5>Actividades</h5>
+  <h5 class="colorPrincipal">Actividades</h5>
 
   <div id="listaActividades"></div>
 
   <hr>
 
-  <h5>Nueva actividad</h5>
+  <h5 class="colorPrincipal">Nueva actividad</h5>
 
   <input 
     type="text"
@@ -198,7 +198,7 @@ async function cargarActividades() {
 
       <div class="d-flex justify-content-between align-items-center">
 
-        <strong>${data.nombre}</strong>
+        <strong  class="colorSecundario">${data.nombre}</strong>
 
         <span class="${claseEstado}">
           ${estado}
@@ -228,7 +228,7 @@ async function cargarActividades() {
 
       <hr>
 
-      <h6>Categorías</h6>
+      <h6 class="colorSecundario fw-bold">Categorías</h6>
 
       ${renderCategorias(id)}
 

@@ -9,11 +9,11 @@
 function cargarModuloPagos() {
   document.getElementById("pagos").innerHTML = `
 
-<h2>Buscar Pagos</h2>
+<h2 class="colorPrincipal">Buscar Pagos</h2>
 
 <div class="card border-0 shadow-sm p-3 mb-4">
 
-  <label class="form-label">
+  <label class="form-label colorSecundario fw-bold">
     DNI del socio
   </label>
 

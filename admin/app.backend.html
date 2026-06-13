@@ -20,48 +20,70 @@
     <div class="container-fluid">
       <div class="row">
         <nav class="sidebar col-2 p-3 d-flex flex-column">
-          <h4 id="nombreClub"></h4>
-
+          <div class="text-center">
+            <h3><strong id="nombreClub"></strong></h3>
+          </div>
           <button
-            class="btn btn-light w-100 mb-2"
+            class="btn btn-custom w-100 mb-2"
             onclick="mostrar('dashboard')"
           >
-            Dashboard General
+            <strong>Dashboard General</strong>
           </button>
 
           <button
-            class="btn btn-light w-100 mb-2"
+            class="btn btn-custom w-100 mb-2"
             onclick="mostrar('dashboardFacturacion')"
           >
-            Dashboard Facturación
+            <strong>Dashboard Facturación</strong>
           </button>
 
           <button
-            class="btn btn-light w-100 mb-2"
+            class="btn btn-custom w-100 mb-2"
             onclick="mostrar('importar')"
           >
-            Crear socios
+            <strong>Crear socios</strong>
           </button>
 
-          <button class="btn btn-light w-100 mb-2" onclick="mostrar('buscar')">
-            Buscar socio
+          <button class="btn btn-custom w-100 mb-2" onclick="mostrar('buscar')">
+            <strong>Buscar socio</strong>
           </button>
 
-          <button class="btn btn-light w-100 mb-2" onclick="mostrar('precios')">
-            Precios
+          <button
+            class="btn btn-custom w-100 mb-2"
+            onclick="mostrar('precios')"
+          >
+            <strong>Precios</strong>
           </button>
 
-          <button class="btn btn-light w-100 mb-2" onclick="mostrar('pagos')">
-            Pagos
+          <button class="btn btn-custom w-100 mb-2" onclick="mostrar('pagos')">
+            <strong>Pagos</strong>
+          </button>
+
+          <button
+            class="btn btn-custom w-100 mb-2"
+            onclick="mostrar('notificaciones')"
+          >
+            <strong>Notificaciones APP</strong>
           </button>
 
           <div class="d-flex flex-column align-items-center mt-auto">
             <button
               class="btn text-white mb-3"
               onclick="mostrar('configuracion')"
-              style="font-size: 1.8rem; transition: transform 0.2s"
-              onmouseover="this.style.transform = 'rotate(30deg) scale(1.1)'"
-              onmouseout="this.style.transform = 'rotate(0deg) scale(1)'"
+              style="
+                font-size: 1.8rem;
+                transition:
+                  transform 0.2s,
+                  color 0.2s;
+              "
+              onmouseover="
+                this.style.transform = 'rotate(30deg) scale(1.1)';
+                this.style.color = colorPrincipal;
+              "
+              onmouseout="
+                this.style.transform = 'rotate(0deg) scale(1)';
+                this.style.color = 'white';
+              "
               title="Configuración"
             >
               <i class="bi bi-gear-fill"></i>
@@ -89,6 +111,8 @@
           <div id="precios" class="modulo d-none"></div>
 
           <div id="pagos" class="modulo d-none"></div>
+
+          <div id="notificaciones" class="modulo d-none"></div>
 
           <div id="configuracion" class="modulo d-none"></div>
         </main>
@@ -121,5 +145,6 @@
     <script src="./pages/moduloPrecios.js"></script>
     <script src="./pages/moduloPagos.js"></script>
     <script src="./pages/configuracionGeneral.js"></script>
+    <script src="./pages/notificaciones.js"></script>
   </body>
 </html>

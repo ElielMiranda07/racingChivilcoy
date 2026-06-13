@@ -414,7 +414,7 @@ document.getElementById("importar").innerHTML = `
 
 
 
-<h2>Crear socio manualmente</h2>
+<h2 class="colorPrincipal">Crear socio manualmente</h2>
 
 <div class="card p-4">
 
@@ -422,7 +422,7 @@ document.getElementById("importar").innerHTML = `
 
     <div class="col-md-6 mb-3">
 
-      <label class="form-label">
+      <label class="form-label fw-bold colorSecundario">
         Nombre y apellido
       </label>
 
@@ -435,7 +435,7 @@ document.getElementById("importar").innerHTML = `
 
     <div class="col-md-6 mb-3">
 
-      <label class="form-label">
+      <label class="form-label fw-bold colorSecundario">
         DNI
       </label>
 
@@ -448,20 +448,20 @@ document.getElementById("importar").innerHTML = `
 
     <div class="col-md-6 mb-3">
 
-      <label class="form-label">
+      <label class="form-label fw-bold colorSecundario">
         Mail
       </label>
 
       <input
         type="email"
         id="manualMail"
-        class="form-control">
+        class="form-control fw-bold colorSecundario">
 
     </div>
 
     <div class="col-md-6 mb-3">
 
-      <label class="form-label">
+      <label class="form-label fw-bold colorSecundario">
         Teléfono
       </label>
 
@@ -488,7 +488,7 @@ document.getElementById("importar").innerHTML = `
 
 <hr class="my-5">
 
-<h2>Importar CSV</h2>
+<h2 class="colorPrincipal">Importar CSV</h2>
 
 <input type="file" id="csvFile" class="form-control">
 
@@ -501,7 +501,7 @@ Mostrar preview
 
 <div id="preview" class="mt-3"></div>
 
-<h4>Ejemplo de archivo CSV</h4>
+<h4 class="colorPrincipal">Ejemplo de archivo CSV</h4>
 
 <a 
 href="../ejemplos/CSV_Modelo.csv"

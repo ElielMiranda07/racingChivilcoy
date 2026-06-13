@@ -150,7 +150,7 @@ ${itemsHtml.join("")}
 function cargarBuscadorSocios() {
   document.getElementById("buscar").innerHTML = `
 
-<h2>Buscar socio</h2>
+<h2 class="colorPrincipal">Buscar socio</h2>
 
 <div class="row g-2">
 

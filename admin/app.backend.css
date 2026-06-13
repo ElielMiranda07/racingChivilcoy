@@ -28,3 +28,26 @@
   max-width: 45%;
   height: auto;
 }
+
+.btn-custom {
+  background-color: var(--color-principal);
+  color: var(--color-secundario);
+}
+
+.nav-tabs .nav-link {
+  color: var(--color-secundario);
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--color-principal);
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--color-principal);
+  font-weight: 700;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+}

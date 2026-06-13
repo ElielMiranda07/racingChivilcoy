@@ -9,7 +9,7 @@ async function cargarConfiguracion() {
 
 function cabeceraConfiguracion() {
   return `
-    <h2 class="mb-4">
+    <h2 class="mb-4 colorPrincipal">
       <i class="bi bi-gear-fill"></i>
       Configuración del Sistema
     </h2>
@@ -21,62 +21,38 @@ function tabsConfiguracion() {
     <ul class="nav nav-tabs mb-4">
 
       <li class="nav-item">
-        <button
-          class="nav-link active"
-          data-bs-toggle="tab"
-          data-bs-target="#tabGeneral"
-        >
-          🏛️ General
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabGeneral">
+          <i class="bi bi-building me-2"></i>General
         </button>
       </li>
 
       <li class="nav-item">
-        <button
-          class="nav-link"
-          data-bs-toggle="tab"
-          data-bs-target="#tabApariencia"
-        >
-          🎨 Apariencia
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabApariencia">
+          <i class="bi bi-palette me-2"></i>Apariencia
         </button>
       </li>
 
       <li class="nav-item">
-        <button
-          class="nav-link"
-          data-bs-toggle="tab"
-          data-bs-target="#tabModulos"
-        >
-          🧩 Módulos
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabModulos">
+          <i class="bi bi-grid me-2"></i>Módulos
         </button>
       </li>
 
       <li class="nav-item">
-        <button
-          class="nav-link"
-          data-bs-toggle="tab"
-          data-bs-target="#tabFacturacion"
-        >
-          💰 Facturación
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabFacturacion">
+          <i class="bi bi-cash-stack me-2"></i>Facturación
         </button>
       </li>
 
       <li class="nav-item">
-        <button
-          class="nav-link"
-          data-bs-toggle="tab"
-          data-bs-target="#tabDashboard"
-        >
-          📊 Dashboard
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabDashboard">
+          <i class="bi bi-bar-chart-line me-2"></i>Dashboard
         </button>
       </li>
 
       <li class="nav-item">
-        <button
-          class="nav-link"
-          data-bs-toggle="tab"
-          data-bs-target="#tabExportaciones"
-        >
-          📤 Exportaciones
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabExportaciones">
+          <i class="bi bi-download me-2"></i>Exportaciones
         </button>
       </li>
 
@@ -113,13 +89,13 @@ function tabGeneral() {
 
     <div class="card-body">
 
-      <h4>🏛️ Información del Club</h4>
+      <h4 class="colorPrincipal">Información del Club</h4>
 
       <hr>
 
       <div class="mb-3">
 
-        <label class="form-label">
+        <label class="form-label colorSecundario">
 
           Nombre del club
 
@@ -135,7 +111,7 @@ function tabGeneral() {
 
       <div class="mb-3">
 
-  <label class="form-label">
+  <label class="form-label colorSecundario">
 
     Logo del club
 
@@ -164,7 +140,7 @@ function tabGeneral() {
 
       <div class="mb-3">
 
-        <label class="form-label">
+        <label class="form-label colorSecundario">
 
           Dirección
 
@@ -180,7 +156,7 @@ function tabGeneral() {
 
       <div class="mb-3">
 
-        <label class="form-label">
+        <label class="form-label colorSecundario">
 
           Teléfono
 
@@ -196,7 +172,7 @@ function tabGeneral() {
 
       <div class="mb-3">
 
-        <label class="form-label">
+        <label class="form-label colorSecundario">
 
           Email
 
@@ -228,7 +204,7 @@ function tabApariencia() {
 
     <div class="card-body">
 
-      <h4>🎨 Apariencia</h4>
+      <h4 class="colorPrincipal">Apariencia</h4>
 
       <hr>
 
@@ -236,7 +212,7 @@ function tabApariencia() {
 
         <div class="col-md-4">
 
-          <label>Color principal</label>
+          <label class="colorSecundario">Color principal</label>
 
           <input
             type="color"
@@ -249,7 +225,7 @@ function tabApariencia() {
 
         <div class="col-md-4">
 
-          <label>Color secundario</label>
+          <label class="colorSecundario">Color secundario</label>
 
           <input
             type="color"
@@ -262,7 +238,7 @@ function tabApariencia() {
 
         <div class="col-md-4">
 
-          <label>Color acento</label>
+          <label class="colorSecundario">Color acento</label>
 
           <input
             type="color"
@@ -293,7 +269,7 @@ function tabModulos() {
 
     <div class="card-body">
 
-      <h4>🧩 Módulos</h4>
+      <h4 class="colorPrincipal">Módulos</h4>
 
       <hr>
 
@@ -301,7 +277,7 @@ function tabModulos() {
 
         <input class="form-check-input" type="checkbox" id="modDashboard" ${configuracionGeneral.modulos?.dashboard ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Dashboard General
 
@@ -313,7 +289,7 @@ function tabModulos() {
 
         <input class="form-check-input" type="checkbox" id="modFacturacion" ${configuracionGeneral.modulos?.dashboardFacturacion ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Dashboard Facturación
 
@@ -325,7 +301,7 @@ function tabModulos() {
 
         <input class="form-check-input" type="checkbox" id="modImportar" ${configuracionGeneral.modulos?.importar ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Crear socios
 
@@ -337,7 +313,7 @@ function tabModulos() {
 
         <input class="form-check-input" type="checkbox" id="modBuscar" ${configuracionGeneral.modulos?.buscar ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Buscar socios
 
@@ -349,7 +325,7 @@ function tabModulos() {
 
         <input class="form-check-input" type="checkbox" id="modPrecios" ${configuracionGeneral.modulos?.precios ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Precios
 
@@ -361,9 +337,21 @@ function tabModulos() {
 
         <input class="form-check-input" type="checkbox" id="modPagos" ${configuracionGeneral.modulos?.pagos ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Pagos
+
+        </label>
+
+      </div>
+
+      <div class="form-check">
+
+        <input class="form-check-input" type="checkbox" id="modNotificaciones" ${configuracionGeneral.modulos?.notificaciones ? "checked" : ""}>
+
+        <label class="form-check-label colorSecundario">
+
+          Notificaciones
 
         </label>
 
@@ -387,13 +375,13 @@ function tabFacturacion() {
 
     <div class="card-body">
 
-      <h4>💰 Facturación</h4>
+      <h4 class="colorPrincipal">Facturación</h4>
 
       <hr>
 
       <div class="mb-3">
 
-        <label>
+        <label class="colorSecundario">
 
           Meses para Vitalicio
 
@@ -410,7 +398,7 @@ function tabFacturacion() {
 
       <div class="mb-3">
 
-        <label>
+        <label class="colorSecundario">
 
           Días para Mora
 
@@ -427,7 +415,7 @@ function tabFacturacion() {
 
       <div class="mb-3">
 
-        <label>
+        <label class="colorSecundario">
 
           Interés mensual
 
@@ -460,7 +448,7 @@ function tabDashboard() {
 
     <div class="card-body">
 
-      <h4>📊 Dashboard</h4>
+      <h4 class="colorPrincipal">Dashboard</h4>
 
       <hr>
 
@@ -468,7 +456,7 @@ function tabDashboard() {
 
         <input class="form-check-input" type="checkbox" id="dashSocios" ${configuracionGeneral.dashboard?.mostrarSocios ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Mostrar estadísticas de socios
 
@@ -480,7 +468,7 @@ function tabDashboard() {
 
         <input class="form-check-input" type="checkbox" id="dashFacturacion" ${configuracionGeneral.dashboard?.mostrarFacturacion ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Mostrar facturación
 
@@ -492,7 +480,7 @@ function tabDashboard() {
 
         <input class="form-check-input" type="checkbox" id="dashMorosos" ${configuracionGeneral.dashboard?.mostrarMorosos ? "checked" : ""}>
 
-        <label class="form-check-label">
+        <label class="form-check-label colorSecundario">
 
           Mostrar morosos
 
@@ -518,13 +506,13 @@ function tabExportaciones() {
 
     <div class="card-body">
 
-      <h4>📤 Exportaciones</h4>
+      <h4 class="colorPrincipal">Exportaciones</h4>
 
       <hr>
 
       <div class="mb-3">
 
-        <label>
+        <label class="colorSecundario">
 
           Nombre por defecto del Excel
 
@@ -540,7 +528,7 @@ function tabExportaciones() {
 
       <div class="mb-3">
 
-        <label>
+        <label class="colorSecundario">
 
           Incluir logo en PDF
 
