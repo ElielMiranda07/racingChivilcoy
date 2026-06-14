@@ -122,7 +122,6 @@ function tabGeneral() {
     id="configLogo"
     class="form-control"
     accept="image/*"
-    onchange="previewLogoConfiguracion(event)"
   >
 
   <div class="mt-3 text-center">
@@ -130,8 +129,8 @@ function tabGeneral() {
     <img
       id="previewLogo"
       src="${configuracionGeneral.general?.logo || ""}"
-      class="img-fluid border rounded p-2"
-      style="max-height: 150px;"
+      class="img-fluid mt-3"
+      style="max-height:120px;"
     >
 
   </div>
@@ -613,7 +612,7 @@ async function guardarConfiguracion() {
       general: {
         nombreClub: document.getElementById("configNombreClub")?.value || "",
 
-        logo: logoURL,
+        logo: logoBase64,
 
         direccion: document.getElementById("configDireccion")?.value || "",
 
@@ -645,6 +644,9 @@ async function guardarConfiguracion() {
         precios: document.getElementById("modPrecios")?.checked || false,
 
         pagos: document.getElementById("modPagos")?.checked || false,
+
+        notificaciones:
+          document.getElementById("modNotificaciones")?.checked || false,
       },
 
       facturacion: {
@@ -695,4 +697,30 @@ async function guardarConfiguracion() {
       text: "No se pudo guardar la configuración.",
     });
   }
+}
+
+document.addEventListener("change", (e) => {
+  if (e.target.id !== "configLogo") return;
+
+  const archivo = e.target.files[0];
+
+  if (!archivo) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    logoBase64 = reader.result;
+
+    document.getElementById("previewLogo").src = logoBase64;
+  };
+
+  reader.readAsDataURL(archivo);
+});
+
+logoBase64 = configuracionGeneral.general?.logo || "";
+
+const preview = document.getElementById("previewLogo");
+
+if (preview) {
+  preview.src = logoBase64;
 }

@@ -144,6 +144,7 @@ let timerBusquedaNombre;
 let datosCSV = [];
 let graficoFacturacion = null;
 let graficoFacturacionLineal = null;
+let logoBase64 = "";
 
 let colorPrincipal = "#000000";
 let colorSecundario = "#ffffff";
@@ -155,6 +156,9 @@ async function cargarConfiguracionSistema() {
   if (!doc.exists) return;
 
   configuracionGeneral = doc.data();
+
+  logoBase64 = configuracionGeneral.general?.logo || "";
+
   console.log(configuracionGeneral);
 }
 
@@ -169,8 +173,8 @@ function aplicarConfiguracionGeneral() {
   // Logo
   const logoSidebar = document.getElementById("logoSidebar");
 
-  if (logoSidebar && configuracionGeneral.general?.logo) {
-    logoSidebar.src = configuracionGeneral.general.logo;
+  if (logoSidebar) {
+    logoSidebar.src = configuracionGeneral.general?.logo || "";
   }
 
   colorPrincipal = configuracionGeneral.apariencia?.colorPrincipal || "#000000";

@@ -61,7 +61,7 @@ Swal.fire({
         class="btn btn-light mt-3"
         onclick="exportarListadoDashboard('todos')"
       >
-        Descargar Excel
+        Descargar Listado
       </button>
 
     </div>
@@ -83,7 +83,7 @@ Swal.fire({
         class="btn btn-light mt-3"
         onclick="exportarListadoDashboard('al_dia')"
       >
-        Descargar Excel
+        Descargar Listado
       </button>
 
     </div>
@@ -105,7 +105,7 @@ Swal.fire({
         class="btn btn-dark mt-3"
         onclick="exportarListadoDashboard('impagas')"
       >
-        Descargar Excel
+        Descargar Listado
       </button>
 
     </div>
@@ -127,7 +127,7 @@ Swal.fire({
         class="btn btn-light mt-3"
         onclick="exportarListadoDashboard('morosos30')"
       >
-        Descargar Excel
+        Descargar Listado
       </button>
 
     </div>
@@ -216,7 +216,107 @@ function dibujarGraficoDashboard(
   });
 }
 
-// EXPORTAR EXCEL DASHBOARD
+////////////////////////////// EXPORTAR ARCHIVOS DASHBOARD //////////////////////////////
+
+async function seleccionarFormatoExportacion() {
+  const resultado = await Swal.fire({
+    title: "Formato de exportación",
+
+    html: `
+
+<div class="text-start">
+
+  <div class="form-check mb-3">
+
+    <input
+      class="form-check-input"
+      type="radio"
+      name="formatoExportacion"
+      id="formatoExcel"
+      value="excel"
+      checked
+    >
+
+    <label class="form-check-label" for="formatoExcel">
+
+      📊 <b>Excel</b>
+
+      <br>
+
+      <small class="text-muted">
+        Ideal para editar, filtrar y analizar datos.
+      </small>
+
+    </label>
+
+  </div>
+
+  <div class="form-check mb-3">
+
+    <input
+      class="form-check-input"
+      type="radio"
+      name="formatoExportacion"
+      id="formatoPdf"
+      value="pdf"
+    >
+
+    <label class="form-check-label" for="formatoPdf">
+
+      📄 <b>PDF Institucional</b>
+
+      <br>
+
+      <small class="text-muted">
+        Con logo, colores y presentación profesional.
+      </small>
+
+    </label>
+
+  </div>
+
+  <div class="form-check">
+
+    <input
+      class="form-check-input"
+      type="radio"
+      name="formatoExportacion"
+      id="formatoPrint"
+      value="pdf_print"
+    >
+
+    <label class="form-check-label" for="formatoPrint">
+
+      🖨️ <b>PDF para impresión</b>
+
+      <br>
+
+      <small class="text-muted">
+        Optimizado para imprimir en papel.
+      </small>
+
+    </label>
+
+  </div>
+
+</div>
+
+`,
+
+    showCancelButton: true,
+
+    confirmButtonText: "Continuar",
+
+    cancelButtonText: "Cancelar",
+
+    preConfirm: () => {
+      return document.querySelector('input[name="formatoExportacion"]:checked')
+        .value;
+    },
+  });
+
+  return resultado.isConfirmed ? resultado.value : null;
+}
 
 const camposExportables = {
   nombre: "Nombre",
@@ -306,7 +406,7 @@ ${label}
 
     showCancelButton: true,
 
-    confirmButtonText: "Generar Excel",
+    confirmButtonText: "Generar Archivo",
 
     cancelButtonText: "Cancelar",
 
@@ -331,7 +431,13 @@ ${label}
 }
 
 async function exportarListadoDashboard(tipo) {
-  // SELECCIONAR COLUMNAS
+  // FORMATO
+
+  const formato = await seleccionarFormatoExportacion();
+
+  if (!formato) return;
+
+  // COLUMNAS
 
   const camposSeleccionados = await seleccionarCamposExportacion();
 
@@ -340,7 +446,7 @@ async function exportarListadoDashboard(tipo) {
   // LOADING
 
   Swal.fire({
-    title: "Generando Excel...",
+    title: "Generando archivo...",
 
     text: "Espere unos segundos",
 
@@ -457,14 +563,20 @@ async function exportarListadoDashboard(tipo) {
 
     // DESCARGAR
 
-    XLSX.writeFile(wb, `socios_${tipo}_${Date.now()}.xlsx`);
+    if (formato === "excel") {
+      XLSX.writeFile(wb, `socios_${tipo}_${Date.now()}.xlsx`);
+    } else if (formato === "pdf") {
+      generarPDFInstitucional(datos, camposSeleccionados, tipo);
+    } else if (formato === "pdf_print") {
+      generarPDFImpresion(datos, camposSeleccionados, tipo);
+    }
 
     // SUCCESS
 
     Swal.fire({
       icon: "success",
 
-      title: "Excel generado",
+      title: "Archivo generado",
 
       text: `${datos.length} socios exportados`,
 
@@ -478,7 +590,154 @@ async function exportarListadoDashboard(tipo) {
     Swal.fire({
       icon: "error",
 
-      title: "Error al generar Excel",
+      title: "Error al generar el archivo",
     });
   }
+}
+
+async function generarPDFInstitucional(datos, camposSeleccionados, tipo) {
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF();
+
+  const titulo = configuracionGeneral.general?.nombreClub || "Club";
+
+  const fecha = new Date().toLocaleDateString("es-AR");
+
+  const img = new Image();
+  img.src = logoBase64;
+
+  await new Promise((r) => (img.onload = r));
+
+  const alto = 20;
+  const ancho = (img.width / img.height) * alto;
+
+  doc.addImage(logoBase64, undefined, 10, 10, ancho, alto);
+
+  // Título
+
+  doc.setFontSize(22);
+
+  doc.setTextColor(colorPrincipal);
+
+  doc.text(configuracionGeneral.general?.nombreClub || "Club", 105, 18, {
+    align: "center",
+  });
+
+  doc.setFontSize(15);
+
+  doc.setTextColor(40);
+
+  doc.text("Listado de socios", 105, 28, { align: "center" });
+
+  doc.setFontSize(10);
+
+  doc.text(`Generado el ${new Date().toLocaleDateString("es-AR")}`, 105, 35, {
+    align: "center",
+  });
+
+  // Encabezados
+
+  const headers = [camposSeleccionados.map((c) => camposExportables[c])];
+
+  // Filas
+
+  const body = datos.map((fila) =>
+    camposSeleccionados.map((c) => fila[camposExportables[c]]),
+  );
+
+  doc.autoTable({
+    startY: 45,
+
+    head: headers,
+
+    body,
+
+    theme: "grid",
+
+    headStyles: {
+      fillColor: colorPrincipal,
+      textColor: 255,
+      halign: "center",
+    },
+
+    alternateRowStyles: {
+      fillColor: [245, 245, 245],
+    },
+
+    styles: {
+      fontSize: 9,
+    },
+  });
+
+  // Resumen
+
+  const y = doc.lastAutoTable.finalY + 10;
+
+  doc.setFontSize(12);
+
+  doc.setTextColor(colorPrincipal);
+
+  doc.text(`Total de socios: ${datos.length}`, 14, y);
+
+  doc.save(`socios_${tipo}_${Date.now()}.pdf`);
+}
+
+function generarPDFImpresion(datos, camposSeleccionados, tipo) {
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF();
+
+  const fecha = new Date().toLocaleDateString("es-AR");
+
+  doc.setFontSize(18);
+
+  doc.setTextColor(0);
+
+  doc.text("Listado de socios", 105, 18, {
+    align: "center",
+  });
+
+  doc.setFontSize(9);
+
+  doc.text(fecha, 105, 24, {
+    align: "center",
+  });
+
+  const headers = [camposSeleccionados.map((c) => camposExportables[c])];
+
+  const body = datos.map((fila) =>
+    camposSeleccionados.map((c) => fila[camposExportables[c]]),
+  );
+
+  doc.autoTable({
+    startY: 30,
+
+    head: headers,
+
+    body,
+
+    theme: "grid",
+
+    styles: {
+      fontSize: 8,
+      cellPadding: 2,
+    },
+
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      lineColor: [0, 0, 0],
+      lineWidth: 0.2,
+    },
+
+    alternateRowStyles: {},
+
+    margin: {
+      left: 8,
+      right: 8,
+    },
+  });
+
+  doc.save(`socios_impresion_${tipo}_${Date.now()}.pdf`);
 }
