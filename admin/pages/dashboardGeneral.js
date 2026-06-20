@@ -600,54 +600,170 @@ async function generarPDFInstitucional(datos, camposSeleccionados, tipo) {
 
   const doc = new jsPDF();
 
-  const titulo = configuracionGeneral.general?.nombreClub || "Club";
+  // Datos de Estado de Cuenta
 
-  const fecha = new Date().toLocaleDateString("es-AR");
+  let total = 0;
+  let alDia = 0;
+  let deuda = 0;
+  let morosos = 0;
 
-  const img = new Image();
-  img.src = logoBase64;
+  // QUERY
 
-  await new Promise((r) => (img.onload = r));
+  let query = db.collection("socios");
 
-  const alto = 20;
-  const ancho = (img.width / img.height) * alto;
+  if (tipo === "todos") {
+    query = query.orderBy("nombre");
+  } else if (tipo === "al_dia") {
+    query = query.where("estadoCuenta", "==", "al_dia").orderBy("nombre");
+  } else if (tipo === "impagas") {
+    query = query.where("estadoCuenta", "==", "deuda").orderBy("nombre");
+  } else if (tipo === "morosos30") {
+    query = query.where("estadoCuenta", "==", "moroso").orderBy("nombre");
+  }
 
-  doc.addImage(logoBase64, undefined, 10, 10, ancho, alto);
+  // CONSULTA
 
-  // Título
+  const snapshot = await query.get();
+
+  // DATOS
+
+  snapshot.forEach((doc) => {
+    const socio = doc.data();
+
+    total++;
+
+    switch (socio.estadoCuenta) {
+      case "al_dia":
+        alDia++;
+        break;
+
+      case "deuda":
+        deuda++;
+        break;
+
+      case "moroso":
+        morosos++;
+        break;
+    }
+  });
+
+  // ==========================================
+  // DATOS DEL CLUB
+  // ==========================================
+
+  const general = configuracionGeneral.general || {};
+  const exportaciones = configuracionGeneral.exportaciones || {};
+
+  const nombreClub = general.nombreClub || "Club";
+  const direccion = general.direccion || "";
+  const telefono = general.telefono || "";
+  const email = general.email || "";
+
+  const incluirLogo = exportaciones.pdfLogo;
+  const incluirDatosDelClub = exportaciones.pdfDatosDelClub;
+  const incluirFecha = exportaciones.pdfFecha;
+  const incluirResumen = exportaciones.pdfResumen;
+  const incluirPaginacion = exportaciones.pdfPaginacion;
+
+  // ==========================================
+  // LOGO
+  // ==========================================
+
+  if (incluirLogo && logoBase64) {
+    const img = new Image();
+
+    img.src = logoBase64;
+
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+
+    const alto = 22;
+
+    const ancho = (img.width / img.height) * alto;
+
+    doc.addImage(logoBase64, undefined, 12, 10, ancho, alto);
+  }
+
+  // ==========================================
+  // TITULO
+  // ==========================================
 
   doc.setFontSize(22);
 
   doc.setTextColor(colorPrincipal);
 
-  doc.text(configuracionGeneral.general?.nombreClub || "Club", 105, 18, {
+  doc.text(nombreClub, 105, 18, {
     align: "center",
   });
 
-  doc.setFontSize(15);
+  doc.setFontSize(14);
 
   doc.setTextColor(40);
 
-  doc.text("Listado de socios", 105, 28, { align: "center" });
-
-  doc.setFontSize(10);
-
-  doc.text(`Generado el ${new Date().toLocaleDateString("es-AR")}`, 105, 35, {
+  doc.text("Listado de Socios", 105, 27, {
     align: "center",
   });
 
-  // Encabezados
+  doc.setFontSize(9);
+
+  doc.setTextColor(100);
+
+  let linea = 34;
+
+  if (incluirDatosDelClub) {
+    if (direccion) {
+      doc.setTextColor(colorSecundario);
+      doc.text(direccion, 105, linea, {
+        align: "center",
+      });
+
+      linea += 5;
+    }
+
+    if (telefono) {
+      doc.text(`Tel: ${telefono}`, 105, linea, {
+        align: "center",
+      });
+
+      linea += 5;
+    }
+
+    if (email) {
+      doc.text(email, 105, linea, {
+        align: "center",
+      });
+
+      linea += 5;
+    }
+  }
+  if (incluirFecha) {
+    doc.text(
+      `Generado el ${new Date().toLocaleDateString("es-AR")}`,
+      105,
+      linea,
+      {
+        align: "center",
+      },
+    );
+  }
+
+  doc.setDrawColor(colorPrincipal);
+  doc.setLineWidth(0.5);
+  doc.line(10, linea + 3, 200, linea + 3);
+
+  // ==========================================
+  // TABLA
+  // ==========================================
 
   const headers = [camposSeleccionados.map((c) => camposExportables[c])];
-
-  // Filas
 
   const body = datos.map((fila) =>
     camposSeleccionados.map((c) => fila[camposExportables[c]]),
   );
 
   doc.autoTable({
-    startY: 45,
+    startY: linea + 8,
 
     head: headers,
 
@@ -666,43 +782,246 @@ async function generarPDFInstitucional(datos, camposSeleccionados, tipo) {
     },
 
     styles: {
-      fontSize: 9,
+      fontSize: 8,
     },
   });
 
-  // Resumen
+  const totalPaginas = doc.getNumberOfPages();
 
-  const y = doc.lastAutoTable.finalY + 10;
+  if (incluirPaginacion) {
+    for (let i = 1; i <= totalPaginas; i++) {
+      doc.setPage(i);
 
-  doc.setFontSize(12);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
 
-  doc.setTextColor(colorPrincipal);
+      // Línea superior
+      doc.setDrawColor(220);
+      doc.line(14, pageHeight - 12, pageWidth - 14, pageHeight - 12);
 
-  doc.text(`Total de socios: ${datos.length}`, 14, y);
+      doc.setFontSize(8);
+      doc.setTextColor(120);
 
-  doc.save(`socios_${tipo}_${Date.now()}.pdf`);
+      // Texto izquierdo
+      doc.text(
+        `Sistema de Gestión de Socios • ${configuracionGeneral.general?.nombreClub || ""}`,
+        14,
+        pageHeight - 6,
+      );
+
+      // Texto derecho
+      doc.text(`Página ${i}/${totalPaginas}`, pageWidth - 14, pageHeight - 6, {
+        align: "right",
+      });
+    }
+  }
+
+  // ==========================================
+  // RESUMEN
+  // ==========================================
+
+  if (incluirResumen) {
+    let y = doc.lastAutoTable.finalY + 12;
+
+    if (y > 260) {
+      doc.addPage();
+
+      y = 20;
+    }
+
+    doc.setFontSize(14);
+
+    doc.setTextColor(colorPrincipal);
+
+    doc.text("Resumen", 14, y);
+
+    y += 8;
+
+    doc.setFontSize(11);
+
+    doc.setTextColor(40);
+
+    doc.text(`Total de socios: ${total}`, 14, y);
+
+    y += 7;
+
+    doc.text(`Socios al día: ${alDia}`, 14, y);
+
+    y += 7;
+
+    doc.text(`Socios con deuda: ${deuda}`, 14, y);
+
+    y += 7;
+
+    doc.text(`Socios morosos: ${morosos}`, 14, y);
+  }
+
+  // ==========================================
+  // DESCARGA
+  // ==========================================
+
+  const nombreArchivo = exportaciones.nombreExcel || "ListadoSocios";
+
+  doc.save(
+    `${nombreArchivo}_inst_${new Date().toISOString().slice(0, 10)}.pdf`,
+  );
 }
 
-function generarPDFImpresion(datos, camposSeleccionados, tipo) {
+async function generarPDFImpresion(datos, camposSeleccionados, tipo) {
   const { jsPDF } = window.jspdf;
 
   const doc = new jsPDF();
 
+  // Datos de Estado de Cuenta
+
+  let total = 0;
+  let alDia = 0;
+  let deuda = 0;
+  let morosos = 0;
+
+  // QUERY
+
+  let query = db.collection("socios");
+
+  if (tipo === "todos") {
+    query = query.orderBy("nombre");
+  } else if (tipo === "al_dia") {
+    query = query.where("estadoCuenta", "==", "al_dia").orderBy("nombre");
+  } else if (tipo === "impagas") {
+    query = query.where("estadoCuenta", "==", "deuda").orderBy("nombre");
+  } else if (tipo === "morosos30") {
+    query = query.where("estadoCuenta", "==", "moroso").orderBy("nombre");
+  }
+
+  // CONSULTA
+
+  const snapshot = await query.get();
+
+  // DATOS
+
+  snapshot.forEach((doc) => {
+    const socio = doc.data();
+
+    total++;
+
+    switch (socio.estadoCuenta) {
+      case "al_dia":
+        alDia++;
+        break;
+
+      case "deuda":
+        deuda++;
+        break;
+
+      case "moroso":
+        morosos++;
+        break;
+    }
+  });
+
   const fecha = new Date().toLocaleDateString("es-AR");
 
-  doc.setFontSize(18);
+  // ==========================================
+  // DATOS DEL CLUB
+  // ==========================================
+
+  const general = configuracionGeneral.general || {};
+  const exportaciones = configuracionGeneral.exportaciones || {};
+
+  const nombreClub = general.nombreClub || "Club";
+  const direccion = general.direccion || "";
+  const telefono = general.telefono || "";
+  const email = general.email || "";
+
+  const incluirLogo = exportaciones.pdfLogo;
+  const incluirDatosDelClub = exportaciones.pdfDatosDelClub;
+  const incluirFecha = exportaciones.pdfFecha;
+  const incluirResumen = exportaciones.pdfResumen;
+  const incluirPaginacion = exportaciones.pdfPaginacion;
+
+  // ==========================================
+  // LOGO
+  // ==========================================
+
+  if (incluirLogo && logoBase64) {
+    const img = new Image();
+
+    img.src = logoBase64;
+
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+
+    const alto = 22;
+
+    const ancho = (img.width / img.height) * alto;
+
+    doc.addImage(logoBase64, undefined, 12, 10, ancho, alto);
+  }
+
+  let linea = 34;
+
+  doc.setFontSize(22);
 
   doc.setTextColor(0);
 
-  doc.text("Listado de socios", 105, 18, {
+  doc.text(nombreClub, 105, 18, {
+    align: "center",
+  });
+
+  doc.setFontSize(14);
+
+  doc.setTextColor(0);
+
+  doc.text("Listado de Socios", 105, 27, {
     align: "center",
   });
 
   doc.setFontSize(9);
 
-  doc.text(fecha, 105, 24, {
-    align: "center",
-  });
+  doc.setTextColor(0);
+
+  if (incluirDatosDelClub) {
+    if (direccion) {
+      doc.text(direccion, 105, linea, {
+        align: "center",
+      });
+
+      linea += 5;
+    }
+
+    if (telefono) {
+      doc.text(`Tel: ${telefono}`, 105, linea, {
+        align: "center",
+      });
+
+      linea += 5;
+    }
+
+    if (email) {
+      doc.text(email, 105, linea, {
+        align: "center",
+      });
+
+      linea += 5;
+    }
+  }
+  if (incluirFecha) {
+    doc.text(
+      `Generado el ${new Date().toLocaleDateString("es-AR")}`,
+      105,
+      linea,
+      {
+        align: "center",
+      },
+    );
+  }
+
+  doc.setDrawColor("#000000");
+  doc.setLineWidth(0.5);
+  doc.line(10, linea + 3, 200, linea + 3);
+
+  doc.setFontSize(9);
 
   const headers = [camposSeleccionados.map((c) => camposExportables[c])];
 
@@ -711,7 +1030,7 @@ function generarPDFImpresion(datos, camposSeleccionados, tipo) {
   );
 
   doc.autoTable({
-    startY: 30,
+    startY: linea + 8,
 
     head: headers,
 
@@ -739,5 +1058,77 @@ function generarPDFImpresion(datos, camposSeleccionados, tipo) {
     },
   });
 
-  doc.save(`socios_impresion_${tipo}_${Date.now()}.pdf`);
+  const totalPaginas = doc.getNumberOfPages();
+
+  if (incluirPaginacion) {
+    for (let i = 1; i <= totalPaginas; i++) {
+      doc.setPage(i);
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      // Línea superior
+      doc.setDrawColor(220);
+      doc.line(14, pageHeight - 12, pageWidth - 14, pageHeight - 12);
+
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+
+      // Texto izquierdo
+      doc.text(
+        `Sistema de Gestión de Socios • ${configuracionGeneral.general?.nombreClub || ""}`,
+        14,
+        pageHeight - 6,
+      );
+
+      // Texto derecho
+      doc.text(`Página ${i}/${totalPaginas}`, pageWidth - 14, pageHeight - 6, {
+        align: "right",
+      });
+    }
+  }
+
+  // ==========================================
+  // RESUMEN
+  // ==========================================
+
+  if (incluirResumen) {
+    let y = doc.lastAutoTable.finalY + 12;
+
+    if (y > 260) {
+      doc.addPage();
+
+      y = 20;
+    }
+
+    doc.setFontSize(14);
+
+    doc.setTextColor(0);
+
+    doc.text("Resumen", 14, y);
+
+    y += 8;
+
+    doc.setFontSize(11);
+
+    doc.setTextColor(40);
+
+    doc.text(`Total de socios: ${total}`, 14, y);
+
+    y += 7;
+
+    doc.text(`Socios al día: ${alDia}`, 14, y);
+
+    y += 7;
+
+    doc.text(`Socios con deuda: ${deuda}`, 14, y);
+
+    y += 7;
+
+    doc.text(`Socios morosos: ${morosos}`, 14, y);
+  }
+
+  const nombreArchivo = exportaciones.nombreExcel || "ListadoSocios";
+
+  doc.save(`${nombreArchivo}_imp_${new Date().toISOString().slice(0, 10)}.pdf`);
 }

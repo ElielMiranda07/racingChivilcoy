@@ -5,6 +5,8 @@ async function cargarConfiguracion() {
     ${contenidoConfiguracion()}
     ${botonGuardarConfiguracion()}
   `;
+
+  cargarListaModulos();
 }
 
 function cabeceraConfiguracion() {
@@ -259,7 +261,93 @@ function tabApariencia() {
 `;
 }
 
+function cargarListaModulos() {
+  const orden = configuracionGeneral.menu?.length
+    ? configuracionGeneral.menu
+    : MODULOS.map((m) => m.id);
+
+  let html = "";
+
+  orden.forEach((id) => {
+    const modulo = MODULOS.find((m) => m.id === id);
+
+    if (!modulo) return;
+
+    html += `
+      <div
+  class="card mb-2 moduloOrden"
+  data-id="${modulo.id}">
+
+  <div class="card-body py-3">
+
+    <i class="bi bi-grip-vertical"></i>
+
+    <div>
+
+      <div class="fw-bold colorSecundario">
+
+        ${modulo.nombre}
+
+      </div>
+
+      <small class="text-muted">
+
+        Arrastrar para cambiar posición
+
+      </small>
+
+    </div>
+
+  </div>
+
+</div>
+    `;
+  });
+
+  document.getElementById("listaModulos").innerHTML = html;
+
+  Sortable.create(document.getElementById("listaModulos"), {
+    animation: 200,
+
+    ghostClass: "sortable-ghost",
+
+    chosenClass: "sortable-chosen",
+
+    dragClass: "sortable-drag",
+  });
+}
+
+async function guardarOrdenMenu() {
+  const orden = [];
+
+  document.querySelectorAll(".moduloOrden").forEach((item) => {
+    orden.push(item.dataset.id);
+  });
+
+  await db.collection("configuracion").doc("general").update({
+    menu: orden,
+  });
+
+  Swal.fire({
+    icon: "success",
+    title: "Orden guardado",
+  });
+}
+
+function obtenerOrdenMenuActual() {
+  const orden = [];
+
+  document.querySelectorAll(".moduloOrden").forEach((item) => {
+    orden.push(item.dataset.id);
+  });
+
+  return orden;
+}
+
 function tabModulos() {
+  console.log(configuracionGeneral.menu);
+  console.log(MODULOS);
+
   return `
 
 <div class="tab-pane fade" id="tabModulos">
@@ -268,91 +356,21 @@ function tabModulos() {
 
     <div class="card-body">
 
-      <h4 class="colorPrincipal">Módulos</h4>
+      <h4 class="colorPrincipal">
+        Orden del menú
+      </h4>
 
       <hr>
 
-      <div class="form-check">
+      <small class="text-muted">
 
-        <input class="form-check-input" type="checkbox" id="modDashboard" ${configuracionGeneral.modulos?.dashboard ? "checked" : ""}>
+        Arrastrá los módulos para cambiar el orden en la barra lateral.
 
-        <label class="form-check-label colorSecundario">
+      </small>
 
-          Dashboard General
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="modFacturacion" ${configuracionGeneral.modulos?.dashboardFacturacion ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Dashboard Facturación
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="modImportar" ${configuracionGeneral.modulos?.importar ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Crear socios
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="modBuscar" ${configuracionGeneral.modulos?.buscar ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Buscar socios
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="modPrecios" ${configuracionGeneral.modulos?.precios ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Precios
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="modPagos" ${configuracionGeneral.modulos?.pagos ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Pagos
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="modNotificaciones" ${configuracionGeneral.modulos?.notificaciones ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Notificaciones
-
-        </label>
+      <div
+        id="listaModulos"
+        class="mt-3">
 
       </div>
 
@@ -382,7 +400,7 @@ function tabFacturacion() {
 
         <label class="colorSecundario">
 
-          Meses para Vitalicio
+          <strong>Meses para Vitalicio</strong>
 
         </label>
 
@@ -399,24 +417,7 @@ function tabFacturacion() {
 
         <label class="colorSecundario">
 
-          Días para Mora
-
-        </label>
-
-        <input
-          type="number"
-          id="diasMora"
-          class="form-control"
-          value="${configuracionGeneral.facturacion?.diasMora || ""}"
-        >
-
-      </div>
-
-      <div class="mb-3">
-
-        <label class="colorSecundario">
-
-          Interés mensual
+          <strong>Interés mensual</strong>
 
         </label>
 
@@ -426,6 +427,90 @@ function tabFacturacion() {
           class="form-control"
           value="${configuracionGeneral.facturacion?.interesMora || ""}"
         >
+
+      </div>
+
+      <div class="mb-3">
+
+          <label class="colorSecundario">
+
+            <strong>Descuento en cuota social a grupos familiares 2, 3, 4, 5 y 6 miembros (expresado en %)</strong>
+
+          </label>
+
+          <div class="d-flex flex-column align-items-center">
+
+          <div class="col-6 text-center mt-1">
+            <label class="colorPrincipal">
+
+              2
+
+            </label>
+            <input
+              type="number"
+              id="descuentoFamilia2"
+              class="form-control"
+              value="${configuracionGeneral.facturacion?.descuentoFamilia2 || ""}"
+            >
+          </div>
+
+          <div class="col-6 text-center mt-1">
+            <label class="colorPrincipal">
+
+              3
+
+            </label>
+            <input
+              type="number"
+              id="descuentoFamilia3"
+              class="form-control"
+              value="${configuracionGeneral.facturacion?.descuentoFamilia3 || ""}"
+            >
+          </div>
+
+          <div class="col-6 text-center mt-1">
+            <label class="colorPrincipal">
+
+              4
+
+            </label>
+            <input
+              type="number"
+              id="descuentoFamilia4"
+              class="form-control"
+              value="${configuracionGeneral.facturacion?.descuentoFamilia4 || ""}"
+            >
+          </div>
+
+          <div class="col-6 text-center mt-1">
+            <label class="colorPrincipal">
+
+              5
+
+            </label>
+            <input
+              type="number"
+              id="descuentoFamilia5"
+              class="form-control"
+              value="${configuracionGeneral.facturacion?.descuentoFamilia5 || ""}"
+            >
+          </div>
+
+          <div class="col-6 text-center mt-1">
+            <label class="colorPrincipal">
+
+              6
+
+            </label>
+            <input
+              type="number"
+              id="descuentoFamilia6"
+              class="form-control"
+              value="${configuracionGeneral.facturacion?.descuentoFamilia6 || ""}"
+            >
+          </div>
+            
+        </div>
 
       </div>
 
@@ -539,14 +624,122 @@ function tabExportaciones() {
         >
 
           <option value="true"
-  ${configuracionGeneral.exportaciones?.pdfLogo ? "selected" : ""}>
-  Sí
-</option>
+            ${configuracionGeneral.exportaciones?.pdfLogo ? "selected" : ""}>
+            Sí
+          </option>
 
-<option value="false"
-  ${!configuracionGeneral.exportaciones?.pdfLogo ? "selected" : ""}>
-  No
-</option>
+          <option value="false"
+            ${!configuracionGeneral.exportaciones?.pdfLogo ? "selected" : ""}>
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="mb-3">
+
+        <label class="colorSecundario">
+
+          Incluir Datos del Club
+
+        </label>
+
+        <select
+          id="pdfDatosDelClub"
+          class="form-select"
+        >
+
+          <option value="true"
+            ${configuracionGeneral.exportaciones?.pdfDatosDelClub ? "selected" : ""}>
+            Sí
+          </option>
+
+          <option value="false"
+            ${!configuracionGeneral.exportaciones?.pdfDatosDelClub ? "selected" : ""}>
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="mb-3">
+
+        <label class="colorSecundario">
+
+          Incluir Fecha de Emisión
+
+        </label>
+
+        <select
+          id="pdfFecha"
+          class="form-select"
+        >
+
+          <option value="true"
+            ${configuracionGeneral.exportaciones?.pdfFecha ? "selected" : ""}>
+            Sí
+          </option>
+
+          <option value="false"
+            ${!configuracionGeneral.exportaciones?.pdfFecha ? "selected" : ""}>
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="mb-3">
+
+        <label class="colorSecundario">
+
+          Incluir Resumen de Socios
+
+        </label>
+
+        <select
+          id="pdfResumen"
+          class="form-select"
+        >
+
+          <option value="true"
+            ${configuracionGeneral.exportaciones?.pdfResumen ? "selected" : ""}>
+            Sí
+          </option>
+
+          <option value="false"
+            ${!configuracionGeneral.exportaciones?.pdfResumen ? "selected" : ""}>
+            No
+          </option>
+
+        </select>
+
+      </div>
+
+      <div class="mb-3">
+
+        <label class="colorSecundario">
+
+          Incluir Paginación
+
+        </label>
+
+        <select
+          id="pdfPaginacion"
+          class="form-select"
+        >
+
+          <option value="true"
+            ${configuracionGeneral.exportaciones?.pdfPaginacion ? "selected" : ""}>
+            Sí
+          </option>
+
+          <option value="false"
+            ${!configuracionGeneral.exportaciones?.pdfPaginacion ? "selected" : ""}>
+            No
+          </option>
 
         </select>
 
@@ -654,9 +847,27 @@ async function guardarConfiguracion() {
           document.getElementById("mesesVitalicio")?.value || 0,
         ),
 
-        diasMora: Number(document.getElementById("diasMora")?.value || 0),
-
         interesMora: Number(document.getElementById("interesMora")?.value || 0),
+
+        descuentoFamilia2: Number(
+          document.getElementById("descuentoFamilia2")?.value || 0,
+        ),
+
+        descuentoFamilia3: Number(
+          document.getElementById("descuentoFamilia3")?.value || 0,
+        ),
+
+        descuentoFamilia4: Number(
+          document.getElementById("descuentoFamilia4")?.value || 0,
+        ),
+
+        descuentoFamilia5: Number(
+          document.getElementById("descuentoFamilia5")?.value || 0,
+        ),
+
+        descuentoFamilia6: Number(
+          document.getElementById("descuentoFamilia6")?.value || 0,
+        ),
       },
 
       dashboard: {
@@ -673,7 +884,19 @@ async function guardarConfiguracion() {
         nombreExcel: document.getElementById("nombreExcel")?.value || "",
 
         pdfLogo: document.getElementById("pdfLogo")?.value === "true",
+
+        pdfDatosDelClub:
+          document.getElementById("pdfDatosDelClub")?.value === "true",
+
+        pdfFecha: document.getElementById("pdfFecha")?.value === "true",
+
+        pdfResumen: document.getElementById("pdfResumen")?.value === "true",
+
+        pdfPaginacion:
+          document.getElementById("pdfPaginacion")?.value === "true",
       },
+
+      menu: obtenerOrdenMenuActual(),
     };
 
     await db
@@ -684,9 +907,11 @@ async function guardarConfiguracion() {
     Swal.fire({
       icon: "success",
       title: "Configuración guardada",
-      text: "Los cambios se guardaron correctamente.",
+      text: "Recargando el sistema...",
       timer: 2000,
       showConfirmButton: false,
+    }).then(() => {
+      window.location.reload();
     });
   } catch (error) {
     console.error(error);

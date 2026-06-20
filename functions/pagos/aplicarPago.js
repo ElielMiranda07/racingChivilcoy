@@ -35,6 +35,16 @@ async function aplicarPago({
 
   const socioDoc = await socioRef.get();
 
+  const configDoc = await admin
+    .firestore()
+    .collection("configuracion")
+    .doc("general")
+    .get();
+
+  const config = configDoc.data() || {};
+
+  const mesesVitalicio = config.facturacion?.mesesVitalicio ?? 500;
+
   if (!socioDoc.exists) {
     throw new Error("Socio no existe");
   }
@@ -231,7 +241,7 @@ async function aplicarPago({
 
     mesesPagos,
 
-    esVitalicio: mesesPagos >= 480,
+    esVitalicio: mesesPagos >= mesesVitalicio,
 
     ultimoPago: admin.firestore.FieldValue.serverTimestamp(),
   });

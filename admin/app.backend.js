@@ -91,39 +91,118 @@ function checkUserRole(user) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const MODULOS = [
+  {
+    id: "dashboard",
+    nombre: "Dashboard General",
+    permiso: "dashboard",
+    cargar: "cargarDashboard",
+  },
+
+  {
+    id: "dashboardFacturacion",
+    nombre: "Dashboard Facturación",
+    permiso: "facturacion",
+    cargar: "cargarDashboardFacturacion",
+  },
+
+  {
+    id: "importar",
+    nombre: "Crear socios",
+    permiso: "importar",
+    cargar: "cargarModuloImportar",
+  },
+
+  {
+    id: "buscar",
+    nombre: "Buscar socio",
+    permiso: "buscar",
+    cargar: "cargarBuscadorSocios",
+  },
+
+  {
+    id: "precios",
+    nombre: "Precios",
+    permiso: "precios",
+    cargar: "cargarModuloPrecios",
+  },
+
+  {
+    id: "pagos",
+    nombre: "Pagos",
+    permiso: "pagos",
+    cargar: "cargarModuloPagos",
+  },
+
+  {
+    id: "notificaciones",
+    nombre: "Notificaciones",
+    permiso: "notificaciones",
+    cargar: "cargarModuloNotificaciones",
+  },
+
+  {
+    id: "usuarios",
+    nombre: "Usuarios",
+    permiso: "usuarios",
+    cargar: "cargarModuloUsuarios",
+  },
+
+  {
+    id: "pileta",
+    nombre: "Pileta",
+    permiso: "pileta",
+    cargar: "cargarModuloPileta",
+  },
+
+  {
+    id: "analisis",
+    nombre: "Analisis",
+    permiso: "analisis",
+    cargar: "cargarModuloAnalisis",
+  },
+
+  {
+    id: "configuracion",
+    nombre: "Configuración",
+    permiso: "configuracion",
+    cargar: "cargarConfiguracion",
+  },
+];
+
+function obtenerOrdenModulos() {
+  const ordenGuardado = configuracionGeneral.menu || [];
+
+  return [
+    ...ordenGuardado,
+    ...MODULOS.map((m) => m.id).filter((id) => !ordenGuardado.includes(id)),
+  ];
+}
+
 function mostrar(modulo) {
+  const moduloActual = MODULOS.find((m) => m.id === modulo);
+
+  if (moduloActual && permisosUsuario[moduloActual.permiso] === false) {
+    Swal.fire({
+      icon: "error",
+      title: "Sin permisos",
+      text: "No tiene acceso a este módulo",
+    });
+
+    return;
+  }
+
   document
     .querySelectorAll(".modulo")
     .forEach((m) => m.classList.add("d-none"));
 
   document.getElementById(modulo).classList.remove("d-none");
 
-  if (modulo === "dashboard") {
-    cargarDashboard();
-  }
-
-  if (modulo === "dashboardFacturacion") {
-    cargarDashboardFacturacion();
-  }
-
-  if (modulo === "buscar") {
-    cargarBuscadorSocios();
-  }
-
-  if (modulo === "precios") {
-    cargarModuloPrecios();
-  }
-
-  if (modulo === "pagos") {
-    cargarModuloPagos();
-  }
-
-  if (modulo === "configuracion") {
-    cargarConfiguracion();
-  }
-
-  if (modulo === "notificaciones") {
-    cargarModuloNotificaciones();
+  if (
+    moduloActual?.cargar &&
+    typeof window[moduloActual.cargar] === "function"
+  ) {
+    window[moduloActual.cargar]();
   }
 }
 
@@ -145,6 +224,8 @@ let datosCSV = [];
 let graficoFacturacion = null;
 let graficoFacturacionLineal = null;
 let logoBase64 = "";
+let permisosUsuario = {};
+let proximoSocio;
 
 let colorPrincipal = "#000000";
 let colorSecundario = "#ffffff";
@@ -195,12 +276,101 @@ function aplicarConfiguracionGeneral() {
   );
 
   document.documentElement.style.setProperty("--color-acento", colorAcento);
+
+  proximoSocio = (configuracionGeneral.ultimoNumeroSocio || 0) + 1;
+
+  actualizarNumeroSocioPreview();
+
+  console.log("Próximo socio:", proximoSocio);
+}
+
+async function cargarPermisosUsuario() {
+  const uid = firebase.auth().currentUser.uid;
+
+  const doc = await db.collection("usuarios").doc(uid).get();
+
+  permisosUsuario = doc.data().permisos || {};
+
+  renderMenu();
 }
 
 async function iniciarSistema() {
   await cargarConfiguracionSistema();
 
   aplicarConfiguracionGeneral();
+
+  await cargarPermisosUsuario();
 }
 
 iniciarSistema();
+
+function renderMenu() {
+  let html = "";
+  let html2 = "";
+
+  const orden = obtenerOrdenModulos();
+
+  orden.forEach((idModulo) => {
+    const modulo = MODULOS.find((m) => m.id === idModulo);
+
+    if (!modulo) return;
+
+    if (permisosUsuario[modulo.permiso] === false) return;
+
+    // CONFIGURACIÓN
+
+    if (modulo.id === "configuracion") {
+      html2 += `
+        <button
+          class="btn text-white mt-auto mb-1"
+          onclick="mostrar('configuracion')"
+          style="
+            font-size:1.8rem;
+            transition:
+              transform .2s,
+              color .2s;
+          "
+
+          onmouseover="
+            this.style.transform='rotate(30deg) scale(1.1)';
+            this.style.color=colorPrincipal;
+          "
+
+          onmouseout="
+            this.style.transform='rotate(0deg) scale(1)';
+            this.style.color='white';
+          "
+
+          title="Configuración">
+
+          <i class="bi bi-gear-fill"></i>
+
+        </button>
+      `;
+    }
+
+    // RESTO DE LOS MÓDULOS
+    else {
+      html += `
+        <button
+          class="btn btn-custom w-100 mb-2"
+          onclick="mostrar('${modulo.id}')">
+
+          <strong>${modulo.nombre}</strong>
+
+        </button>
+      `;
+    }
+  });
+
+  document.getElementById("menuModulos").innerHTML = html;
+  document.getElementById("configuracionContainer").innerHTML = html2;
+}
+
+function actualizarNumeroSocioPreview() {
+  const input = document.getElementById("numeroSocioPreview");
+
+  if (input) {
+    input.value = proximoSocio || "-";
+  }
+}

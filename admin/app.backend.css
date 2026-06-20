@@ -34,6 +34,12 @@
   color: var(--color-secundario);
 }
 
+.btn-custom:hover {
+  background-color: var(--color-principal);
+  color: var(--color-secundario);
+  border: 1.5px, inset, var(--color-acento);
+}
+
 .nav-tabs .nav-link {
   color: var(--color-secundario);
   font-weight: 700;
@@ -50,4 +56,68 @@
   font-weight: 700;
   background-color: #fff;
   border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.swal2-popup {
+  border-radius: 1rem !important;
+}
+
+.swal2-html-container {
+  overflow-x: hidden !important;
+}
+
+.swal2-confirm {
+  font-weight: 600 !important;
+}
+
+.swal2-cancel {
+  font-weight: 600 !important;
+}
+
+.moduloOrden {
+  cursor: grab;
+  transition: all 0.2s ease;
+  border: none !important;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.moduloOrden:active {
+  cursor: grabbing;
+}
+
+.moduloOrden .card-body {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 15px;
+  font-weight: 600;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.moduloOrden:hover .card-body {
+  transform: translateX(5px);
+  border-color: var(--color-principal);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.moduloOrden i {
+  font-size: 1.2rem;
+  color: #adb5bd;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+}
+
+.sortable-chosen .card-body {
+  border: 2px solid var(--color-principal);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.sortable-drag .card-body {
+  transform: rotate(2deg);
 }

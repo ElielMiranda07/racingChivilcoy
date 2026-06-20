@@ -15,67 +15,150 @@ admin.initializeApp();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////// Exportar socios individualmente ///////////////////////////////////////
+///////////////////////////////////////// Crear Socios (MANUAL Y CSV) /////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-exports.crearUsuarioSocio = onCall(async (request) => {
+exports.procesarSocios = onCall(async (request) => {
   if (!request.auth) {
     throw new Error("Debes estar logueado");
   }
 
-  const dni = request.data.dni;
-  const nombre = request.data.nombre;
+  const db = admin.firestore();
 
-  const email = `dni_${dni}@socios.racing`;
-
-  const userRecord = await admin.auth().createUser({
-    email: email,
-    password: "Test1234!",
-    displayName: nombre,
-  });
-
-  return {
-    uid: userRecord.uid,
-  };
-});
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////// Exportar socios en Bloques ////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-exports.crearUsuariosSociosBatch = onCall(async (request) => {
-  if (!request.auth) {
-    throw new Error("Debes estar logueado");
-  }
-
-  const socios = request.data.socios;
+  const socios = request.data.socios || [];
 
   const resultados = [];
 
   for (const socio of socios) {
     try {
       const dni = socio.dni.trim();
-      const nombre = socio.nombre;
 
-      const email = `dni_${dni}@socios.racing`;
+      // EXISTE?
 
-      const userRecord = await admin.auth().createUser({
-        email,
-        password: "Test1234!",
-        displayName: nombre,
-      });
+      const existente = await db
+        .collection("socios")
+        .where("dni", "==", dni)
+        .limit(1)
+        .get();
+
+      let uid;
+
+      // NUEVO SOCIO
+
+      if (existente.empty) {
+        const email = `dni_${dni}@socios.racing`;
+
+        const userRecord = await admin.auth().createUser({
+          email,
+          password: "Test1234!",
+          displayName: socio.nombre,
+        });
+
+        uid = userRecord.uid;
+      } else {
+        uid = existente.docs[0].id;
+      }
+
+      // NUMERO DE SOCIO
+
+      let numeroDeSocio;
+
+      if (socio.numeroDeSocio) {
+        numeroDeSocio = Number(socio.numeroDeSocio);
+      } else {
+        numeroDeSocio = await db.runTransaction(async (transaction) => {
+          const ref = db.collection("configuracion").doc("general");
+
+          const doc = await transaction.get(ref);
+
+          let ultimoNumeroSocio = 0;
+
+          if (doc.exists) {
+            ultimoNumeroSocio = doc.data().ultimoNumeroSocio || 0;
+          }
+
+          ultimoNumeroSocio++;
+
+          transaction.set(
+            ref,
+            {
+              ultimoNumeroSocio,
+            },
+            {
+              merge: true,
+            },
+          );
+
+          return ultimoNumeroSocio;
+        });
+      }
+
+      // ACTUALIZAR ULTIMO NUMERO SI VIENE
+      // UNO MAYOR DESDE CSV
+
+      if (socio.numeroDeSocio) {
+        await db.runTransaction(async (transaction) => {
+          const ref = db.collection("configuracion").doc("general");
+
+          const doc = await transaction.get(ref);
+
+          let ultimoNumeroSocio = doc.data()?.ultimoNumeroSocio || 0;
+
+          if (numeroDeSocio > ultimoNumeroSocio) {
+            transaction.set(
+              ref,
+              {
+                ultimoNumeroSocio: numeroDeSocio,
+              },
+              {
+                merge: true,
+              },
+            );
+          }
+        });
+      }
+
+      // GUARDAR SOCIO
+
+      await db
+        .collection("socios")
+        .doc(uid)
+        .set(
+          {
+            numeroDeSocio,
+
+            activo: true,
+
+            dni,
+
+            nombre: socio.nombre,
+
+            nombreBusqueda: socio.nombre.toLowerCase(),
+
+            mail: socio.mail || "",
+
+            telefono: socio.telefono || "",
+
+            primerLogin: true,
+
+            rol: "socio",
+
+            ultimaActualizacion: admin.firestore.FieldValue.serverTimestamp(),
+          },
+          {
+            merge: true,
+          },
+        );
 
       resultados.push({
         dni,
-        uid: userRecord.uid,
+        uid,
+        numeroDeSocio,
+        error: false,
       });
-    } catch (error) {
+    } catch (e) {
       resultados.push({
         dni: socio.dni,
         error: true,
@@ -83,7 +166,9 @@ exports.crearUsuariosSociosBatch = onCall(async (request) => {
     }
   }
 
-  return { resultados };
+  return {
+    resultados,
+  };
 });
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,6 +253,12 @@ exports.crearPreferencia = onRequest((req, res) => {
 async function procesarPagoSocio(uid, paymentId = null) {
   const db = admin.firestore();
 
+  const configDoc = await db.collection("configuracion").doc("general").get();
+
+  const configuracion = configDoc.data() || {};
+
+  const mesesVitalicio = configuracion.facturacion?.mesesVitalicio ?? 500;
+
   // TRAER SOCIO
 
   const socioRef = db.collection("socios").doc(uid);
@@ -213,7 +304,7 @@ async function procesarPagoSocio(uid, paymentId = null) {
 
     const nuevosMeses = mesesActuales + 1;
 
-    const esVitalicio = nuevosMeses >= 480;
+    const esVitalicio = nuevosMeses >= mesesVitalicio;
 
     totalCobradoAhora += data.deudaActual || 0;
 
@@ -1004,3 +1095,87 @@ exports.registrarPagoManual = onCall(async (request) => {
     resultados,
   };
 });
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////// Crear Usuario Sitema ///////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+exports.crearUsuarioSistema = onCall(async (request) => {
+  // AUTENTICACIÓN
+
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Debe iniciar sesión.");
+  }
+
+  // VERIFICAR ADMIN
+
+  const solicitante = await admin
+    .firestore()
+    .collection("usuarios")
+    .doc(request.auth.uid)
+    .get();
+
+  if (!solicitante.exists) {
+    throw new HttpsError("permission-denied", "Usuario inexistente.");
+  }
+
+  const datosSolicitante = solicitante.data();
+
+  if (datosSolicitante.role !== "admin") {
+    throw new HttpsError("permission-denied", "No posee permisos.");
+  }
+
+  // DATOS
+  console.log("request.data:", request.data);
+
+  const { nombre, email, password, accesos, permisos } = request.data;
+
+  if (!nombre || !email || !password) {
+    throw new HttpsError("invalid-argument", "Faltan datos.");
+  }
+
+  // CREAR AUTH
+
+  const nuevoUsuario = await admin.auth().createUser({
+    email,
+    password,
+    displayName: nombre,
+  });
+
+  // CREAR FIRESTORE
+
+  await admin
+    .firestore()
+    .collection("usuarios")
+    .doc(nuevoUsuario.uid)
+    .set({
+      name: nombre,
+
+      email,
+
+      role: "admin",
+
+      accesos: accesos || {},
+
+      permisos: permisos || {},
+
+      creado: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+  return {
+    ok: true,
+    uid: nuevoUsuario.uid,
+  };
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////// Notificaciones /////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

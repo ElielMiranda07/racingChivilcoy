@@ -6,133 +6,130 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////// Crear socio MANUAL //////////////////////
+function cargarModuloImportar() {
+  document.getElementById("importar").innerHTML = `
 
-async function crearSocioManual() {
-  try {
-    const nombre = document.getElementById("manualNombre").value.trim();
+<h2 class="colorPrincipal">Crear socio manualmente</h2>
 
-    const dni = document.getElementById("manualDni").value.trim();
+<div class="card p-4">
 
-    const mail = document.getElementById("manualMail").value.trim();
+  <div class="row">
 
-    const telefono = document.getElementById("manualTelefono").value.trim();
+    <div class="col-md-12 mb-4">
 
-    // VALIDACIONES
+      <label class="form-label fw-bold colorSecundario">
+        <i class="bi bi-person-vcard"></i>
+        Número de socio
+      </label>
 
-    if (!nombre || !dni) {
-      Swal.fire("Completar nombre y DNI", "", "warning");
+      <input
+        type="text"
+        id="numeroSocioPreview"
+        class="form-control"
+        readonly
+      >
 
-      return;
-    }
+      <small class="text-muted">
+        Se asignará automáticamente al crear el socio.
+      </small>
 
-    // VERIFICAR EXISTENTE
+    </div>
 
-    const existente = await db
-      .collection("socios")
-      .where("dni", "==", dni)
-      .limit(1)
-      .get();
+    <div class="col-md-6 mb-3">
 
-    if (!existente.empty) {
-      Swal.fire("Ya existe un socio con ese DNI", "", "warning");
+      <label class="form-label fw-bold colorSecundario">
+        Nombre y apellido
+      </label>
 
-      return;
-    }
+      <input
+        type="text"
+        id="manualNombre"
+        class="form-control">
 
-    // CREAR AUTH
+    </div>
 
-    const res = await crearUsuariosBatch({
-      socios: [
-        {
-          dni,
-          nombre,
-        },
-      ],
-    });
+    <div class="col-md-6 mb-3">
 
-    const resultado = res.data.resultados[0];
+      <label class="form-label fw-bold colorSecundario">
+        DNI
+      </label>
 
-    if (resultado.error) {
-      throw new Error("Error creando usuario");
-    }
+      <input
+        type="text"
+        id="manualDni"
+        class="form-control">
 
-    // GUARDAR FIRESTORE
+    </div>
 
-    await db
-      .collection("socios")
-      .doc(resultado.uid)
-      .set({
-        activo: true,
+    <div class="col-md-6 mb-3">
 
-        dni: dni,
+      <label class="form-label fw-bold colorSecundario">
+        Mail
+      </label>
 
-        nombre: nombre,
+      <input
+        type="email"
+        id="manualMail"
+        class="form-control fw-bold colorSecundario">
 
-        nombreBusqueda: nombre.toLowerCase(),
+    </div>
 
-        mail: mail || "",
+    <div class="col-md-6 mb-3">
 
-        telefono: telefono || "",
+      <label class="form-label fw-bold colorSecundario">
+        Teléfono
+      </label>
 
-        primerLogin: true,
+      <input
+        type="text"
+        id="manualTelefono"
+        class="form-control">
 
-        rol: "socio",
+    </div>
 
-        ultimaActualizacion: firebase.firestore.Timestamp.now(),
-      });
+  </div>
 
-    await db
-      .collection("estadisticas")
-      .doc("dashboard")
-      .update({
-        totalSocios: firebase.firestore.FieldValue.increment(1),
-      });
+  <button
+    class="btn btn-success mt-3"
+    onclick="crearSocioManual()">
 
-    // LIMPIAR FORM
+    Crear socio
 
-    document.getElementById("manualNombre").value = "";
+  </button>
 
-    document.getElementById("manualDni").value = "";
+  <div id="estadoManual" class="mt-3"></div>
 
-    document.getElementById("manualMail").value = "";
+</div>
 
-    document.getElementById("manualTelefono").value = "";
+<hr class="my-5">
 
-    // MENSAJE
+<h2 class="colorPrincipal">Importar CSV</h2>
 
-    document.getElementById("estadoManual").innerHTML = `
+<input type="file" id="csvFile" class="form-control">
 
-Swal.fire({
-  icon: "success",
-  title: "Socio creado correctamente",
-  timer: 2000,
-  showConfirmButton: false,
-});
+<button class="btn btn-primary mt-2"
+onclick="procesarCSV()">
+
+Mostrar preview
+
+</button>
+
+<div id="preview" class="mt-3"></div>
+
+<h4 class="colorPrincipal">Ejemplo de archivo CSV</h4>
+
+<a 
+href="../ejemplos/CSV_Modelo.csv"
+download
+class="btn btn-secondary mb-3">
+
+Descargar CSV de ejemplo
+
+</a>
 
 `;
-  } catch (e) {
-    console.error(e);
 
-    document.getElementById("estadoManual").innerHTML = `
-
-Swal.fire({
-  icon: "error",
-  title: "Error al crear socio",
-});
-
-`;
-  }
-}
-
-function dividirEnBloques(array, tamaño) {
-  const bloques = [];
-
-  for (let i = 0; i < array.length; i += tamaño) {
-    bloques.push(array.slice(i, i + tamaño));
-  }
-
-  return bloques;
+  document.getElementById("numeroSocioPreview").value = proximoSocio || "-";
 }
 
 function procesarCSV() {
@@ -237,151 +234,101 @@ function analizarCSV() {
   document.getElementById("preview").innerHTML += html;
 }
 
-console.log("usuario actual", firebase.auth().currentUser);
-
-const crearUsuariosBatch = firebase
+const procesarSociosCloud = firebase
   .functions()
-  .httpsCallable("crearUsuariosSociosBatch");
+  .httpsCallable("procesarSocios");
+
+async function crearSocioManual() {
+  try {
+    const nombre = document.getElementById("manualNombre").value.trim();
+
+    const dni = document.getElementById("manualDni").value.trim();
+
+    const mail = document.getElementById("manualMail").value.trim();
+
+    const telefono = document.getElementById("manualTelefono").value.trim();
+
+    if (!nombre || !dni) {
+      Swal.fire("Completar nombre y DNI", "", "warning");
+
+      return;
+    }
+
+    const res = await procesarSociosCloud({
+      socios: [
+        {
+          nombre,
+          dni,
+          mail,
+          telefono,
+        },
+      ],
+    });
+
+    const resultado = res.data.resultados[0];
+
+    if (resultado.error) {
+      throw new Error(resultado.error);
+    }
+
+    document.getElementById("manualNombre").value = "";
+
+    document.getElementById("manualDni").value = "";
+
+    document.getElementById("manualMail").value = "";
+
+    document.getElementById("manualTelefono").value = "";
+
+    Swal.fire({
+      icon: "success",
+      title: "Socio creado",
+      html: `
+      Número de socio:
+      <strong>${resultado.numeroDeSocio}</strong>
+      `,
+    });
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.message,
+    });
+  }
+}
 
 async function importarSocios() {
   const boton = document.querySelector('button[onclick="importarSocios()"]');
 
   boton.disabled = true;
 
-  boton.innerHTML = `
-    <span class="spinner-border spinner-border-sm"></span>
-    Importando...
-  `;
-
   try {
-    const user = await esperarAuth();
-
-    if (!user) {
-      Swal.fire({
-        icon: "warning",
-        title: "Acceso requerido",
-        text: "Debes estar logueado",
-      });
-
-      return;
-    }
-
     const barra = document.getElementById("barraProgreso");
 
-    const snapshot = await db.collection("socios").get();
+    barra.style.width = "20%";
 
-    const mapaSocios = {};
-
-    snapshot.forEach((doc) => {
-      const socio = doc.data();
-      mapaSocios[socio.dni] = doc.id;
+    const res = await procesarSociosCloud({
+      socios: datosCSV,
     });
+
+    barra.style.width = "100%";
+
+    const resultados = res.data.resultados;
 
     let creados = 0;
     let actualizados = 0;
     let errores = 0;
 
-    let batch = db.batch();
-    let procesados = 0;
-
-    const bloques = dividirEnBloques(datosCSV, 50);
-
-    for (const bloque of bloques) {
-      const sociosAcrear = [];
-
-      for (const fila of bloque) {
-        const dni = fila.dni.trim();
-
-        if (!mapaSocios[dni]) {
-          sociosAcrear.push({
-            dni,
-            nombre: fila.nombre,
-          });
-        }
+    resultados.forEach((r) => {
+      if (r.error) {
+        errores++;
+      } else if (r.creado) {
+        creados++;
+      } else {
+        actualizados++;
       }
-
-      if (sociosAcrear.length > 0) {
-        const res = await crearUsuariosBatch({
-          socios: sociosAcrear,
-        });
-
-        res.data.resultados.forEach((r) => {
-          if (!r.error) {
-            mapaSocios[r.dni] = r.uid;
-            creados++;
-          } else {
-            errores++;
-          }
-        });
-      }
-
-      for (const fila of bloque) {
-        try {
-          const dni = fila.dni.trim();
-
-          const uid = mapaSocios[dni];
-
-          if (!uid) {
-            errores++;
-            continue;
-          }
-
-          if (mapaSocios[dni] && !sociosAcrear.find((s) => s.dni === dni)) {
-            actualizados++;
-          }
-
-          const ref = db.collection("socios").doc(uid);
-
-          batch.set(
-            ref,
-            {
-              activo: true,
-              dni,
-              nombre: fila.nombre,
-              nombreBusqueda: fila.nombre.toLowerCase(),
-              mail: fila.mail || "",
-              telefono: fila.telefono || "",
-              primerLogin: true,
-              rol: "socio",
-              ultimaActualizacion: firebase.firestore.Timestamp.now(),
-            },
-            { merge: true },
-          );
-
-          procesados++;
-
-          if (procesados % 400 === 0) {
-            await batch.commit();
-            batch = db.batch();
-          }
-
-          const progreso = Math.round((procesados / datosCSV.length) * 100);
-
-          barra.style.width = progreso + "%";
-          barra.innerText = progreso + "%";
-        } catch (e) {
-          console.error(e);
-          errores++;
-        }
-      }
-    }
-
-    await batch.commit();
-
-    // ACTUALIZAR TOTAL SOCIOS REAL
-
-    const totalSocios = (await db.collection("socios").get()).size;
-
-    await db.collection("estadisticas").doc("dashboard").set(
-      {
-        totalSocios,
-      },
-      {
-        merge: true,
-      },
-    );
-
-    // RESULTADO
+    });
 
     Swal.fire({
       icon: "success",
@@ -391,125 +338,16 @@ async function importarSocios() {
         <strong>Socios actualizados:</strong> ${actualizados}<br>
         <strong>Errores:</strong> ${errores}
       `,
-      confirmButtonText: "Aceptar",
     });
-
-    boton.innerHTML = "Finalizado";
   } catch (error) {
     console.error(error);
 
     Swal.fire({
       icon: "error",
-      title: "Error en la importación",
-      text: error.message || "Ocurrió un error inesperado",
+      title: "Error",
+      text: error.message,
     });
-
-    boton.innerHTML = "Error";
-  } finally {
-    boton.disabled = false;
   }
+
+  boton.disabled = false;
 }
-
-document.getElementById("importar").innerHTML = `
-
-
-
-<h2 class="colorPrincipal">Crear socio manualmente</h2>
-
-<div class="card p-4">
-
-  <div class="row">
-
-    <div class="col-md-6 mb-3">
-
-      <label class="form-label fw-bold colorSecundario">
-        Nombre y apellido
-      </label>
-
-      <input
-        type="text"
-        id="manualNombre"
-        class="form-control">
-
-    </div>
-
-    <div class="col-md-6 mb-3">
-
-      <label class="form-label fw-bold colorSecundario">
-        DNI
-      </label>
-
-      <input
-        type="text"
-        id="manualDni"
-        class="form-control">
-
-    </div>
-
-    <div class="col-md-6 mb-3">
-
-      <label class="form-label fw-bold colorSecundario">
-        Mail
-      </label>
-
-      <input
-        type="email"
-        id="manualMail"
-        class="form-control fw-bold colorSecundario">
-
-    </div>
-
-    <div class="col-md-6 mb-3">
-
-      <label class="form-label fw-bold colorSecundario">
-        Teléfono
-      </label>
-
-      <input
-        type="text"
-        id="manualTelefono"
-        class="form-control">
-
-    </div>
-
-  </div>
-
-  <button
-    class="btn btn-success mt-3"
-    onclick="crearSocioManual()">
-
-    Crear socio
-
-  </button>
-
-  <div id="estadoManual" class="mt-3"></div>
-
-</div>
-
-<hr class="my-5">
-
-<h2 class="colorPrincipal">Importar CSV</h2>
-
-<input type="file" id="csvFile" class="form-control">
-
-<button class="btn btn-primary mt-2"
-onclick="procesarCSV()">
-
-Mostrar preview
-
-</button>
-
-<div id="preview" class="mt-3"></div>
-
-<h4 class="colorPrincipal">Ejemplo de archivo CSV</h4>
-
-<a 
-href="../ejemplos/CSV_Modelo.csv"
-download
-class="btn btn-secondary mb-3">
-
-Descargar CSV de ejemplo
-
-</a>
-
-`;

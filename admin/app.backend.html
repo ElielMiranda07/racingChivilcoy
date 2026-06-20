@@ -23,72 +23,18 @@
           <div class="text-center">
             <h3><strong id="nombreClub"></strong></h3>
           </div>
-          <button
-            class="btn btn-custom w-100 mb-2"
-            onclick="mostrar('dashboard')"
-          >
-            <strong>Dashboard General</strong>
-          </button>
 
-          <button
-            class="btn btn-custom w-100 mb-2"
-            onclick="mostrar('dashboardFacturacion')"
-          >
-            <strong>Dashboard Facturación</strong>
-          </button>
+          <div
+            class="d-flex flex-column align-items-center mb-auto"
+            id="menuModulos"
+          ></div>
 
-          <button
-            class="btn btn-custom w-100 mb-2"
-            onclick="mostrar('importar')"
-          >
-            <strong>Crear socios</strong>
-          </button>
+          <div
+            id="configuracionContainer"
+            class="d-flex flex-column align-items-center mt-auto"
+          ></div>
 
-          <button class="btn btn-custom w-100 mb-2" onclick="mostrar('buscar')">
-            <strong>Buscar socio</strong>
-          </button>
-
-          <button
-            class="btn btn-custom w-100 mb-2"
-            onclick="mostrar('precios')"
-          >
-            <strong>Precios</strong>
-          </button>
-
-          <button class="btn btn-custom w-100 mb-2" onclick="mostrar('pagos')">
-            <strong>Pagos</strong>
-          </button>
-
-          <button
-            class="btn btn-custom w-100 mb-2"
-            onclick="mostrar('notificaciones')"
-          >
-            <strong>Notificaciones APP</strong>
-          </button>
-
-          <div class="d-flex flex-column align-items-center mt-auto">
-            <button
-              class="btn text-white mb-3"
-              onclick="mostrar('configuracion')"
-              style="
-                font-size: 1.8rem;
-                transition:
-                  transform 0.2s,
-                  color 0.2s;
-              "
-              onmouseover="
-                this.style.transform = 'rotate(30deg) scale(1.1)';
-                this.style.color = colorPrincipal;
-              "
-              onmouseout="
-                this.style.transform = 'rotate(0deg) scale(1)';
-                this.style.color = 'white';
-              "
-              title="Configuración"
-            >
-              <i class="bi bi-gear-fill"></i>
-            </button>
-
+          <div class="d-flex flex-column align-items-center">
             <img
               id="logoSidebar"
               class="logo-sidebar w-100 pt-2"
@@ -115,6 +61,12 @@
           <div id="notificaciones" class="modulo d-none"></div>
 
           <div id="configuracion" class="modulo d-none"></div>
+
+          <div id="usuarios" class="modulo d-none"></div>
+
+          <div id="pileta" class="modulo d-none"></div>
+
+          <div id="analisis" class="modulo d-none"></div>
         </main>
       </div>
     </div>
@@ -137,6 +89,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="./app.backend.js"></script>
     <script src="./pages/dashboardGeneral.js"></script>
     <script src="./pages/dashboardFacturacion.js"></script>
@@ -146,5 +99,7 @@
     <script src="./pages/moduloPagos.js"></script>
     <script src="./pages/configuracionGeneral.js"></script>
     <script src="./pages/notificaciones.js"></script>
+    <script src="./pages/usuarios.js"></script>
+    <script src="./pages/moduloAnalisis.js"></script>
   </body>
 </html>
