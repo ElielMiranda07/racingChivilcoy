@@ -21,7 +21,7 @@
 }
 
 .colorSecundario {
-  color: var(--color-secundario);
+  color: var(--color-secundario) !important;
 }
 
 .logo-sidebar {

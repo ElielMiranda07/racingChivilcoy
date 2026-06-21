@@ -47,12 +47,6 @@ function tabsConfiguracion() {
       </li>
 
       <li class="nav-item">
-        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabDashboard">
-          <i class="bi bi-bar-chart-line me-2"></i>Dashboard
-        </button>
-      </li>
-
-      <li class="nav-item">
         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabExportaciones">
           <i class="bi bi-download me-2"></i>Exportaciones
         </button>
@@ -73,8 +67,6 @@ function contenidoConfiguracion() {
       ${tabModulos()}
 
       ${tabFacturacion()}
-
-      ${tabDashboard()}
 
       ${tabExportaciones()}
 
@@ -511,64 +503,6 @@ function tabFacturacion() {
           </div>
             
         </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-`;
-}
-
-function tabDashboard() {
-  return `
-
-<div class="tab-pane fade" id="tabDashboard">
-
-  <div class="card shadow-sm border-0">
-
-    <div class="card-body">
-
-      <h4 class="colorPrincipal">Dashboard</h4>
-
-      <hr>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="dashSocios" ${configuracionGeneral.dashboard?.mostrarSocios ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Mostrar estadísticas de socios
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="dashFacturacion" ${configuracionGeneral.dashboard?.mostrarFacturacion ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Mostrar facturación
-
-        </label>
-
-      </div>
-
-      <div class="form-check">
-
-        <input class="form-check-input" type="checkbox" id="dashMorosos" ${configuracionGeneral.dashboard?.mostrarMorosos ? "checked" : ""}>
-
-        <label class="form-check-label colorSecundario">
-
-          Mostrar morosos
-
-        </label>
 
       </div>
 
