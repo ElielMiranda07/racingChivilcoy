@@ -189,20 +189,97 @@ const cors = require("cors")({ origin: true });
 exports.crearPreferencia = onRequest((req, res) => {
   cors(req, res, async () => {
     try {
-      console.log("BODY:", req.body);
+      const db = admin.firestore();
 
-      const uid = req.body?.uid;
+      console.log("BODY crearPreferencia:", req.body);
 
-      if (!uid) {
-        return res.status(400).json({ error: "UID no recibido" });
+      const authorization = req.headers.authorization || "";
+      const idToken = authorization.startsWith("Bearer ")
+        ? authorization.split("Bearer ")[1]
+        : null;
+
+      if (!idToken) {
+        return res.status(401).json({
+          error: "Token de autenticación requerido",
+        });
       }
 
-      const userRef = admin.firestore().collection("socios").doc(uid);
-      const userDoc = await userRef.get();
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
 
-      if (!userDoc.exists) {
-        return res.status(404).json({ error: "Usuario no existe" });
+      const uid = decodedToken.uid;
+
+      const pagosSeleccionados = req.body?.pagos;
+
+      if (
+        !Array.isArray(pagosSeleccionados) ||
+        pagosSeleccionados.length === 0
+      ) {
+        return res.status(400).json({
+          error: "No se recibieron ítems para pagar",
+        });
       }
+
+      const socioRef = db.collection("socios").doc(uid);
+      const socioDoc = await socioRef.get();
+
+      if (!socioDoc.exists) {
+        return res.status(404).json({
+          error: "Socio no existe",
+        });
+      }
+
+      const socioPagador = {
+        id: socioDoc.id,
+        ...socioDoc.data(),
+      };
+
+      const pagosValidados = await validarPagosPWA({
+        uid,
+        socioPagador,
+        pagosSeleccionados,
+      });
+
+      const montoTotal = pagosValidados.reduce((acc, pagoSocio) => {
+        const totalSocio = pagoSocio.items.reduce((sub, item) => {
+          return sub + Number(item.monto || 0);
+        }, 0);
+
+        return acc + totalSocio;
+      }, 0);
+
+      if (montoTotal <= 0) {
+        return res.status(400).json({
+          error: "El monto total debe ser mayor a cero",
+        });
+      }
+
+      const pagoPendienteRef = db.collection("pagosPendientes").doc();
+
+      const pagoPendienteId = pagoPendienteRef.id;
+
+      await pagoPendienteRef.set({
+        pagoPendienteId,
+
+        uid,
+        pagadorId: uid,
+        pagadorNombre: socioPagador.nombreCompleto || socioPagador.nombre || "",
+
+        origen: "pwa",
+        metodo: "mercadopago",
+
+        estado: "pendiente",
+
+        montoTotal,
+
+        pagos: pagosValidados,
+
+        preferenceId: null,
+        paymentId: null,
+
+        creadoEn: admin.firestore.FieldValue.serverTimestamp(),
+        aprobadoEn: null,
+        actualizadoEn: admin.firestore.FieldValue.serverTimestamp(),
+      });
 
       const preference = new Preference(client);
 
@@ -210,17 +287,26 @@ exports.crearPreferencia = onRequest((req, res) => {
         body: {
           items: [
             {
-              title: "Cuota mensual",
+              title: "Pago de cuotas y actividades",
               quantity: 1,
               currency_id: "ARS",
-              unit_price: 10,
+              unit_price: montoTotal,
             },
           ],
 
-          metadata: { uid },
+          metadata: {
+            uid,
+            pagoPendienteId,
+          },
+
+          external_reference: pagoPendienteId,
 
           payer: {
-            email: userDoc.data().email || "test@test.com",
+            email:
+              socioPagador.mail ||
+              socioPagador.email ||
+              decodedToken.email ||
+              "test@test.com",
           },
 
           back_urls: {
@@ -236,17 +322,265 @@ exports.crearPreferencia = onRequest((req, res) => {
         },
       });
 
-      console.log("PREFERENCIA OK:", response.id);
+      await pagoPendienteRef.update({
+        preferenceId: response.id,
+        initPoint: response.init_point,
+        actualizadoEn: admin.firestore.FieldValue.serverTimestamp(),
+      });
 
-      res.json({
+      console.log("Preferencia creada:", {
+        pagoPendienteId,
+        preferenceId: response.id,
+        montoTotal,
+      });
+
+      return res.json({
         init_point: response.init_point,
+        pagoPendienteId,
       });
     } catch (error) {
       console.error("🔥 ERROR crearPreferencia:", error);
-      res.status(500).json({ error: error.message });
+
+      return res.status(500).json({
+        error: error.message,
+      });
     }
   });
 });
+
+async function validarPagosPWA({ uid, socioPagador, pagosSeleccionados }) {
+  const db = admin.firestore();
+
+  const pagosPorSocio = {};
+
+  for (const item of pagosSeleccionados) {
+    const socioId = item.socioId;
+
+    if (!socioId) {
+      throw new Error("Ítem sin socioId");
+    }
+
+    if (!pagosPorSocio[socioId]) {
+      pagosPorSocio[socioId] = {
+        socioId,
+        socioNombre: item.socioNombre || "",
+        items: [],
+      };
+    }
+
+    pagosPorSocio[socioId].items.push({
+      tipo: item.tipo,
+      concepto: item.concepto || item.tipo,
+      periodo: item.periodo || null,
+      monto: Number(item.monto || 0),
+    });
+  }
+
+  const pagosValidados = [];
+
+  for (const pagoSocio of Object.values(pagosPorSocio)) {
+    const puedePagarEseSocio = puedePagadorPagarSocio({
+      uid,
+      socioPagador,
+      socioIdAPagar: pagoSocio.socioId,
+    });
+
+    if (!puedePagarEseSocio) {
+      throw new Error("No tenés permiso para pagar deudas de este socio");
+    }
+
+    const socioDoc = await db.collection("socios").doc(pagoSocio.socioId).get();
+
+    if (!socioDoc.exists) {
+      throw new Error(`Socio no existe: ${pagoSocio.socioId}`);
+    }
+
+    const socio = {
+      id: socioDoc.id,
+      ...socioDoc.data(),
+    };
+
+    const itemsValidados = validarItemsContraSocio({
+      socio,
+      items: pagoSocio.items,
+    });
+
+    pagosValidados.push({
+      socioId: socio.id,
+      socioNombre:
+        socio.nombreCompleto || socio.nombre || pagoSocio.socioNombre || "",
+      items: itemsValidados,
+    });
+  }
+
+  return pagosValidados;
+}
+
+function puedePagadorPagarSocio({ uid, socioPagador, socioIdAPagar }) {
+  if (uid === socioIdAPagar) {
+    return true;
+  }
+
+  const esTitular = socioPagador.grupoFamiliar?.rol === "titular";
+
+  const miembros = socioPagador.miembrosGrupo || [];
+
+  return esTitular && miembros.includes(socioIdAPagar);
+}
+
+function validarItemsContraSocio({ socio, items }) {
+  const itemsValidados = [];
+
+  for (const item of items) {
+    const montoCliente = Number(item.monto || 0);
+
+    if (montoCliente <= 0) {
+      throw new Error("Monto inválido");
+    }
+
+    if (item.tipo === "mora") {
+      const concepto = item.concepto;
+
+      const periodo = item.periodo;
+
+      if (!concepto || !periodo) {
+        throw new Error("Mora incompleta");
+      }
+
+      const listaMoras = socio.moras?.[concepto] || [];
+
+      if (!Array.isArray(listaMoras)) {
+        throw new Error(`No existe mora para ${concepto}`);
+      }
+
+      const moraEncontrada = listaMoras.find((mora) => {
+        return mora.periodo === periodo;
+      });
+
+      if (!moraEncontrada) {
+        throw new Error(`No existe mora ${concepto} del período ${periodo}`);
+      }
+
+      const montoReal = Number(moraEncontrada.monto || 0);
+
+      if (montoReal !== montoCliente) {
+        throw new Error("El monto de una mora no coincide con Firestore");
+      }
+
+      itemsValidados.push({
+        tipo: "mora",
+        concepto,
+        periodo,
+        monto: montoReal,
+      });
+
+      continue;
+    }
+
+    const tipo = item.tipo;
+
+    const montoReal = Number(socio.deudas?.[tipo] || 0);
+
+    if (!montoReal) {
+      throw new Error(`No existe deuda actual para ${tipo}`);
+    }
+
+    if (montoReal !== montoCliente) {
+      throw new Error(`El monto de ${tipo} no coincide con Firestore`);
+    }
+
+    itemsValidados.push({
+      tipo,
+      monto: montoReal,
+    });
+  }
+
+  return itemsValidados;
+}
+
+async function procesarPagoPendienteMercadoPago({
+  pagoPendienteId,
+  paymentId,
+}) {
+  const db = admin.firestore();
+
+  const pagoPendienteRef = db
+    .collection("pagosPendientes")
+    .doc(pagoPendienteId);
+
+  const pagoPendienteDoc = await pagoPendienteRef.get();
+
+  if (!pagoPendienteDoc.exists) {
+    throw new Error("Pago pendiente no existe");
+  }
+
+  const pagoPendiente = pagoPendienteDoc.data();
+
+  if (pagoPendiente.estado === "aprobado") {
+    console.log("Pago pendiente ya procesado:", pagoPendienteId);
+    return {
+      ok: true,
+      yaProcesado: true,
+    };
+  }
+
+  if (pagoPendiente.estado === "procesando") {
+    console.log("Pago pendiente en procesamiento:", pagoPendienteId);
+    return {
+      ok: true,
+      procesando: true,
+    };
+  }
+
+  await pagoPendienteRef.update({
+    estado: "procesando",
+    paymentId,
+    actualizadoEn: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  const grupoPagoId = db.collection("gruposPago").doc().id;
+
+  const pagos = pagoPendiente.pagos || [];
+
+  for (const pagoSocio of pagos) {
+    await aplicarPago({
+      socioId: pagoSocio.socioId,
+      items: pagoSocio.items,
+
+      metodo: "mercadopago",
+
+      paymentId,
+
+      pagadorId: pagoPendiente.pagadorId,
+      pagadorNombre: pagoPendiente.pagadorNombre,
+
+      pagaPorGrupo: pagos.length > 1,
+
+      grupoPagoId,
+
+      montoPagadoGrupo: pagoPendiente.montoTotal,
+    });
+  }
+
+  await pagoPendienteRef.update({
+    estado: "aprobado",
+    paymentId,
+    aprobadoEn: admin.firestore.FieldValue.serverTimestamp(),
+    actualizadoEn: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  console.log("✅ Pago pendiente procesado:", {
+    pagoPendienteId,
+    paymentId,
+    montoTotal: pagoPendiente.montoTotal,
+  });
+
+  return {
+    ok: true,
+    pagoPendienteId,
+    paymentId,
+  };
+}
 
 // PROCESAR PAGO COMPLETO
 
@@ -422,24 +756,32 @@ exports.webhookMercadoPago = onRequest(async (req, res) => {
 
     console.log("Payment status:", payment.status);
 
-    if (payment.status === "approved") {
-      const uid = payment.metadata?.uid;
-
-      if (!uid) {
-        console.log("No hay UID en metadata");
-
-        return res.status(200).send("OK");
-      }
-
-      await procesarPagoSocio(uid, payment.id);
-
-      console.log("✅ Pago aprobado:", uid);
+    if (payment.status !== "approved") {
+      return res.status(200).send("OK");
     }
 
-    res.status(200).send("OK");
+    const pagoPendienteId =
+      payment.metadata?.pago_pendiente_id ||
+      payment.metadata?.pagoPendienteId ||
+      payment.external_reference;
+
+    if (!pagoPendienteId) {
+      console.log("No hay pagoPendienteId en metadata/external_reference");
+      return res.status(200).send("OK");
+    }
+
+    await procesarPagoPendienteMercadoPago({
+      pagoPendienteId,
+      paymentId: String(payment.id),
+    });
+
+    console.log("✅ Pago aprobado y procesado:", pagoPendienteId);
+
+    return res.status(200).send("OK");
   } catch (error) {
     console.error("❌ Error webhook:", error);
-    res.status(200).send("OK");
+
+    return res.status(200).send("OK");
   }
 });
 
@@ -451,68 +793,65 @@ exports.webhookMercadoPago = onRequest(async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-exports.confirmarPago = onRequest(async (req, res) => {
-  try {
-    console.log("🔎 Confirmar pago request:", req.body);
+exports.confirmarPago = onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      console.log("🔎 Confirmar pago request:", req.body);
 
-    // PAYMENT ID
+      const paymentId = req.body?.paymentId;
 
-    const paymentId = req.body?.paymentId;
+      if (!paymentId) {
+        return res.status(400).json({
+          error: "paymentId requerido",
+        });
+      }
 
-    if (!paymentId) {
-      return res.status(400).json({
-        error: "paymentId requerido",
+      const paymentClient = new Payment(client);
+
+      const payment = await paymentClient.get({
+        id: paymentId,
       });
-    }
 
-    // TRAER PAGO
+      console.log("💳 Payment status:", payment.status);
 
-    const paymentClient = new Payment(client);
+      if (payment.status !== "approved") {
+        return res.json({
+          success: false,
+          status: payment.status,
+        });
+      }
 
-    const payment = await paymentClient.get({
-      id: paymentId,
-    });
+      const pagoPendienteId =
+        payment.metadata?.pago_pendiente_id ||
+        payment.metadata?.pagoPendienteId ||
+        payment.external_reference;
 
-    console.log("💳 Payment:", payment);
+      if (!pagoPendienteId) {
+        return res.status(400).json({
+          error: "pagoPendienteId no encontrado",
+        });
+      }
 
-    // VALIDAR ESTADO
+      await procesarPagoPendienteMercadoPago({
+        pagoPendienteId,
+        paymentId: String(payment.id),
+      });
 
-    if (payment.status !== "approved") {
+      console.log("✅ Pago confirmado manualmente:", pagoPendienteId);
+
       return res.json({
-        success: false,
-        status: payment.status,
+        success: true,
+        message: "Pago acreditado correctamente",
+        pagoPendienteId,
+      });
+    } catch (error) {
+      console.error("❌ Error confirmarPago:", error);
+
+      return res.status(500).json({
+        error: error.message,
       });
     }
-
-    // UID
-
-    const uid = payment.metadata?.uid;
-
-    if (!uid) {
-      return res.status(400).json({
-        error: "UID no encontrado",
-      });
-    }
-
-    // PROCESAR PAGO
-
-    await procesarPagoSocio(uid, payment.id);
-
-    console.log("✅ Pago confirmado manualmente:", uid);
-
-    // RESPUESTA
-
-    res.json({
-      success: true,
-      message: "Pago acreditado correctamente",
-    });
-  } catch (error) {
-    console.error("❌ Error confirmarPago:", error);
-
-    res.status(500).json({
-      error: error.message,
-    });
-  }
+  });
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
