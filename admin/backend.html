@@ -18,18 +18,53 @@
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="./css/backend.css">
   </head>
-  <body>
-    <section class="container-fluid d-flex justify-content-center my-3">
-      <h2 class="my-4">Racing de Chivilcoy - Panel de Administradores</h2>
-    </section>
-    <section class="container-fluid d-flex flex-column align-items-center my-3">
-      <div class="my-4">
-        <button class="btn btn-primary" id="loginGoogle">
+  <body class="admin-login-body"></body>
+    <main class="admin-login-wrapper">
+
+      <section class="admin-login-card">
+
+        <div class="admin-logo-wrapper mb-4">
+  <img
+    src="./media/akdBlanco.png"
+    alt="Logo del club"
+    class="admin-logo logo-club"
+  />
+</div>
+
+<h1 class="admin-title nombre-club">
+  Racing Club Chivilcoy
+</h1>
+
+        <h4 class="admin-title">
+          Racing Club Chivilcoy
+        </h4>
+
+        <p class="admin-subtitle">
+          Panel de administradores
+        </p>
+
+        <button
+          class="btn btn-admin-google w-100 mt-4"
+          id="loginGoogle">
+
+          <i class="bi bi-google me-2"></i>
+
           Iniciar sesión con Google
+
         </button>
-      </div>
-    </section>
+
+        <p
+          id="mensajeLogin"
+          class="admin-message mt-3 mb-0">
+
+        </p>
+
+      </section>
+    
+    </main>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -38,6 +73,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="./backend.js"></script>
+    <script src="./js/backend.js"></script>
   </body>
 </html>

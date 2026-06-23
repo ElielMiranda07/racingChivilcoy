@@ -18,31 +18,79 @@
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="./css/backend.css" />
   </head>
-  <body>
-    <section class="container-fluid d-flex justify-content-center my-3">
-      <h2 class="my-4">Racing de Chivilcoy - Paneles de Administradores</h2>
-    </section>
-    <section class="container-fluid d-flex flex-column align-items-center my-3">
-      <div class="my-4">
+  <body class="admin-login-body">
+    <main class="admin-login-wrapper">
+      <section class="admin-panel-card">
+        <div class="admin-logo-wrapper mb-4">
+          <img
+            src="./media/akdBlanco.png"
+            alt="Logo del club"
+            class="admin-logo logo-club"
+          />
+        </div>
+
+        <h1 class="admin-title nombre-club">Racing Club Chivilcoy</h1>
+
+        <h4 class="admin-title">Paneles de administración</h4>
+
+        <p class="admin-subtitle">
+          Seleccioná el sistema al que querés ingresar
+        </p>
+
+        <div class="admin-panel-grid mt-4">
+          <button
+            id="elegirWeb"
+            class="admin-panel-option d-none"
+            onclick="location.href = './backend.admin.html'"
+          >
+            <div class="admin-panel-icon">
+              <i class="bi bi-globe2"></i>
+            </div>
+
+            <div class="admin-panel-text">
+              <span>Administrador Web</span>
+
+              <small>
+                Noticias, productos, imágenes y contenido institucional
+              </small>
+            </div>
+          </button>
+
+          <button
+            id="elegirApp"
+            class="admin-panel-option d-none"
+            onclick="location.href = './app.backend.html'"
+          >
+            <div class="admin-panel-icon">
+              <i class="bi bi-speedometer2"></i>
+            </div>
+
+            <div class="admin-panel-text">
+              <span>Administrador App / ERP</span>
+
+              <small>
+                Socios, pagos, cuotas, actividades y configuración
+              </small>
+            </div>
+          </button>
+        </div>
+
         <button
-          class="btn btn-primary"
-          id="elegirWeb"
-          onclick="location.href = './backend.admin.html'"
+          class="btn btn-outline-light w-100 mt-4"
+          onclick="cerrarSesion()"
         >
-          Web
+          Cerrar sesión
         </button>
-      </div>
-      <div class="my-4">
-        <button
-          class="btn btn-primary"
-          id="elegirApp"
-          onclick="location.href = './app.backend.html'"
-        >
-          App
-        </button>
-      </div>
-    </section>
+
+        <p id="mensajePanel" class="admin-message mt-3 mb-0"></p>
+      </section>
+    </main>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -51,6 +99,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <script src="./elegirPanel.js"></script>
+    <script src="./js/elegirPanel.js"></script>
   </body>
 </html>
