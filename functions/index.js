@@ -1729,6 +1729,7 @@ async function enviarPushATokens({ tokens, tokenDocs, titulo, mensaje, link }) {
 
         if (tokenDoc?.ref) {
           batch.update(tokenDoc.ref, {
+            activo: true,
             ultimoEnvioOk: admin.firestore.FieldValue.serverTimestamp(),
             ultimoMessageId: resp.messageId || "",
             error: admin.firestore.FieldValue.delete(),
@@ -1756,20 +1757,11 @@ async function enviarPushATokens({ tokens, tokenDocs, titulo, mensaje, link }) {
 
       if (tokenDoc?.ref) {
         batch.update(tokenDoc.ref, {
+          activo: false,
           ultimoEnvioFallido: admin.firestore.FieldValue.serverTimestamp(),
           error: code,
           errorMensaje: message,
-        });
-      }
-
-      const tokenInvalido =
-        code.includes("registration-token-not-registered") ||
-        code.includes("invalid-registration-token") ||
-        code.includes("invalid-argument");
-
-      if (tokenInvalido && tokenDoc?.ref) {
-        batch.update(tokenDoc.ref, {
-          activo: false,
+          actualizadoEn: admin.firestore.FieldValue.serverTimestamp(),
         });
       }
     });
