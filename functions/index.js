@@ -1518,3 +1518,280 @@ exports.crearUsuarioSistema = onCall(async (request) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+exports.enviarNotificacionSocio = onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      const db = admin.firestore();
+
+      const authorization = req.headers.authorization || "";
+
+      const idToken = authorization.startsWith("Bearer ")
+        ? authorization.split("Bearer ")[1]
+        : null;
+
+      if (!idToken) {
+        return res.status(401).json({
+          error: "Token de autenticación requerido",
+        });
+      }
+
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+      const adminUid = decodedToken.uid;
+
+      const adminDoc = await db.collection("usuarios").doc(adminUid).get();
+
+      if (!adminDoc.exists) {
+        return res.status(403).json({
+          error: "Usuario administrador no encontrado",
+        });
+      }
+
+      const adminData = adminDoc.data();
+
+      const puedeEnviar =
+        adminData.role === "admin" ||
+        adminData.accesos?.sistema === true ||
+        adminData.accesos?.notificaciones === true;
+
+      if (!puedeEnviar) {
+        return res.status(403).json({
+          error: "No tenés permiso para enviar notificaciones",
+        });
+      }
+
+      const socioId = req.body?.socioId;
+      const titulo = req.body?.titulo;
+      const mensaje = req.body?.mensaje;
+      const link = req.body?.link || "/dashboard.html";
+
+      if (!socioId) {
+        return res.status(400).json({
+          error: "socioId requerido",
+        });
+      }
+
+      if (!titulo || !mensaje) {
+        return res.status(400).json({
+          error: "Título y mensaje son requeridos",
+        });
+      }
+
+      const socioRef = db.collection("socios").doc(socioId);
+
+      const socioDoc = await socioRef.get();
+
+      if (!socioDoc.exists) {
+        return res.status(404).json({
+          error: "Socio no encontrado",
+        });
+      }
+
+      const tokensSnapshot = await socioRef
+        .collection("tokensNotificacion")
+        .where("activo", "==", true)
+        .get();
+
+      if (tokensSnapshot.empty) {
+        return res.json({
+          ok: false,
+          enviados: 0,
+          fallidos: 0,
+          mensaje: "El socio no tiene tokens activos",
+        });
+      }
+
+      const tokens = [];
+      const tokenDocs = [];
+
+      tokensSnapshot.forEach((doc) => {
+        const data = doc.data();
+
+        if (data.token) {
+          tokens.push(data.token);
+          tokenDocs.push({
+            ref: doc.ref,
+            token: data.token,
+          });
+        }
+      });
+
+      if (tokens.length === 0) {
+        return res.json({
+          ok: false,
+          enviados: 0,
+          fallidos: 0,
+          mensaje: "No hay tokens válidos",
+        });
+      }
+
+      const resultado = await enviarPushATokens({
+        tokens,
+        tokenDocs,
+        titulo,
+        mensaje,
+        link,
+      });
+
+      await db.collection("notificaciones").add({
+        tipo: "manual_test_socio",
+
+        titulo,
+        mensaje,
+        link,
+
+        socioId,
+
+        enviadoPorId: adminUid,
+        enviadoPorEmail: decodedToken.email || "",
+
+        enviados: resultado.enviados,
+        fallidos: resultado.fallidos,
+
+        creadoEn: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      return res.json({
+        ok: true,
+        socioId,
+        enviados: resultado.enviados,
+        fallidos: resultado.fallidos,
+        errores: resultado.errores || [],
+      });
+    } catch (error) {
+      console.error("Error enviarNotificacionSocio:", error);
+
+      return res.status(500).json({
+        error: error.message,
+      });
+    }
+  });
+});
+
+async function enviarPushATokens({ tokens, tokenDocs, titulo, mensaje, link }) {
+  let enviados = 0;
+  let fallidos = 0;
+
+  const errores = [];
+
+  const linkFinal =
+    link && link.startsWith("https")
+      ? link
+      : "https://socios-racing.vercel.app/dashboard.html";
+
+  const chunks = dividirArray(tokens, 500);
+
+  let offset = 0;
+
+  for (const chunk of chunks) {
+    const response = await admin.messaging().sendEachForMulticast({
+      tokens: chunk,
+
+      notification: {
+        title: titulo,
+        body: mensaje,
+      },
+
+      data: {
+        titulo: String(titulo || ""),
+        mensaje: String(mensaje || ""),
+        link: linkFinal,
+      },
+
+      webpush: {
+        fcmOptions: {
+          link: linkFinal,
+        },
+
+        notification: {
+          title: titulo,
+          body: mensaje,
+          icon: "https://socios-racing.vercel.app/media/akdBlanco.png",
+          badge: "https://socios-racing.vercel.app/media/akdBlanco.png",
+        },
+      },
+    });
+
+    enviados += response.successCount;
+    fallidos += response.failureCount;
+
+    const batch = admin.firestore().batch();
+
+    response.responses.forEach((resp, index) => {
+      const tokenDoc = tokenDocs[offset + index];
+
+      if (resp.success) {
+        console.log("✅ FCM aceptó la notificación:", {
+          tokenDocId: tokenDoc?.ref?.id,
+          messageId: resp.messageId,
+        });
+
+        if (tokenDoc?.ref) {
+          batch.update(tokenDoc.ref, {
+            ultimoEnvioOk: admin.firestore.FieldValue.serverTimestamp(),
+            ultimoMessageId: resp.messageId || "",
+            error: admin.firestore.FieldValue.delete(),
+            errorMensaje: admin.firestore.FieldValue.delete(),
+          });
+        }
+
+        return;
+      }
+
+      const code = resp.error?.code || "sin_codigo";
+      const message = resp.error?.message || "sin_mensaje";
+
+      console.error("❌ Error FCM:", {
+        tokenDocId: tokenDoc?.ref?.id,
+        code,
+        message,
+      });
+
+      errores.push({
+        tokenDocId: tokenDoc?.ref?.id || "",
+        code,
+        message,
+      });
+
+      if (tokenDoc?.ref) {
+        batch.update(tokenDoc.ref, {
+          ultimoEnvioFallido: admin.firestore.FieldValue.serverTimestamp(),
+          error: code,
+          errorMensaje: message,
+        });
+      }
+
+      const tokenInvalido =
+        code.includes("registration-token-not-registered") ||
+        code.includes("invalid-registration-token") ||
+        code.includes("invalid-argument");
+
+      if (tokenInvalido && tokenDoc?.ref) {
+        batch.update(tokenDoc.ref, {
+          activo: false,
+        });
+      }
+    });
+
+    await batch.commit();
+
+    offset += chunk.length;
+  }
+
+  return {
+    enviados,
+    fallidos,
+    errores,
+  };
+}
+
+function dividirArray(array, tamanio) {
+  const chunks = [];
+
+  for (let i = 0; i < array.length; i += tamanio) {
+    chunks.push(array.slice(i, i + tamanio));
+  }
+
+  return chunks;
+}

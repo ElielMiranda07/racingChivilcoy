@@ -1,0 +1,98 @@
+[debug] [2026-06-27T02:48:05.342Z] ----------------------------------------------------------------------
+[debug] [2026-06-27T02:48:05.344Z] Command:       E:\node.exe C:\Users\Eliel\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2026-06-27T02:48:05.344Z] CLI Version:   15.9.1
+[debug] [2026-06-27T02:48:05.344Z] Platform:      win32
+[debug] [2026-06-27T02:48:05.344Z] Node Version:  v24.14.0
+[debug] [2026-06-27T02:48:05.344Z] Time:          Fri Jun 26 2026 23:48:05 GMT-0300 (hora estándar de Argentina)
+[debug] [2026-06-27T02:48:05.344Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-06-27T02:48:06.406Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-06-27T02:48:06.407Z] > authorizing via signed-in user (eliel.miranda07@gmail.com)
+[debug] [2026-06-27T02:48:06.407Z] [iam] checking project reactss-26771 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-06-27T02:48:06.408Z] Checked if tokens are valid: false, expires at: 1782521343871
+[debug] [2026-06-27T02:48:06.408Z] Checked if tokens are valid: false, expires at: 1782521343871
+[debug] [2026-06-27T02:48:06.408Z] > refreshing access token with scopes: []
+[debug] [2026-06-27T02:48:06.409Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-06-27T02:48:06.409Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-27T02:48:06.579Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-06-27T02:48:06.579Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-06-27T02:48:06.588Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions [none]
+[debug] [2026-06-27T02:48:06.588Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions  x-goog-user-project=reactss-26771
+[debug] [2026-06-27T02:48:06.588Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-06-27T02:48:07.672Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions 200
+[debug] [2026-06-27T02:48:07.672Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-06-27T02:48:07.673Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:07.673Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:07.673Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/reactss-26771/serviceAccounts/reactss-26771@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-06-27T02:48:07.673Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/reactss-26771/serviceAccounts/reactss-26771@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-06-27T02:48:08.765Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/reactss-26771/serviceAccounts/reactss-26771@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-06-27T02:48:08.766Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/reactss-26771/serviceAccounts/reactss-26771@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'reactss-26771'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-06-27T02:48:08.771Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:08.771Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:08.771Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771 [none]
+[debug] [2026-06-27T02:48:09.032Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771 200
+[debug] [2026-06-27T02:48:09.032Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771 {"projectNumber":"443520919767","projectId":"reactss-26771","lifecycleState":"ACTIVE","name":"RacingDeChivilcoy","labels":{"firebase":"enabled"},"createTime":"2023-12-23T06:00:36.711478Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-06-27T02:48:09.035Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:09.035Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:09.035Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/reactss-26771/adminSdkConfig [none]
+[debug] [2026-06-27T02:48:09.488Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/reactss-26771/adminSdkConfig 200
+[debug] [2026-06-27T02:48:09.488Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/reactss-26771/adminSdkConfig {"projectId":"reactss-26771","storageBucket":"reactss-26771.appspot.com","locationId":"us-central"}
+[debug] [2026-06-27T02:48:09.490Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2026-06-27T02:48:10.148Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "24"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "firebase-admin": "^13.7.0",
+    "firebase-functions": "^7.2.0",
+    "mercadopago": "^2.12.0"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.4.1"
+  },
+  "private": true
+}
+[debug] [2026-06-27T02:48:10.149Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-06-27T02:48:10.149Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-06-27T02:48:10.155Z] Found firebase-functions binary at 'C:\Users\Eliel\Desktop\racingChivilcoy\racingChivilcoy\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8303
+
+[debug] [2026-06-27T02:48:10.656Z] Got response from /__/functions.yaml {"endpoints":{"procesarSocios":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"procesarSocios"},"crearPreferencia":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"crearPreferencia"},"webhookMercadoPago":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"webhookMercadoPago"},"confirmarPago":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"confirmarPago"},"calcularDeudas":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"calcularDeudas"},"registrarPagoManual":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"registrarPagoManual"},"crearUsuarioSistema":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"crearUsuarioSistema"},"enviarNotificacionSocio":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"enviarNotificacionSocio"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2026-06-27T02:48:14.696Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-06-27T02:48:14.696Z] > authorizing via signed-in user (eliel.miranda07@gmail.com)
+[debug] [2026-06-27T02:48:14.696Z] [iam] checking project reactss-26771 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2026-06-27T02:48:14.696Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:14.696Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:14.696Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions [none]
+[debug] [2026-06-27T02:48:14.696Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions  x-goog-user-project=reactss-26771
+[debug] [2026-06-27T02:48:14.696Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-06-27T02:48:15.753Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions 200
+[debug] [2026-06-27T02:48:15.754Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/reactss-26771:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2026-06-27T02:48:15.754Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:15.754Z] Checked if tokens are valid: true, expires at: 1782532085580
+[debug] [2026-06-27T02:48:15.754Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/reactss-26771/instances pageSize=100&pageToken=
+[debug] [2026-06-27T02:48:16.853Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/reactss-26771/instances 200
+[debug] [2026-06-27T02:48:16.853Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/reactss-26771/instances {}
+[info] i  functions: preparing functions directory for uploading... 

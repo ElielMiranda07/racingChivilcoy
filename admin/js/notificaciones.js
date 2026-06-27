@@ -93,6 +93,18 @@ async function cargarModuloNotificaciones() {
 
   </ul>
 
+  <div class="mb-3">
+  <label class="form-label">
+    UID de socio para prueba
+  </label>
+
+  <input
+    id="notificacionSocioIdTest"
+    class="form-control"
+    placeholder="Pegá acá el ID del documento del socio"
+  >
+</div>
+
   <div class="tab-content">
 
     <div
@@ -522,4 +534,70 @@ function tabHistorial() {
 </div>
 
 `;
+}
+
+async function enviarNotificacionManual() {
+  const titulo = document.getElementById("notificacionTitulo")?.value.trim();
+  const mensaje = document.getElementById("notificacionMensaje")?.value.trim();
+  const socioId = document
+    .getElementById("notificacionSocioIdTest")
+    ?.value.trim();
+
+  if (!titulo || !mensaje) {
+    alert("Completá título y mensaje.");
+    return;
+  }
+
+  if (!socioId) {
+    alert("Por ahora ingresá un UID de socio para probar.");
+    return;
+  }
+
+  const confirmar = confirm(
+    `¿Enviar notificación de prueba al socio ${socioId}?`,
+  );
+
+  if (!confirmar) return;
+
+  try {
+    const user = firebase.auth().currentUser;
+
+    if (!user) {
+      alert("Sesión expirada.");
+      return;
+    }
+
+    const idToken = await user.getIdToken();
+
+    const response = await fetch(
+      "https://us-central1-reactss-26771.cloudfunctions.net/enviarNotificacionSocio",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          socioId,
+          titulo,
+          mensaje,
+          link: "https://socios-racing.vercel.app/dashboard.html",
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Error al enviar notificación");
+    }
+
+    alert(
+      `Notificación procesada.\nEnviadas: ${data.enviados}\nFallidas: ${data.fallidos}`,
+    );
+  } catch (error) {
+    console.error("Error enviando notificación:", error);
+
+    alert(error.message || "Error al enviar la notificación.");
+  }
 }
